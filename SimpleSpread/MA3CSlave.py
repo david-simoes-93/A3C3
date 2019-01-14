@@ -257,7 +257,11 @@ class Worker:
             current_screen = self.env.reset()
             #print(current_screen)
             for i in range(self.number_of_agents):
-                current_screen[i] = current_screen[i][0:self.s_size]
+                if self.s_size==6:
+                    current_screen[i] = np.hstack([current_screen[i][0:4],current_screen[i][4+i*2:6+i*2]])
+                else:
+                    current_screen[i] = current_screen[i][0:self.s_size]
+
             current_screen_central = np.hstack(current_screen)
             arrayed_current_screen_central = [current_screen_central for _ in range(self.number_of_agents)]
             for i in range(self.number_of_agents):
@@ -307,7 +311,7 @@ class Worker:
                 current_screen, reward, terminal, info = self.env.step(actions_one_hot)
                 for i in range(self.number_of_agents):
                     current_screen[i] = current_screen[i][0:self.s_size]
-                terminal = np.sum(reward) > -0.05
+                terminal = np.sum(reward) > (-0.25)*self.number_of_agents
                 current_screen_central = np.hstack(current_screen)
                 arrayed_current_screen_central = [current_screen_central for _ in range(self.number_of_agents)]
 
@@ -360,11 +364,6 @@ class Worker:
                     actions = [np.random.choice(self.action_indexes, p=act_distribution)
                                for act_distribution in action_distribution]
                     actions_one_hot = [self.actions_one_hot[act] for act in actions]
-
-                    # TODO hardcoded comms
-                    #if self.message_size == 3:
-                    #    for i in range(self.number_of_agents):
-                    #        message[i] = list(current_screen[i])
 
                     if self.critic_action:
                         for agent in range(self.number_of_agents):
