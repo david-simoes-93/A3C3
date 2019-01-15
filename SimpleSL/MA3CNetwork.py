@@ -37,7 +37,7 @@ class AC_Network:
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)
 
-            hidden = slim.fully_connected(self.flattened_inputs_with_comm, 161,
+            hidden = slim.fully_connected(self.flattened_inputs_with_comm, 160,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)

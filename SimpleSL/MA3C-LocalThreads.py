@@ -10,32 +10,32 @@ import os
 import threading
 from time import sleep
 import tensorflow as tf
-from SimpleTag.MA3CNetwork import AC_Network
-from SimpleTag.MA3CSlave import Worker
+from SimpleSL.MA3CNetwork import AC_Network
+from SimpleSL.MA3CSlave import Worker
 from simulator_openai.make_env import make_env
 
 max_episode_length = 100
-gamma = 0.95  # discount rate for advantage estimation and reward discounting
+gamma = 0.001  # discount rate for advantage estimation and reward discounting
 learning_rate = 1e-4
 spread_messages = False
 batch_size = 25
 
-load_model = False
+load_model = True
 model_path = './model'
-display = False
+display = True
 
 parser = argparse.ArgumentParser()
 parser.register("type", "bool", lambda v: v.lower() == "true")
 parser.add_argument(
     "--num_slaves",
     type=int,
-    default=3,
+    default=1,
     help="Set number of available CPU threads"
 )
 parser.add_argument(
     "--num_agents",
     type=int,
-    default=4,
+    default=2,
     help="Set number of agents"
 )
 parser.add_argument(
@@ -59,7 +59,7 @@ parser.add_argument(
 parser.add_argument(
     "--max_epis",
     type=int,
-    default=50000,
+    default=25000,
     help="training steps"
 )
 parser.add_argument(
@@ -100,9 +100,9 @@ if FLAGS.critic == 1 or FLAGS.critic == 3:
 if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
 
-state_size = [14, 14, 14, 14]
+state_size = [3, 8]
 s_size_central = sum(state_size)
-action_size = [5, 5, 5, 5]
+action_size = [1, 5]
 
 tf.reset_default_graph()
 
@@ -113,17 +113,17 @@ if not os.path.exists(model_path):
 with tf.device("/cpu:0"):
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    predator = AC_Network(state_size[0], s_size_central, number_of_agents, action_size[0],
-                          2 * comm_size, 2 * comm_size if spread_messages else comm_size, 'global',
-                          None, '_agentPredator', critic_action=critic_action, critic_comm=critic_comm)
-    prey = AC_Network(state_size[3], s_size_central, number_of_agents, action_size[3], 0, 0,
-                      'global', None, '_agentPrey', critic_action=critic_action, critic_comm=critic_comm)
-    master_networks = [predator, predator, predator, prey]  # Generate global network
+    master_networks = [AC_Network(state_size[i], s_size_central, number_of_agents, action_size[i],
+                                  (number_of_agents - 1) * comm_size,
+                                  (number_of_agents - 1) * comm_size if spread_messages else comm_size,
+                                  'global',
+                                  None, '_agent'+str(i), critic_action=critic_action, critic_comm=critic_comm)
+                       for i in range(number_of_agents)]  # Generate global network
 
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(make_env("simple_tag"), i, state_size, s_size_central,
+        workers.append(Worker(make_env("simple_speaker_listener"), i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
                               global_episodes,
                               display=display and i == 0, comm=(comm_size != 0),

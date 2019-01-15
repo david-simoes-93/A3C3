@@ -36,21 +36,25 @@ class Worker:
         self.critic_action = critic_action
         self.critic_comm = critic_comm
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
-        self.local_AC = \
-            AC_Network(s_size, s_size_central, number_of_agents, a_size,
-                       (number_of_agents - 1) * comm_size_per_agent,
-                         (number_of_agents - 1) * comm_size_per_agent if spread_messages else comm_size_per_agent,
-                       self.name, trainer, critic_action=critic_action, critic_comm=critic_comm)
-        self.update_local_ops = update_target_graph('global', self.name)
+        predator = AC_Network(s_size[0], s_size_central, number_of_agents, a_size[0], 2 * comm_size_per_agent,
+                              2 * comm_size_per_agent if spread_messages else comm_size_per_agent,
+                              self.name, trainer, "_agentPredator", critic_action=critic_action,
+                              critic_comm=critic_comm)
+        prey = AC_Network(s_size[3], s_size_central, number_of_agents, a_size[3], 0, 0,
+                          self.name, trainer, "_agentPrey", critic_action=critic_action, critic_comm=critic_comm)
+        self.local_AC = [predator, predator, predator, prey]
+        self.update_local_ops = [update_target_graph('global_agentPredator', self.name + "_agentPredator"),
+                                 update_target_graph('global_agentPrey', self.name + "_agentPrey")]
 
         # Env Pursuit set-up
         self.env = game
         self.s_size = s_size
         self.number_of_actions = a_size
-        self.action_indexes = list(range(self.number_of_actions))
-        self.actions_one_hot = np.zeros([self.number_of_actions, self.number_of_actions])
-        for i in range(self.number_of_actions):
-            self.actions_one_hot[i][i] = 1
+        self.action_indexes = [list(range(noa)) for noa in self.number_of_actions]
+        self.actions_one_hot = [np.zeros([noa, noa]) for noa in self.number_of_actions]
+        for agent in range(self.number_of_agents):
+            for i in range(self.number_of_actions[agent]):
+                self.actions_one_hot[agent][i][i] = 1
 
         self.comm = comm
         self.display = display
@@ -256,47 +260,56 @@ class Worker:
             # start new epi
             current_screen = self.env.reset()
             for i in range(self.number_of_agents):
-                current_screen[i] = current_screen[i][0:self.s_size]
+                current_screen[i] = current_screen[i][0:self.s_size[i]]
             current_screen_central = np.hstack(current_screen)
             arrayed_current_screen_central = [current_screen_central for _ in range(self.number_of_agents)]
+
+            this_turns_comm_map = [[1, 2], [0, 1], [1, 2], []]
             for i in range(self.number_of_agents):
-                comm_map = list(range(self.number_of_agents))
-                comm_map.remove(i)
-                episode_comm_maps[i].append(comm_map)
+                episode_comm_maps[i].append(this_turns_comm_map[i])
 
             if self.is_chief and self.display:
                 self.env.render()
 
-            curr_comm = [[] for _ in range(self.number_of_agents)]
-            for curr_agent in range(self.number_of_agents):
-                for from_agent in range(self.number_of_agents - 1):
-                    curr_comm[curr_agent].extend([0] * self.message_size)
+            curr_comm = [[0] * self.message_size * 2, [0] * self.message_size * 2, [0] * self.message_size * 2, []]
 
             for episode_step_count in range(max_episode_length):
                 # feedforward pass
                 if not already_calculated_actions:
-                    action_distribution, message = sess.run([self.local_AC.policy, self.local_AC.message],
-                                                            feed_dict={self.local_AC.inputs: current_screen,
-                                                                       self.local_AC.inputs_comm: curr_comm})
-                    actions = [np.random.choice(self.action_indexes, p=act_distribution)
-                               for act_distribution in action_distribution]
-                    actions_one_hot = [self.actions_one_hot[act] for act in actions]
-
-                    # message gauss noise
+                    action_distribution, message, actions, actions_one_hot = \
+                        [None] * self.number_of_agents, [None] * self.number_of_agents, \
+                        [None] * self.number_of_agents, [None] * self.number_of_agents
+                    for agent in range(self.number_of_agents):
+                        # print(agent, current_screen[agent],curr_comm[agent])
+                        [action_distribution[agent]], [message[agent]] = sess.run(
+                            [self.local_AC[agent].policy, self.local_AC[agent].message],
+                            feed_dict={self.local_AC[agent].inputs: [current_screen[agent]],
+                                       self.local_AC[agent].inputs_comm: [curr_comm[agent]]})
+                        actions[agent] = np.random.choice(self.action_indexes[agent], p=action_distribution[agent])
+                        actions_one_hot[agent] = self.actions_one_hot[agent][actions[agent]]
+                        # print(actions_one_hot[agent])
+                    # exit()
+                    """# message gauss noise
                     if self.comm_gaussian_noise != 0:
                         for index in range(len(message)):
                             message[index] += np.random.normal(0, self.comm_gaussian_noise)
 
                     if self.critic_action:
                         for agent in range(self.number_of_agents):
-                            actions_one_hot = one_hot_encoding(actions[0:agent] + actions[agent + 1:], self.number_of_actions)
-                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[agent] + actions_one_hot
+                            actions_one_hot = one_hot_encoding(actions[0:agent] + actions[agent + 1:],
+                                                               self.number_of_actions)
+                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[
+                                                                        agent] + actions_one_hot
                     if self.critic_comm:
                         for agent in range(self.number_of_agents):
-                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[agent] + curr_comm[agent]
+                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[agent] + curr_comm[
+                                agent]"""
                 already_calculated_actions = False
-                value = sess.run(self.local_AC.value,
-                                 feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
+                value = [None] * self.number_of_agents
+                for agent in range(self.number_of_agents):
+                    [[value[agent]]] = sess.run(self.local_AC[agent].value,
+                                                feed_dict={self.local_AC[agent].inputs_central: [
+                                                    arrayed_current_screen_central[agent]]})
 
                 previous_screen = current_screen
                 arrayed_previous_screen_central = arrayed_current_screen_central
@@ -305,13 +318,14 @@ class Worker:
                 # Watch environment
                 current_screen, reward, terminal, info = self.env.step(actions_one_hot)
                 for i in range(self.number_of_agents):
-                    current_screen[i] = current_screen[i][0:self.s_size]
-                terminal = np.sum(reward) > -0.05
+                    current_screen[i] = current_screen[i][0:self.s_size[i]]
                 current_screen_central = np.hstack(current_screen)
                 arrayed_current_screen_central = [current_screen_central for _ in range(self.number_of_agents)]
 
-                this_turns_comm_map = []
+                this_turns_comm_map = [[1, 2], [0, 1], [1, 2], []]
                 for i in range(self.number_of_agents):
+                    episode_comm_maps[i].append(this_turns_comm_map[i])
+                """for i in range(self.number_of_agents):
                     # 50% chance of no comms
                     surviving_comms = list(range(self.number_of_agents))
                     surviving_comms.remove(i)
@@ -319,7 +333,7 @@ class Worker:
                         if random.random() < self.comm_delivery_failure_chance:  # chance of failure comms
                             surviving_comms[index] = -1
                     episode_comm_maps[i].append(surviving_comms)
-                    this_turns_comm_map.append(surviving_comms)
+                    this_turns_comm_map.append(surviving_comms)"""
                 curr_comm = self.output_mess_to_input_mess(message, this_turns_comm_map)
 
                 if self.is_chief and self.display:
@@ -327,7 +341,7 @@ class Worker:
                     sleep(0.2)
                 episode_reward += sum(reward) if self.spread_rewards else reward
 
-                # jumbles comms
+                """# jumbles comms
                 if self.comm_jumble_chance != 0:
                     for i in range(self.number_of_agents):
                         joint_comm = [0] * self.message_size
@@ -339,7 +353,7 @@ class Worker:
                                 # only jumble messages that got received
                                 jumble = curr_comm[i][index] != 0 and random.random() < self.comm_jumble_chance
                             if jumble:
-                                curr_comm[i][index] = joint_comm[index % self.message_size]
+                                curr_comm[i][index] = joint_comm[index % self.message_size]"""
 
                 for i in range(self.number_of_agents):
                     episode_buffer[i].append([previous_screen[i], arrayed_previous_screen_central[i],
@@ -353,34 +367,39 @@ class Worker:
                 if len(episode_buffer[0]) == batch_size and not terminal and \
                                 episode_step_count < max_episode_length - 1:
                     # feedforward pass
-                    action_distribution, message = sess.run([self.local_AC.policy, self.local_AC.message],
-                                                            feed_dict={self.local_AC.inputs: current_screen,
-                                                                       self.local_AC.inputs_comm: curr_comm})
-                    actions = [np.random.choice(self.action_indexes, p=act_distribution)
-                               for act_distribution in action_distribution]
-                    actions_one_hot = [self.actions_one_hot[act] for act in actions]
+                    for agent in range(self.number_of_agents):
+                        [action_distribution[agent]], [message[agent]] = sess.run(
+                            [self.local_AC[agent].policy, self.local_AC[agent].message],
+                            feed_dict={self.local_AC[agent].inputs: [current_screen[agent]],
+                                       self.local_AC[agent].inputs_comm: [curr_comm[agent]]})
+                        actions[agent] = np.random.choice(self.action_indexes[agent], p=action_distribution[agent])
+                        actions_one_hot[agent] = self.actions_one_hot[agent][actions[agent]]
 
-                    # TODO hardcoded comms
-                    #if self.message_size == 3:
+                    """# TODO hardcoded comms
+                    # if self.message_size == 3:
                     #    for i in range(self.number_of_agents):
                     #        message[i] = list(current_screen[i])
 
                     if self.critic_action:
                         for agent in range(self.number_of_agents):
-                            actions_one_hot = one_hot_encoding(actions[0:agent] + actions[agent + 1:], self.number_of_actions)
-                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[agent] + actions_one_hot
+                            actions_one_hot = one_hot_encoding(actions[0:agent] + actions[agent + 1:],
+                                                               self.number_of_actions)
+                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[
+                                                                        agent] + actions_one_hot
                     if self.critic_comm:
                         for agent in range(self.number_of_agents):
-                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[agent] + curr_comm[agent]
+                            arrayed_current_screen_central[agent] = arrayed_current_screen_central[agent] + curr_comm[
+                                agent]"""
                     already_calculated_actions = True
-                    v1 = sess.run(self.local_AC.value,
-                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
-
                     for i in range(self.number_of_agents):
+                        [v1] = sess.run(self.local_AC[i].value,
+                                        feed_dict={
+                                            self.local_AC[i].inputs_central: [arrayed_current_screen_central[i]]})
+
                         partial_obs[i], partial_mess_rec[i], sent_message[i], mgrad_per_received[i], \
                         v_l[i], p_l[i], e_l[i], g_n[i], v_n[i] = \
-                            self.train_weights_and_get_comm_gradients(episode_buffer[i], sess, gamma, self.local_AC,
-                                                                      bootstrap_value=v1[i][0])
+                            self.train_weights_and_get_comm_gradients(episode_buffer[i], sess, gamma, self.local_AC[i],
+                                                                      bootstrap_value=v1)
 
                     if self.comm:
                         mgrad_per_sent = self.input_mloss_to_output_mloss(batch_size - 1, mgrad_per_received,
@@ -391,9 +410,9 @@ class Worker:
                         for i in range(self.number_of_agents):
                             temp_episode_comm_maps.append([episode_comm_maps[i][-1]])
                         episode_comm_maps = temp_episode_comm_maps
-                        for i in range(self.number_of_agents):
+                        for i in range(self.number_of_agents - 1):
                             self.apply_comm_gradients(partial_obs[i], partial_mess_rec[i],
-                                                      sent_message[i], mgrad_per_sent[i], sess, self.local_AC)
+                                                      sent_message[i], mgrad_per_sent[i], sess, self.local_AC[i])
 
                     # print("Copying global networks to local networks")
                     sess.run(self.update_local_ops)
@@ -412,7 +431,7 @@ class Worker:
                     prev_clock = new_clock
 
                 # If both prey and predator have acknowledged game is over, then break from episode
-                if terminal:
+                if episode_step_count >= 99:
                     break
 
             # print("0ver ",episode_step_count,episode_reward)
@@ -424,15 +443,15 @@ class Worker:
             for i in range(self.number_of_agents):
                 partial_obs[i], partial_mess_rec[i], sent_message[i], mgrad_per_received[i], \
                 v_l[i], p_l[i], e_l[i], g_n[i], v_n[i] = \
-                    self.train_weights_and_get_comm_gradients(episode_buffer[i], sess, gamma, self.local_AC)
+                    self.train_weights_and_get_comm_gradients(episode_buffer[i], sess, gamma, self.local_AC[i])
 
             if self.comm and len(mgrad_per_received[0]) != 0:
                 mgrad_per_sent = self.input_mloss_to_output_mloss(len(mgrad_per_received[0]), mgrad_per_received,
                                                                   episode_comm_maps)
 
-                for i in range(self.number_of_agents):
+                for i in range(self.number_of_agents - 1):
                     self.apply_comm_gradients(partial_obs[i], partial_mess_rec[i],
-                                              sent_message[i], mgrad_per_sent[i], sess, self.local_AC)
+                                              sent_message[i], mgrad_per_sent[i], sess, self.local_AC[i])
 
             # print("Copying global networks to local networks")
             sess.run(self.update_local_ops)
@@ -446,7 +465,7 @@ class Worker:
                 mean_value = np.mean(self.episode_mean_values[-5:])
 
                 if self.is_chief and episode_count % 10 == 0:
-                    print("length", mean_length, "reward", np.max(reward))
+                    print("length", mean_length, "reward", mean_reward)
 
                 # Save current model
                 if self.is_chief and saver is not None and episode_count % 500 == 0:

@@ -60,7 +60,7 @@ parser.add_argument(
 parser.add_argument(
     "--max_epis",
     type=int,
-    default=200000,
+    default=25000,
     help="training steps"
 )
 parser.add_argument(
@@ -101,7 +101,7 @@ if FLAGS.critic == 1 or FLAGS.critic == 3:
 if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
 
-state_size = 14
+state_size = 10
 s_size_central = state_size*number_of_agents
 action_size = 5
 
