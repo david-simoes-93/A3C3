@@ -44,7 +44,7 @@ class GymNav(gym.Env):
         # A tuple corresponding to the min and max possible rewards
         self.reward_range = [0, self.number_of_agents]
 
-    def _render(self, mode='human', close=False):
+    def render(self, mode='human', close=False):
         cell_width = 50
         cell_width_half = int(cell_width / 2)
         if close:
@@ -78,7 +78,7 @@ class GymNav(gym.Env):
 
         pygame.display.flip()
 
-    def _reset(self):
+    def reset(self):
         self.target_goal = []
         for i in range(self.number_of_agents):
             possible_pos = [random.randint(0, self.map_size - 1), random.randint(0, self.map_size - 1)]
@@ -96,7 +96,7 @@ class GymNav(gym.Env):
 
         return self.get_state(), {"state_central": self.get_state_central()}
 
-    def _step(self, action):
+    def step(self, action):
         reward = 0
         for i, action in enumerate(action):
             if action == 0:
@@ -147,10 +147,10 @@ class GymNav(gym.Env):
 
         return obs
 
-    def _close(self):
+    def close(self):
         return
 
-    def _seed(self, seed=None):
+    def seed(self, seed=None):
         if seed is None:
             seed = random.randrange(sys.maxsize)
         random.seed(seed)

@@ -9,7 +9,7 @@ import pygame
 
 
 class GymBGU(gym.Env):
-    def __init__(self, number_of_agents=11, map_size=7):
+    def __init__(self, number_of_agents=11, map_size=5):
         # super?
         self.max_actions = 5
         self.number_of_agents = number_of_agents
@@ -46,7 +46,7 @@ class GymBGU(gym.Env):
         # A tuple corresponding to the min and max possible rewards
         self.reward_range = [0, self.number_of_agents]
 
-    def _render(self, mode='human', close=False):
+    def render(self, mode='human', close=False):
         cell_width = 50
         cell_width_half = int(cell_width / 2)
         if close:
@@ -79,7 +79,7 @@ class GymBGU(gym.Env):
 
         pygame.display.flip()
 
-    def _reset(self):
+    def reset(self):
         self.target_goal = [random.randint(0, self.map_size - 1), random.randint(0, self.map_size - 1)]
         for i in range(self.number_of_agents):
             self.pos[i] = [random.randint(0, self.map_size - 1), random.randint(0, self.map_size - 1)]
@@ -90,7 +90,7 @@ class GymBGU(gym.Env):
 
         return self.get_state(), {"state_central": self.get_state_central()}
 
-    def _step(self, action):
+    def step(self, action):
         reward = []
         for i, action in enumerate(action):
             if action == 0:
@@ -142,10 +142,10 @@ class GymBGU(gym.Env):
             obs.append([1 if self.target_goal == pos else 0] + pos)
         return obs
 
-    def _close(self):
+    def close(self):
         return
 
-    def _seed(self, seed=None):
+    def seed(self, seed=None):
         if seed is None:
             seed = random.randrange(sys.maxsize)
         random.seed(seed)

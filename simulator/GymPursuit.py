@@ -55,7 +55,7 @@ class GymPursuit(gym.Env):
                              range(number_of_agents)]
         # self.max_timer = 1
 
-    def _render(self, mode='human', close=False):
+    def render(self, mode='human', close=False):
         cell_width = 50
         cell_width_half = int(cell_width / 2)
         cell_width_quarter = int(cell_width / 8)
@@ -107,7 +107,7 @@ class GymPursuit(gym.Env):
 
         pygame.display.flip()
 
-    def _reset(self):
+    def reset(self):
         # self.max_timer += 1
         # print("max timer pursuit",self.max_timer)
         self.timer = 0
@@ -134,7 +134,7 @@ class GymPursuit(gym.Env):
 
         return self.get_state(), {"state_central": self.get_state_central(), "time_chasing": 0}
 
-    def _step(self, action):
+    def step(self, action):
         reward = -0.1
         for i, action in enumerate(action):
             if action == 0:
@@ -296,10 +296,10 @@ class GymPursuit(gym.Env):
 
         return obs
 
-    def _close(self):
+    def close(self):
         return
 
-    def _seed(self, seed=None):
+    def seed(self, seed=None):
         if seed is None:
             seed = random.randrange(sys.maxsize)
         random.seed(seed)

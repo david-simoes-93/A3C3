@@ -56,7 +56,7 @@ class GymTraffic(gym.Env):
         self.reward_range = [0, 1]
         self.map_border = self.road_size * self.intersections + self.road_size - 1
 
-    def _render(self, mode='human', close=False):
+    def render(self, mode='human', close=False):
         cell_width = 50
         cell_width_half = int(cell_width / 2)
         if close:
@@ -107,7 +107,7 @@ class GymTraffic(gym.Env):
         pygame.display.flip()
         # sleep(2)
 
-    def _reset(self):
+    def reset(self):
         self.intersection_collision_counter = 0
         self.stall_counter = 0
 
@@ -136,7 +136,7 @@ class GymTraffic(gym.Env):
         states = self.get_state()
         return states, {"state_central": self.get_central_state(states)}
 
-    def _step(self, actions):
+    def step(self, actions):
         self.already_moved = [False] * self.number_of_agents
         self.intersection_crash = [False] * self.number_of_agents
         rewards = [0.1] * self.number_of_agents
@@ -338,10 +338,10 @@ class GymTraffic(gym.Env):
 
         return obs
 
-    def _close(self):
+    def close(self):
         return
 
-    def _seed(self, seed=None):
+    def seed(self, seed=None):
         if seed is None:
             seed = random.randrange(sys.maxsize)
         random.seed(seed)

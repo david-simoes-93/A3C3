@@ -20,16 +20,16 @@ learning_rate = 1e-4
 spread_messages = False
 batch_size = 25
 
-load_model = True
+load_model = False
 model_path = './model'
-display = True
+display = False
 
 parser = argparse.ArgumentParser()
 parser.register("type", "bool", lambda v: v.lower() == "true")
 parser.add_argument(
     "--num_slaves",
     type=int,
-    default=1,
+    default=3,
     help="Set number of available CPU threads"
 )
 parser.add_argument(
@@ -41,7 +41,7 @@ parser.add_argument(
 parser.add_argument(
     "--comm_size",
     type=int,
-    default=10,
+    default=3,
     help="comm channels"
 )
 parser.add_argument(
