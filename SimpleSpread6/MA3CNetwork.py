@@ -6,46 +6,53 @@ from Helper import normalized_columns_initializer
 
 # Actor-Critic Network
 class AC_Network:
-    def __init__(self, s_size, s_size_central, number_of_agents, a_size, comm_size_input, comm_size_output, scope, trainer,
-                 critic_action=False, critic_comm=False):
+    def __init__(self, s_size, s_size_central, number_of_agents, a_size, comm_size_input, comm_size_output, scope,
+                 trainer, critic_action=False, critic_comm=False):
         with tf.variable_scope(scope):
             print("Scope", scope)
-            self.inputs = tf.placeholder(shape=[None, 80, 50, 3], dtype=tf.float32)
-            self.imageIn = tf.reshape(self.inputs, shape=[-1, 80, 50, 3])
-            self.conv1 = slim.conv2d(activation_fn=tf.nn.elu,
-                                     inputs=self.imageIn, num_outputs=16,
-                                     kernel_size=[10,10], stride=[5, 5], padding='VALID')
-            self.conv2 = slim.conv2d(activation_fn=tf.nn.elu,
-                                     inputs=self.conv1, num_outputs=32,
-                                     kernel_size=[5, 5], stride=[2, 2], padding='VALID')
+            if critic_action and critic_comm:
+                central_input_size = [s_size_central[0] + (number_of_agents - 1)*a_size + comm_size_input]
+            elif critic_comm:
+                central_input_size = [s_size_central[0] + comm_size_input]
+            elif critic_action:
+                central_input_size = [s_size_central[0] + (number_of_agents - 1) * a_size]
+            else:
+                central_input_size = s_size_central
 
-            self.inputs_central = self.inputs
+            self.inputs = tf.placeholder(shape=[None, s_size], dtype=tf.float32)
+            self.inputs_central = tf.placeholder(shape=[None, central_input_size], dtype=tf.float32)
+            # now append actions of all other agents
+            # then try with comms of all other agents as well
+            # then just comms
+
+            # then try multiple output of actions but no extra inputs
+            # then mix everything
             self.inputs_comm = tf.placeholder(shape=[None, comm_size_input], dtype=tf.float32)
 
-            flattened_inputs = tf.contrib.layers.flatten(self.conv2)
+            flattened_inputs = tf.contrib.layers.flatten(self.inputs)
             self.flattened_inputs_with_comm = tf.concat([flattened_inputs, self.inputs_comm], 1)
 
-            hidden_comm = slim.fully_connected(flattened_inputs, 40,
+            hidden_comm = slim.fully_connected(flattened_inputs, 80,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)
 
-            hidden = slim.fully_connected(self.flattened_inputs_with_comm, 512,
+            hidden = slim.fully_connected(self.flattened_inputs_with_comm, 160,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)
 
-            hidden2 = slim.fully_connected(hidden, 256,
+            hidden2 = slim.fully_connected(hidden, 80,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)
 
-            hidden_central = slim.fully_connected(flattened_inputs, 512,
+            hidden_central = slim.fully_connected(self.inputs_central, 160,
                                           weights_initializer=tf.contrib.layers.xavier_initializer(),
                                           biases_initializer=tf.contrib.layers.xavier_initializer(),
                                           activation_fn=tf.nn.relu)
 
-            hidden2_central = slim.fully_connected(hidden_central, 256,
+            hidden2_central = slim.fully_connected(hidden_central, 80,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)

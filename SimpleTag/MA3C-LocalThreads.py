@@ -12,6 +12,7 @@ from time import sleep
 import tensorflow as tf
 from SimpleTag.MA3CNetwork import AC_Network
 from SimpleTag.MA3CSlave import Worker
+from SimpleTag.MADDPGNetwork import MADDPG_Network
 from simulator_openai.make_env import make_env
 
 max_episode_length = 100
@@ -29,7 +30,7 @@ parser.register("type", "bool", lambda v: v.lower() == "true")
 parser.add_argument(
     "--num_slaves",
     type=int,
-    default=3,
+    default=1,
     help="Set number of available CPU threads"
 )
 parser.add_argument(
@@ -41,7 +42,7 @@ parser.add_argument(
 parser.add_argument(
     "--comm_size",
     type=int,
-    default=10,
+    default=0,
     help="comm channels"
 )
 parser.add_argument(
@@ -53,7 +54,7 @@ parser.add_argument(
 parser.add_argument(
     "--demo",
     type=str,
-    default="",
+    default="../TB-Rod-maddpg1/A3C.tag/model/",
     help="demo folder"
 )
 parser.add_argument(
@@ -88,7 +89,7 @@ if FLAGS.demo != "":
     load_model = True
     model_path = FLAGS.demo
     FLAGS.num_slaves = 1
-    display = True
+    display = False
     learning_rate = 0
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
@@ -101,8 +102,9 @@ if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
 
 state_size = [14, 14, 14, 14]
-s_size_central = sum(state_size)
+s_size_central = 14 #sum(state_size)
 action_size = [5, 5, 5, 5]
+env = make_env("simple_tag")
 
 tf.reset_default_graph()
 
@@ -120,10 +122,11 @@ with tf.device("/cpu:0"):
                       'global', None, '_agentPrey', critic_action=critic_action, critic_comm=critic_comm)
     master_networks = [predator, predator, predator, prey]  # Generate global network
 
+
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(make_env("simple_tag"), i, state_size, s_size_central,
+        workers.append(Worker(env, i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
                               global_episodes,
                               display=display and i == 0, comm=(comm_size != 0),
@@ -140,6 +143,7 @@ with tf.Session() as sess:
     if load_model:
         print('Loading Model...')
         ckpt = tf.train.get_checkpoint_state(model_path)
+        print(ckpt)
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         sess.run(tf.global_variables_initializer())

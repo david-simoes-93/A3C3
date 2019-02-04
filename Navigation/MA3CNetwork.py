@@ -26,27 +26,27 @@ class AC_Network:
             flattened_inputs = tf.contrib.layers.flatten(self.inputs)
             self.flattened_inputs_with_comm = tf.concat([flattened_inputs, self.inputs_comm], 1)
 
-            hidden_comm = slim.fully_connected(flattened_inputs, 20,
+            hidden_comm = slim.fully_connected(flattened_inputs, 40,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)
 
-            hidden = slim.fully_connected(self.flattened_inputs_with_comm, 40,
+            hidden = slim.fully_connected(self.flattened_inputs_with_comm, 80,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)
 
-            hidden2 = slim.fully_connected(hidden, 20,
+            hidden2 = slim.fully_connected(hidden, 40,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)
 
-            hidden_central = slim.fully_connected(self.inputs_central, 40,
+            hidden_central = slim.fully_connected(self.inputs_central, 80,
                                           weights_initializer=tf.contrib.layers.xavier_initializer(),
                                           biases_initializer=tf.contrib.layers.xavier_initializer(),
                                           activation_fn=tf.nn.relu)
 
-            hidden2_central = slim.fully_connected(hidden_central, 20,
+            hidden2_central = slim.fully_connected(hidden_central, 40,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
                                            activation_fn=tf.nn.relu)

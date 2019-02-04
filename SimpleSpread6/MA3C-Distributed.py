@@ -8,20 +8,15 @@
 import argparse
 import os
 import tensorflow as tf
+
+from simulator_openai.make_env import make_env
+
 tf.logging.set_verbosity(tf.logging.ERROR)
-from GeoFriends2.MA3CNetwork import AC_Network
-from GeoFriends2.MA3CSlave import Worker
+from SimpleSpread6.MA3CNetwork import AC_Network
+from SimpleSpread6.MA3CSlave import Worker
 
-from simulator_geof2.Players.Circle import Circle
-from simulator_geof2.Simulator.Geofriends2 import GeometryFriends2
-from simulator_geof2.MapGenerators.Basic import Basic
-from simulator_geof2.MapGenerators.Corners import Corners
-from simulator_geof2.MapGenerators.HighPlatform import HighPlatform
-from simulator_geof2.MapGenerators.Pyramid import Pyramid
-from simulator_geof2.MapGenerators.TwoTowers import TwoTowers
-
-max_episode_length = 500
-gamma = 0.95  # discount rate for advantage estimation and reward discounting
+max_episode_length = 100
+gamma = 0.001  # discount rate for advantage estimation and reward discounting
 learning_rate = 1e-4
 spread_messages = False
 batch_size = 25
@@ -52,7 +47,7 @@ parser.add_argument(
 parser.add_argument(
     "--num_agents",
     type=int,
-    default=4,
+    default=6,
     help="Set number of agents"
 )
 parser.add_argument(
@@ -70,7 +65,7 @@ parser.add_argument(
 parser.add_argument(
     "--critic",
     type=int,
-    default=3,
+    default=0,
     help="comm channels"
 )
 parser.add_argument(
@@ -112,13 +107,9 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-agent_circle = Circle()
-circle_maps = [Basic(), HighPlatform(), Corners(), Pyramid(), TwoTowers()]
-#env = GeometryFriends2([agent_circle], circle_maps, graphical_state=True, repeated_actions=5)
-
-state_size = [80, 50, 3]
-s_size_central = state_size
-action_size = 4
+state_size = 4+2*number_of_agents+2*number_of_agents
+s_size_central = (2+2*number_of_agents) * number_of_agents
+action_size = 5
 
 critic_action = False
 critic_comm = False
@@ -132,8 +123,8 @@ hosts = []
 for (url, max_per_url) in zip(FLAGS.urls.split(","), FLAGS.slaves_per_url.split(",")):
     for i in range(int(max_per_url)):
         hosts.append(url + ":" + str(2210 + i))
-cluster = tf.train.ClusterSpec({"a3c": hosts})
-server = tf.train.Server(cluster, job_name="a3c", task_index=FLAGS.task_index)
+cluster = tf.train.ClusterSpec({"a3c3": hosts})
+server = tf.train.Server(cluster, job_name="a3c3", task_index=FLAGS.task_index)
 
 tf.reset_default_graph()
 
@@ -141,38 +132,36 @@ tf.reset_default_graph()
 if not os.path.exists(model_path):
     os.makedirs(model_path)
 
-with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c/task:%d" % FLAGS.task_index, cluster=cluster)):
+with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c3/task:%d" % FLAGS.task_index, cluster=cluster)):
     global_episodes = tf.contrib.framework.get_or_create_global_step()
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
     master_network = AC_Network(state_size, s_size_central, number_of_agents, action_size,
                                 amount_of_agents_to_send_message_to * comm_size,
                                 amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
-                                'global', None, critic_action=critic_action, critic_comm=critic_comm)  # Generate global network
+                                'global', None, critic_action=critic_action,
+                                critic_comm=critic_comm)  # Generate global network
 
     # Master declares worker for all slaves
     for i in range(len(hosts)):
         print("Initializing variables for slave ", i)
         if i == FLAGS.task_index:
-            worker = Worker(GeometryFriends2([agent_circle], circle_maps, graphical_state=True, repeated_actions=10),
-                            i, state_size, s_size_central,
+            worker = Worker(make_env("simple_spread6"), i, state_size, s_size_central,
                             action_size, number_of_agents, trainer, model_path,
-                            global_episodes, amount_of_agents_to_send_message_to,
-                            display=display and i == 0, comm=(comm_size != 0),
+                            global_episodes, display=(display and i == 0), comm=(comm_size != 0),
                             comm_size_per_agent=comm_size, spread_messages=spread_messages,
                             critic_action=critic_action, critic_comm=critic_comm,
-                              comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
-                              comm_gaussian_noise=FLAGS.comm_gaussian_noise,
-                              comm_jumble_chance=FLAGS.comm_jumble_chance)
+                            comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
+                            comm_gaussian_noise=FLAGS.comm_gaussian_noise,
+                            comm_jumble_chance=FLAGS.comm_jumble_chance)
         else:
             Worker(None, i, state_size, s_size_central,
                    action_size, number_of_agents, trainer, model_path,
-                   global_episodes, amount_of_agents_to_send_message_to,
-                   display=display and i == 0, comm=(comm_size != 0),
+                   global_episodes, display=(display and i == 0), comm=(comm_size != 0),
                    comm_size_per_agent=comm_size, spread_messages=spread_messages,
                    critic_action=critic_action, critic_comm=critic_comm,
-                              comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
-                              comm_gaussian_noise=FLAGS.comm_gaussian_noise,
-                              comm_jumble_chance=FLAGS.comm_jumble_chance)
+                   comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
+                   comm_gaussian_noise=FLAGS.comm_gaussian_noise,
+                   comm_jumble_chance=FLAGS.comm_jumble_chance)
 
 print("Starting session", server.target, FLAGS.task_index)
 hooks = [tf.train.StopAtStepHook(last_step=FLAGS.max_epis)]

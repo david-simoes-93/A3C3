@@ -241,6 +241,7 @@ class Worker:
             coord = sess
 
         already_calculated_actions = False
+        #stats1, stats2 = [], []
         while not coord.should_stop():
             sess.run(self.update_local_ops)
 
@@ -438,6 +439,9 @@ class Worker:
                 if terminal:
                     break
 
+            #stats1.append(terminal)
+            #stats2.append(-reward[0] / self.number_of_agents)
+
             # print("0ver ",episode_step_count,episode_reward)
             self.episode_rewards.append(episode_reward)
             self.episode_lengths.append(episode_step_count)
@@ -505,3 +509,5 @@ class Worker:
                 episode_count = sess.run(self.global_episodes)
 
         self.env.close()
+        #print(stats1)
+        #print(stats2)

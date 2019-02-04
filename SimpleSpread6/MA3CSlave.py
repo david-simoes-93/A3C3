@@ -1,7 +1,7 @@
 import random
 from time import time
 import tensorflow as tf
-from SimpleSpread.MA3CNetwork import AC_Network
+from SimpleSpread6.MA3CNetwork import AC_Network
 from Helper import update_target_graph, discount, get_empty_loss_arrays, adv, gae, gae_0, one_hot_encoding
 import numpy as np
 import matplotlib.pyplot as mpl
@@ -262,8 +262,7 @@ class Worker:
                     current_screen[i] = np.hstack([current_screen[i][0:4], current_screen[i][4 + i * 2:6 + i * 2]])
                 else:
                     current_screen[i] = current_screen[i][0:self.s_size]
-
-            current_screen_central = np.hstack(current_screen)
+            current_screen_central = np.hstack([cs[2:2 + 2 + 6 * 2] for cs in current_screen])
             arrayed_current_screen_central = [current_screen_central for _ in range(self.number_of_agents)]
             for i in range(self.number_of_agents):
                 comm_map = list(range(self.number_of_agents))
@@ -321,7 +320,7 @@ class Worker:
                 for i in range(self.number_of_agents):
                     current_screen[i] = current_screen[i][0:self.s_size]
                 terminal = np.sum(reward) > (-0.25) * self.number_of_agents or stats1_temp>5
-                current_screen_central = np.hstack(current_screen)
+                current_screen_central = np.hstack([cs[2:2+2+6*2] for cs in current_screen])
                 arrayed_current_screen_central = [current_screen_central for _ in range(self.number_of_agents)]
 
                 this_turns_comm_map = []

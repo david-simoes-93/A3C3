@@ -252,6 +252,7 @@ class Worker:
 
             # start new epi
             current_screen, info = self.env.reset()
+            current_screen = current_screen / 255
             current_screen = [current_screen for _ in range(self.number_of_agents)]
             arrayed_current_screen_central = [current_screen[i] for i in range(self.number_of_agents)]
             for i in range(self.number_of_agents):
@@ -290,6 +291,7 @@ class Worker:
 
                 # Watch environment
                 current_screen, reward, terminal, info = self.env.step(actions)
+                current_screen = current_screen/255
                 current_screen = [current_screen for _ in range(self.number_of_agents)]
                 arrayed_current_screen_central = [current_screen[i] for i in range(self.number_of_agents)]
                 this_turns_comm_map = []

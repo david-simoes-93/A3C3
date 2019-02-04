@@ -23,20 +23,20 @@ from simulator_geof2.MapGenerators.TwoTowers import TwoTowers
 
 max_episode_length = 500
 gamma = 0.95  # discount rate for advantage estimation and reward discounting
-learning_rate = 5e-5
+learning_rate = 1e-4
 spread_messages = False
 batch_size = 25
 
 load_model = False
 model_path = './model'
-display = False
+display = True
 
 parser = argparse.ArgumentParser()
 parser.register("type", "bool", lambda v: v.lower() == "true")
 parser.add_argument(
     "--num_slaves",
     type=int,
-    default=3,
+    default=1,
     help="Set number of available CPU threads"
 )
 parser.add_argument(
@@ -104,7 +104,6 @@ if FLAGS.demo != "":
 
 agent_circle = Circle()
 circle_maps = [Basic(), HighPlatform(), Corners(), Pyramid(), TwoTowers()]
-env = GeometryFriends2([agent_circle], circle_maps, graphical_state=True, repeated_actions=5)
 
 state_size = [80, 50, 3]
 s_size_central = state_size
@@ -133,7 +132,8 @@ with tf.device("/cpu:0"):
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(env, i, state_size, s_size_central,
+        workers.append(Worker(GeometryFriends2([agent_circle], circle_maps, graphical_state=True, repeated_actions=20),
+                              i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
                               global_episodes, amount_of_agents_to_send_message_to,
                               display=display and i == 0, comm=(comm_size != 0),

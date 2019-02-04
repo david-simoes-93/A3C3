@@ -63,7 +63,7 @@ class AC_Network:
                                                weights_initializer=normalized_columns_initializer(0.01),
                                                biases_initializer=normalized_columns_initializer(0.01))
             if comm_size_output != 0:
-                self.message = slim.fully_connected(hidden2_comm, comm_size_output,
+                self.message = slim.fully_connected(hidden_comm, comm_size_output,
                                                     activation_fn=tf.nn.tanh,
                                                     weights_initializer=tf.contrib.layers.xavier_initializer(),
                                                     biases_initializer=tf.contrib.layers.xavier_initializer())

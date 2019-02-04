@@ -113,10 +113,10 @@ if not os.path.exists(model_path):
 with tf.device("/cpu:0"):
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    predator = AC_Network(state_size[1], s_size_central, number_of_agents, action_size[1],
+    predator = AC_Network(state_size[1], s_size_central[1], number_of_agents, action_size[1],
                           comm_size, comm_size, 'global',
                           None, '_agentPredator', critic_action=critic_action, critic_comm=critic_comm)
-    prey = AC_Network(state_size[0], s_size_central, number_of_agents, action_size[0], 0, 0,
+    prey = AC_Network(state_size[0], s_size_central[0], number_of_agents, action_size[0], 0, 0,
                       'global', None, '_agentPrey', critic_action=critic_action, critic_comm=critic_comm)
     master_networks = [prey, predator, predator]  # Generate global network
 

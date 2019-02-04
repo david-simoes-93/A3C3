@@ -10,8 +10,8 @@ import os
 import threading
 from time import sleep
 import tensorflow as tf
-from SimpleSpread.MA3CNetwork import AC_Network
-from SimpleSpread.MA3CSlave import Worker
+from SimpleSpread6.MA3CNetwork import AC_Network
+from SimpleSpread6.MA3CSlave import Worker
 from simulator_openai.make_env import make_env
 
 
@@ -30,13 +30,13 @@ parser.register("type", "bool", lambda v: v.lower() == "true")
 parser.add_argument(
     "--num_slaves",
     type=int,
-    default=3,
+    default=1,
     help="Set number of available CPU threads"
 )
 parser.add_argument(
     "--num_agents",
     type=int,
-    default=3,
+    default=6,
     help="Set number of agents"
 )
 parser.add_argument(
@@ -101,8 +101,8 @@ if FLAGS.critic == 1 or FLAGS.critic == 3:
 if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
 
-state_size = 10
-s_size_central = state_size*number_of_agents
+state_size = 2+2*number_of_agents+2*number_of_agents
+s_size_central = (2+2*number_of_agents) * number_of_agents
 action_size = 5
 
 tf.reset_default_graph()
@@ -122,7 +122,7 @@ with tf.device("/cpu:0"):
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(make_env("simple_spread", benchmark=True), i, state_size, s_size_central,
+        workers.append(Worker(make_env("simple_spread6", benchmark=True), i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
                               global_episodes,
                               display=display and i == 0, comm=(comm_size != 0),
