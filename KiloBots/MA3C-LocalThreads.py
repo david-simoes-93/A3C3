@@ -10,12 +10,11 @@ import os
 import threading
 from time import sleep
 import tensorflow as tf
-from SimpleTag.MA3CNetwork import AC_Network
-from SimpleTag.MA3CSlave import Worker
-from SimpleTag.MADDPGNetwork import MADDPG_Network
-from simulator_openai.make_env import make_env
+from KiloBots.MA3CNetwork import AC_Network
+from KiloBots.MA3CSlave import Worker
+from simulator_kilobots.independent_kilobots import IndependentKilobotsEnv
 
-max_episode_length = 100
+max_episode_length = 2000
 gamma = 0.95  # discount rate for advantage estimation and reward discounting
 learning_rate = 1e-4
 spread_messages = False
@@ -46,6 +45,12 @@ parser.add_argument(
     help="comm channels"
 )
 parser.add_argument(
+    "--max_epis",
+    type=int,
+    default=500000,
+    help="training steps"
+)
+parser.add_argument(
     "--critic",
     type=int,
     default=0,
@@ -56,12 +61,6 @@ parser.add_argument(
     type=str,
     default="",
     help="demo folder"
-)
-parser.add_argument(
-    "--max_epis",
-    type=int,
-    default=50000,
-    help="training steps"
 )
 parser.add_argument(
     "--comm_gaussian_noise",
@@ -84,15 +83,20 @@ parser.add_argument(
 FLAGS, unparsed = parser.parse_known_args()
 number_of_agents = FLAGS.num_agents
 comm_size = FLAGS.comm_size
+amount_of_agents_to_send_message_to = number_of_agents-1
 
 if FLAGS.demo != "":
     load_model = True
     model_path = FLAGS.demo
     FLAGS.num_slaves = 1
-    display = False
+    display = True
     learning_rate = 0
-    FLAGS.max_epis += 350
+    FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
+
+state_size = [3*number_of_agents+3]
+s_size_central = [3*number_of_agents+3]
+action_size = 4
 
 critic_action = False
 critic_comm = False
@@ -100,10 +104,6 @@ if FLAGS.critic == 1 or FLAGS.critic == 3:
     critic_action = True
 if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
-
-state_size = [14, 14, 14, 14]
-s_size_central = 20 #sum(state_size)
-action_size = [5, 5, 5, 5]
 
 tf.reset_default_graph()
 
@@ -114,20 +114,16 @@ if not os.path.exists(model_path):
 with tf.device("/cpu:0"):
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    predator = AC_Network(state_size[0], s_size_central, number_of_agents, action_size[0],
-                          2 * comm_size, 2 * comm_size if spread_messages else comm_size, 'global',
-                          None, '_agentPredator', critic_action=critic_action, critic_comm=critic_comm)
-    prey = AC_Network(state_size[3], s_size_central, number_of_agents, action_size[3], 0, 0,
-                      'global', None, '_agentPrey', critic_action=critic_action, critic_comm=critic_comm)
-    master_networks = [predator, predator, predator, prey]  # Generate global network
-
+    master_network = AC_Network(state_size, s_size_central, number_of_agents, action_size, amount_of_agents_to_send_message_to * comm_size,
+                                amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size, 'global',
+                                   None, critic_action=critic_action, critic_comm=critic_comm)  # Generate global network
 
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(make_env("simple_tag"), i, state_size, s_size_central,
+        workers.append(Worker(IndependentKilobotsEnv(), i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
-                              global_episodes,
+                              global_episodes, amount_of_agents_to_send_message_to,
                               display=display and i == 0, comm=(comm_size != 0),
                               comm_size_per_agent=comm_size, spread_messages=spread_messages,
                               critic_action=critic_action, critic_comm=critic_comm,
@@ -142,7 +138,6 @@ with tf.Session() as sess:
     if load_model:
         print('Loading Model...')
         ckpt = tf.train.get_checkpoint_state(model_path)
-        print(ckpt)
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         sess.run(tf.global_variables_initializer())
