@@ -7,9 +7,9 @@ import yaml
 from gym import spaces
 
 import simulator_kilobots
-from simulator_kilobots.lib import CircularGradientLight, GradientLight, Quad, CornerQuad, Triangle, Circle, LForm, TForm, \
+from simulator_kilobots.kb_lib import CircularGradientLight, GradientLight, Quad, CornerQuad, Triangle, Circle, LForm, TForm, \
     CForm, CompositeLight
-from simulator_kilobots.lib.light import MomentumLight, SinglePositionLight
+from simulator_kilobots.kb_lib.light import MomentumLight, SinglePositionLight
 from .kilobots_env import KilobotsEnv, UnknownLightTypeException, UnknownObjectException
 
 
@@ -350,7 +350,7 @@ class YamlKilobotsEnv(KilobotsEnv):
         for position in kilobot_positions:
             position = np.maximum(position, self.world_bounds[0] + 0.02)
             position = np.minimum(position, self.world_bounds[1] - 0.02)
-            kb_class = getattr(simulator_kilobots.lib, type)
+            kb_class = getattr(simulator_kilobots.kb_lib, type)
             self._add_kilobot(kb_class(self.world, position=position, light=self._light))
 
     @property

@@ -4,7 +4,7 @@ import numpy as np
 from gym import spaces
 from scipy import stats
 
-from simulator_kilobots.lib import SimpleVelocityControlKilobot, CornerQuad, CircularGradientLight
+from simulator_kilobots.kb_lib import SimpleVelocityControlKilobot, CornerQuad, CircularGradientLight
 from simulator_kilobots.envs.kilobots_env import KilobotsEnv
 
 

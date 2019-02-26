@@ -3,9 +3,9 @@ from .kilobots_env import KilobotsEnv
 import numpy as np
 from scipy import stats
 
-from ..lib.body import CornerQuad, Triangle, LForm, CForm, TForm
-from ..lib.kilobot import PhototaxisKilobot, SimplePhototaxisKilobot
-from ..lib.light import CircularGradientLight
+from ..kb_lib.body import CornerQuad, Triangle, LForm, CForm, TForm
+from ..kb_lib.kilobot import PhototaxisKilobot, SimplePhototaxisKilobot
+from ..kb_lib.light import CircularGradientLight
 
 
 class QuadPushingEnv(KilobotsEnv):

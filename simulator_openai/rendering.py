@@ -8,7 +8,7 @@ import sys
 
 if "Apple" in sys.version:
     if 'DYLD_FALLBACK_LIBRARY_PATH' in os.environ:
-        os.environ['DYLD_FALLBACK_LIBRARY_PATH'] += ':/usr/lib'
+        os.environ['DYLD_FALLBACK_LIBRARY_PATH'] += ':/usr/kb_lib'
         # (JDS 2016/04/15): avoid bug on Anaconda 2.3.0 / Yosemite
 
 from gym.utils import reraise

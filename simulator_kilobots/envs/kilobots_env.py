@@ -5,9 +5,9 @@ import gym
 import numpy as np
 from Box2D import b2World, b2ChainShape
 
-from ..lib.body import Body, _world_scale
-from ..lib.kilobot import Kilobot
-from ..lib.light import Light
+from ..kb_lib.body import Body, _world_scale
+from ..kb_lib.kilobot import Kilobot
+from ..kb_lib.light import Light
 
 
 class KilobotsEnv(gym.Env):
@@ -223,7 +223,7 @@ class KilobotsEnv(gym.Env):
         if mode is None:
             mode = self.render_mode
 
-        from simulator_kilobots.lib import kb_rendering
+        from simulator_kilobots.kb_lib import kb_rendering
         if self._screen is None:
             caption = self.spec.id if self.spec else ""
             if self.video_path:
