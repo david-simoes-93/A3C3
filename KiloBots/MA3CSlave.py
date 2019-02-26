@@ -438,7 +438,7 @@ class Worker:
                     print("length", mean_length, "reward", mean_reward)
 
                 # Save current model
-                if self.is_chief and saver is not None and episode_count % 500 == 0:
+                if self.is_chief and saver is not None and episode_count % 100 == 0:
                     saver.save(sess, self.model_path + '/model-' + str(episode_count) + '.cptk')
                     print("Saved Model")
 

@@ -59,29 +59,15 @@ class IndependentKilobotsEnv(KilobotsEnv):
         obses = []
         for i in range(len(self._kilobots)):
             my_state = self._kilobots[i].get_state()
-            # print("i", i, my_state)
-            my_obs = [0] * (3 * len(self._kilobots) + 3 * len(self._objects))
-            my_obs[0] = my_state[0]
-            my_obs[1] = my_state[1]
-            my_obs[2] = my_state[2]
-            index = 3
+
+            my_obs = list(my_state)
             for j in range(len(self._kilobots)):
                 if j == i:
                     continue
-                # print("j", j, self._kilobots[j].get_state())
-                other_state = self._kilobots[j].get_state()
-                my_obs[index] = other_state[0] - my_obs[0]
-                my_obs[index + 1] = other_state[1] - my_obs[1]
-                my_obs[index + 2] = normalize_radian(other_state[2] - my_obs[2])
-                index += 3
+                my_obs.extend(get_polar(my_state, self._kilobots[j].get_state()))
             for j in range(len(self._objects)):
-                # print("j", j, self._objects[j].get_state())
-                other_state = self._objects[j].get_state()
-                my_obs[index] = other_state[0] - my_obs[0]
-                my_obs[index + 1] = other_state[1] - my_obs[1]
-                my_obs[index + 2] = normalize_radian(other_state[2] - my_obs[2])
-                index += 3
-                # my_obs.extend(self._objects[j].get_state() - my_state)
+                my_obs.extend(get_polar(my_state, self._objects[j].get_state()))
+
             obses.append(my_obs)
 
         return obses  # [self.get_state() for _ in range(self._kilobots)]
@@ -115,3 +101,17 @@ def normalize_radian(angle):
     elif angle > np.pi:
         angle -= 2 * np.pi
     return angle
+
+
+# https://www.mathsisfun.com/polar-cartesian-coordinates.html
+def get_polar(my_state, other_state):
+    rel_pos = [other_state[0] - my_state[0], other_state[1] - my_state[1]]
+    r = np.sqrt(rel_pos[0] * rel_pos[0] + rel_pos[1] * rel_pos[1])
+    if rel_pos[0] != 0:
+        angle = normalize_radian(np.arctan(rel_pos[1] / rel_pos[0]) - my_state[2])
+    else:
+        angle = normalize_radian((np.pi / 2 if rel_pos[1] > 0 else -np.pi / 2) - my_state[2])
+    return [r, angle]
+
+
+#print(get_polar([1, 0, np.pi / 2], [1, -1]))

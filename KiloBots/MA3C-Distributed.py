@@ -9,13 +9,13 @@ import argparse
 import os
 import tensorflow as tf
 tf.logging.set_verbosity(tf.logging.ERROR)
-from Pursuit.MA3CNetwork import AC_Network
-from Pursuit.MA3CSlave import Worker
-from simulator.GymPursuit import GymPursuit
+from KiloBots.MA3CNetwork import AC_Network
+from KiloBots.MA3CSlave import Worker
+from simulator_kilobots.independent_kilobots import IndependentKilobotsEnv
 
-max_episode_length = 100
+max_episode_length = 2000
 gamma = 0.95  # discount rate for advantage estimation and reward discounting
-learning_rate = 5e-5
+learning_rate = 1e-3
 spread_messages = False
 batch_size = 25
 
@@ -105,11 +105,9 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-env = GymPursuit(number_of_agents=number_of_agents)
-state_size = env.agent_observation_space
-s_size_central = env.central_observation_space
-action_size = env.agent_action_space
-env.close()
+state_size = [3+(number_of_agents-1)*2+2]
+s_size_central = [3*number_of_agents+3]
+action_size = 4
 
 critic_action = False
 critic_comm = False
@@ -144,7 +142,7 @@ with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c/task:%d" %
     for i in range(len(hosts)):
         print("Initializing variables for slave ", i)
         if i == FLAGS.task_index:
-            worker = Worker(GymPursuit(number_of_agents=number_of_agents), i, state_size, s_size_central,
+            worker = Worker(IndependentKilobotsEnv(), i, state_size, s_size_central,
                             action_size, number_of_agents, trainer, model_path,
                             global_episodes, amount_of_agents_to_send_message_to,
                             display=display and i == 0, comm=(comm_size != 0),

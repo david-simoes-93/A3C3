@@ -16,7 +16,7 @@ from simulator_kilobots.independent_kilobots import IndependentKilobotsEnv
 
 max_episode_length = 2000
 gamma = 0.95  # discount rate for advantage estimation and reward discounting
-learning_rate = 1e-4
+learning_rate = 1e-3
 spread_messages = False
 batch_size = 25
 
@@ -29,7 +29,7 @@ parser.register("type", "bool", lambda v: v.lower() == "true")
 parser.add_argument(
     "--num_slaves",
     type=int,
-    default=3,
+    default=1,
     help="Set number of available CPU threads"
 )
 parser.add_argument(
@@ -41,7 +41,7 @@ parser.add_argument(
 parser.add_argument(
     "--comm_size",
     type=int,
-    default=10,
+    default=2,
     help="comm channels"
 )
 parser.add_argument(
@@ -94,7 +94,7 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [3*number_of_agents+3]
+state_size = [3+(number_of_agents-1)*2+2]
 s_size_central = [3*number_of_agents+3]
 action_size = 4
 
