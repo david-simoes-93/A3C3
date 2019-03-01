@@ -16,13 +16,13 @@ from simulator_kilobots.independent_kilobots import IndependentKilobotsEnv
 
 max_episode_length = 2000
 gamma = 0.95  # discount rate for advantage estimation and reward discounting
-learning_rate = 1e-3
+learning_rate = 1e-4
 spread_messages = False
 batch_size = 25
 
 load_model = False
 model_path = './model'
-display = False
+display = True
 
 parser = argparse.ArgumentParser()
 parser.register("type", "bool", lambda v: v.lower() == "true")
@@ -94,8 +94,8 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [3+(number_of_agents-1)*2+2]
-s_size_central = [3*number_of_agents+3]
+state_size = [4+(number_of_agents-1)*2+2]
+s_size_central = [4*number_of_agents+2]
 action_size = 4
 
 critic_action = False

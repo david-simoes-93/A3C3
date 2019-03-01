@@ -22,7 +22,7 @@ class KilobotsEnv(gym.Env):
     __sim_steps_per_second = 10
     __sim_velocity_iterations = 10
     __sim_position_iterations = 10
-    __steps_per_action = 10
+    __steps_per_action = 100
 
     def __new__(cls, **kwargs):
         cls.sim_steps_per_second = cls.__sim_steps_per_second

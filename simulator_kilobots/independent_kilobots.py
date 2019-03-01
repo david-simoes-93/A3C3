@@ -11,7 +11,7 @@ from simulator_kilobots.envs.kilobots_env import KilobotsEnv
 class IndependentKilobotsEnv(KilobotsEnv):
     def __init__(self, **kwargs):
         super(IndependentKilobotsEnv, self).__init__(**kwargs)
-        self.actions = [[1, 0], [1, 1], [1, -1], [0, 0]]
+        self.actions = [[1, 0], [0, .1], [0, -.1], [0, 0]]
 
     @property
     def action_space(self):
@@ -60,7 +60,7 @@ class IndependentKilobotsEnv(KilobotsEnv):
         for i in range(len(self._kilobots)):
             my_state = self._kilobots[i].get_state()
 
-            my_obs = list(my_state)
+            my_obs = [my_state[0], my_state[1], np.math.sin(my_state[2]), np.math.cos(my_state[2])]
             for j in range(len(self._kilobots)):
                 if j == i:
                     continue

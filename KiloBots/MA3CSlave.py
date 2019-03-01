@@ -254,7 +254,14 @@ class Worker:
             # start new epi
             current_screen = self.env.reset()
             info = self.env.get_state()
-            arrayed_current_screen_central = [np.hstack(np.append(info["kilobots"], info["objects"]))]*self.number_of_agents
+            current_screen_central= []
+            for x in info["kilobots"]:
+                current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+            current_screen_central.extend(info["objects"][0][0:2])
+            arrayed_current_screen_central = [current_screen_central for i in range(self.number_of_agents)]
+            #print(arrayed_current_screen_central)
+            #arrayed_current_screen_central = [np.hstack(np.append(info["kilobots"], info["objects"]))]*self.number_of_agents
+            #print(arrayed_current_screen_central)
             for i in range(self.number_of_agents):
                 comm_map = list(range(self.number_of_agents))
                 comm_map.remove(i)
@@ -302,7 +309,12 @@ class Worker:
                 # Watch environment
                 current_screen, reward, terminal, _ = self.env.step(actions)
                 info = self.env.get_state()
-                arrayed_current_screen_central = [np.hstack(np.append(info["kilobots"], info["objects"]))]*self.number_of_agents
+                current_screen_central = []
+                for x in info["kilobots"]:
+                    current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                current_screen_central.extend(info["objects"][0][0:2])
+                arrayed_current_screen_central = [current_screen_central for i in range(self.number_of_agents)]
+                #arrayed_current_screen_central = [np.hstack(np.append(info["kilobots"], info["objects"]))]*self.number_of_agents
                 this_turns_comm_map = []
                 for i in range(self.number_of_agents):
                     # 50% chance of no comms
