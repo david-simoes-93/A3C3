@@ -8,10 +8,10 @@
 import argparse
 import os
 import tensorflow as tf
+from simulator_kilobots.independent_kilobots_join import IndependentKilobotsJoinEnv
 tf.logging.set_verbosity(tf.logging.ERROR)
-from KiloBots.MA3CNetwork import AC_Network
-from KiloBots.MA3CSlave import Worker
-from simulator_kilobots.independent_kilobots import IndependentKilobotsEnv
+from KiloBotsJoin.MA3CNetwork import AC_Network
+from KiloBotsJoin.MA3CSlave import Worker
 
 max_episode_length = 2000
 gamma = 0.95  # discount rate for advantage estimation and reward discounting
@@ -105,8 +105,8 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [4+(number_of_agents-1)*2+2]
-s_size_central = [4*number_of_agents+2]
+state_size = [4+(number_of_agents-1)*2+2*3]
+s_size_central = [4*number_of_agents+2*3]
 action_size = 4
 
 critic_action = False
@@ -142,7 +142,7 @@ with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c/task:%d" %
     for i in range(len(hosts)):
         print("Initializing variables for slave ", i)
         if i == FLAGS.task_index:
-            worker = Worker(IndependentKilobotsEnv(), i, state_size, s_size_central,
+            worker = Worker(IndependentKilobotsJoinEnv(), i, state_size, s_size_central,
                             action_size, number_of_agents, trainer, model_path,
                             global_episodes, amount_of_agents_to_send_message_to,
                             display=display and i == 0, comm=(comm_size != 0),
