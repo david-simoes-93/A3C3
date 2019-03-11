@@ -8,7 +8,7 @@
 import argparse
 import os
 import tensorflow as tf
-from simulator_kilobots.independent_kilobots_join import IndependentKilobotsJoinEnv
+from simulator_kilobots.independent_kilobots_split import IndependentKilobotsSplitEnv
 tf.logging.set_verbosity(tf.logging.ERROR)
 from KiloBotsJoin.MA3CNetwork import AC_Network
 from KiloBotsJoin.MA3CSlave import Worker
@@ -142,7 +142,7 @@ with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c/task:%d" %
     for i in range(len(hosts)):
         print("Initializing variables for slave ", i)
         if i == FLAGS.task_index:
-            worker = Worker(IndependentKilobotsJoinEnv(), i, state_size, s_size_central,
+            worker = Worker(IndependentKilobotsSplitEnv(), i, state_size, s_size_central,
                             action_size, number_of_agents, trainer, model_path,
                             global_episodes, amount_of_agents_to_send_message_to,
                             display=display and i == 0, comm=(comm_size != 0),
