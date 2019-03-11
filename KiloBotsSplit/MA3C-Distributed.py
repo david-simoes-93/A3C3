@@ -105,8 +105,8 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [4+(number_of_agents-1)*2+2*3]
-s_size_central = [4*number_of_agents+2*3]
+state_size = [4+(number_of_agents-1)*2+2*4]
+s_size_central = [4*number_of_agents+2*4]
 action_size = 4
 
 critic_action = False
