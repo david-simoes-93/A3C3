@@ -8,9 +8,9 @@ from simulator_kilobots.kb_lib import SimpleVelocityControlKilobot, CornerQuad, 
 from simulator_kilobots.envs.kilobots_env import KilobotsEnv
 
 
-class IndependentKilobotsJoinEnv(KilobotsEnv):
+class IndependentKilobotsSplitEnv(KilobotsEnv):
     def __init__(self, **kwargs):
-        super(IndependentKilobotsJoinEnv, self).__init__(**kwargs)
+        super(IndependentKilobotsSplitEnv, self).__init__(**kwargs)
         self.actions = [[1, 0], [0, .1], [0, -.1], [0, 0]]
 
     @property
@@ -30,32 +30,27 @@ class IndependentKilobotsJoinEnv(KilobotsEnv):
             for kb in self.kilobots:
                 kb.set_action(None)
 
-        return super(IndependentKilobotsJoinEnv, self).step(None)
+        return super(IndependentKilobotsSplitEnv, self).step(None)
 
     def get_reward(self, state, action, new_state):
+        dist = get_dist(state["objects"][0], state["objects"][2]) + \
+               get_dist(state["objects"][0], state["objects"][3]) + \
+               get_dist(state["objects"][1], state["objects"][2]) + \
+               get_dist(state["objects"][1], state["objects"][3])
 
-        dist, dist_new = 0, 0
-        for i in range(len(state["objects"])):
-            pos1 = state["objects"][i]
-            pos1_new = new_state["objects"][i]
-            for j in range(len(state["objects"])):
-                pos2 = state["objects"][j]
-                pos2_new = new_state["objects"][j]
-                dist += np.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
-                dist_new += np.sqrt((pos1_new[0] - pos2_new[0]) ** 2 + (pos1_new[1] - pos2_new[1]) ** 2)
+        new_dist = get_dist(new_state["objects"][0], new_state["objects"][2]) + \
+               get_dist(new_state["objects"][0], new_state["objects"][3]) + \
+               get_dist(new_state["objects"][1], new_state["objects"][2]) + \
+               get_dist(new_state["objects"][1], new_state["objects"][3])
 
         # compute reward based on task and swarm state
-        return (dist-dist_new) * 10
+        return (new_dist - dist) * 10
 
     def has_finished(self, state, action):
-        done = True
-
-        for i in range(len(state["objects"])):
-            pos1 = state["objects"][i]
-            for j in range(len(state["objects"])):
-                pos2 = state["objects"][j]
-                dist = np.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
-                done = done and dist < 0.25
+        done = get_dist(state["objects"][0], state["objects"][2]) > 1 and \
+               get_dist(state["objects"][0], state["objects"][3]) > 1 and \
+               get_dist(state["objects"][1], state["objects"][2]) > 1 and \
+               get_dist(state["objects"][1], state["objects"][3]) > 1
 
         return done
 
@@ -78,14 +73,15 @@ class IndependentKilobotsJoinEnv(KilobotsEnv):
 
     def _configure_environment(self):
         # sample swarm spawn location
-        self._swarm_spawn_distribution = stats.uniform(loc=(0,0), scale=(0.1, 0.1))
+        self._swarm_spawn_distribution = stats.uniform(loc=(0, 0), scale=(0.5, 0.5))
         swarm_spawn_location = self._swarm_spawn_distribution.rvs()
 
         # create objects
         self._objects = [
-            CornerQuad(world=self.world, width=.15, height=.15, position=(-.605, 0), orientation=-np.pi / 2),
-            Triangle(world=self.world, width=.15, height=.15, position=(.605, .605), orientation=-np.pi / 2),
-            Circle(world=self.world, radius=.10, position=(.605, -.605))
+            CornerQuad(world=self.world, width=.15, height=.15, position=(-.1, .1), orientation=-np.pi / 2),
+            CornerQuad(world=self.world, width=.15, height=.15, position=(.1, -.1), orientation=-np.pi / 2),
+            Circle(world=self.world, radius=.08, position=(-.1, -.1)),
+            Circle(world=self.world, radius=.08, position=(.1, .1))
         ]
 
         # create light
@@ -118,4 +114,7 @@ def get_polar(my_state, other_state):
     return [r, angle]
 
 
-#print(get_polar([1, 0, np.pi / 2], [1, -1]))
+def get_dist(pos1, pos2):
+    return np.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
+
+# print(get_polar([1, 0, np.pi / 2], [1, -1]))
