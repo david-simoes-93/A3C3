@@ -47,10 +47,10 @@ class IndependentKilobotsSplitEnv(KilobotsEnv):
         return (new_dist - dist) * 10
 
     def has_finished(self, state, action):
-        done = get_dist(state["objects"][0], state["objects"][2]) > 1 and \
-               get_dist(state["objects"][0], state["objects"][3]) > 1 and \
-               get_dist(state["objects"][1], state["objects"][2]) > 1 and \
-               get_dist(state["objects"][1], state["objects"][3]) > 1
+        done = get_dist(state["objects"][0], state["objects"][2]) > .75 and \
+               get_dist(state["objects"][0], state["objects"][3]) > .75 and \
+               get_dist(state["objects"][1], state["objects"][2]) > .75 and \
+               get_dist(state["objects"][1], state["objects"][3]) > .75
 
         return done
 
