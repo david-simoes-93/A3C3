@@ -121,7 +121,7 @@ with tf.device("/cpu:0"):
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(IndependentKilobotsEnv(), i, state_size, s_size_central,
+        workers.append(Worker(IndependentKilobotsEnv(number_of_agents=number_of_agents), i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
                               global_episodes, amount_of_agents_to_send_message_to,
                               display=display and i == 0, comm=(comm_size != 0),

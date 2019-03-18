@@ -4,15 +4,16 @@ import numpy as np
 from gym import spaces
 from scipy import stats
 
-from simulator_kilobots.kb_lib import SimpleVelocityControlKilobot, CornerQuad, CircularGradientLight
+from simulator_kilobots.kb_lib import SimpleVelocityControlKilobot, CornerQuad, CircularGradientLight, Triangle, Circle
 from simulator_kilobots.envs.kilobots_env import KilobotsEnv
 
 
-class IndependentKilobotsEnv(KilobotsEnv):
+class IndependentKilobotsJoinEnv(KilobotsEnv):
     def __init__(self, **kwargs):
         self.number_of_agents = kwargs["number_of_agents"]
-        super(IndependentKilobotsEnv, self).__init__(**kwargs)
+        super(IndependentKilobotsJoinEnv, self).__init__(**kwargs)
         self.actions = [[1, 0], [0, .1], [0, -.1], [0, 0]]
+
 
     @property
     def action_space(self):
@@ -31,28 +32,32 @@ class IndependentKilobotsEnv(KilobotsEnv):
             for kb in self.kilobots:
                 kb.set_action(None)
 
-        return super(IndependentKilobotsEnv, self).step(None)
+        return super(IndependentKilobotsJoinEnv, self).step(None)
 
     def get_reward(self, state, action, new_state):
-        target = state["light"]
-        reward = 0
+
+        dist, dist_new = 0, 0
         for i in range(len(state["objects"])):
             pos1 = state["objects"][i]
-            pos2 = new_state["objects"][i]
-            prev_dist = np.sqrt((pos1[0] - target[0]) ** 2 + (pos1[1] - target[1]) ** 2)
-            next_dist = np.sqrt((pos2[0] - target[0]) ** 2 + (pos2[1] - target[1]) ** 2)
-            reward += prev_dist - next_dist
+            pos1_new = new_state["objects"][i]
+            for j in range(len(state["objects"])):
+                pos2 = state["objects"][j]
+                pos2_new = new_state["objects"][j]
+                dist += np.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
+                dist_new += np.sqrt((pos1_new[0] - pos2_new[0]) ** 2 + (pos1_new[1] - pos2_new[1]) ** 2)
+
         # compute reward based on task and swarm state
-        return reward * 100
+        return (dist - dist_new) * 10
 
     def has_finished(self, state, action):
         done = True
 
-        target = state["light"]
         for i in range(len(state["objects"])):
             pos1 = state["objects"][i]
-            dist = np.sqrt((pos1[0] - target[0]) ** 2 + (pos1[1] - target[1]) ** 2)
-            done = done and dist < 0.2
+            for j in range(len(state["objects"])):
+                pos2 = state["objects"][j]
+                dist = np.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
+                done = done and dist < 0.25
 
         return done
 
@@ -62,6 +67,7 @@ class IndependentKilobotsEnv(KilobotsEnv):
             my_state = self._kilobots[i].get_state()
 
             my_obs = [my_state[0], my_state[1], np.math.sin(my_state[2]), np.math.cos(my_state[2])]
+
             for j in range(len(self._objects)):
                 my_obs.extend(get_polar(my_state, self._objects[j].get_state()))
 
@@ -71,18 +77,18 @@ class IndependentKilobotsEnv(KilobotsEnv):
 
     def _configure_environment(self):
         # sample swarm spawn location
-        self._swarm_spawn_distribution = stats.uniform(loc=(-.95, -.7), scale=(.9, 1.4))
+        self._swarm_spawn_distribution = stats.uniform(loc=(0, 0), scale=(0.1, 0.1))
         swarm_spawn_location = self._swarm_spawn_distribution.rvs()
 
         # create objects
         self._objects = [
-            CornerQuad(world=self.world, width=.15, height=.15, position=(-.75, 0), orientation=-np.pi / 2),
-            # CornerQuad(world=self.world, width=.15, height=.15, position=(.605, .605), orientation=-np.pi / 2),
-            # CornerQuad(world=self.world, width=.15, height=.15, position=(.605, .45), orientation=-np.pi)
+            CornerQuad(world=self.world, width=.15, height=.15, position=(-.605, 0), orientation=-np.pi / 2),
+            Triangle(world=self.world, width=.15, height=.15, position=(.605, .605), orientation=-np.pi / 2),
+            Circle(world=self.world, radius=.10, position=(.605, -.605))
         ]
 
         # create light
-        self._light = CircularGradientLight(position=(.75, 0))  # swarm_spawn_location
+        self._light = CircularGradientLight(position=(2.75, 0))  # swarm_spawn_location
         # self._lights = [GradientLight(np.array([0, .75]), np.array([0, -.75]))]
 
         # create kilobots
@@ -100,7 +106,6 @@ class IndependentKilobotsEnv(KilobotsEnv):
             if counter >= len(pos_mod_list):
                 counter = 0
                 curr_dist_mod += 1
-
 
 def normalize_radian(angle):
     if angle < -np.pi:
@@ -120,5 +125,4 @@ def get_polar(my_state, other_state):
         angle = normalize_radian((np.pi / 2 if rel_pos[1] > 0 else -np.pi / 2) - my_state[2])
     return [r, angle]
 
-
-#print(get_polar([1, 0, np.pi / 2], [1, -1]))
+# print(get_polar([1, 0, np.pi / 2], [1, -1]))

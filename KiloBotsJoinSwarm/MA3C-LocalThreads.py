@@ -10,9 +10,9 @@ import os
 import threading
 from time import sleep
 import tensorflow as tf
-from KiloBotsJoin.MA3CNetwork import AC_Network
-from KiloBotsJoin.MA3CSlave import Worker
-from simulator_kilobots.independent_kilobots_join import IndependentKilobotsJoinEnv
+from KiloBotsJoinSwarm.MA3CNetwork import AC_Network
+from KiloBotsJoinSwarm.MA3CSlave import Worker
+from simulator_kilobots.independent_kilobots_join_hard import IndependentKilobotsJoinEnv
 
 max_episode_length = 2000
 gamma = 0.95  # discount rate for advantage estimation and reward discounting
@@ -22,7 +22,7 @@ batch_size = 25
 
 load_model = False
 model_path = './model'
-display = False
+display = True
 
 parser = argparse.ArgumentParser()
 parser.register("type", "bool", lambda v: v.lower() == "true")
@@ -35,7 +35,7 @@ parser.add_argument(
 parser.add_argument(
     "--num_agents",
     type=int,
-    default=4,
+    default=17,
     help="Set number of agents"
 )
 parser.add_argument(
@@ -83,7 +83,7 @@ parser.add_argument(
 FLAGS, unparsed = parser.parse_known_args()
 number_of_agents = FLAGS.num_agents
 comm_size = FLAGS.comm_size
-amount_of_agents_to_send_message_to = number_of_agents-1
+amount_of_agents_to_send_message_to = 3
 
 if FLAGS.demo != "":
     load_model = True
@@ -94,7 +94,7 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [4+(number_of_agents-1)*2+2*3]
+state_size = [4+2*3]
 s_size_central = [4*number_of_agents+2*3]
 action_size = 4
 
@@ -121,7 +121,7 @@ with tf.device("/cpu:0"):
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(IndependentKilobotsJoinEnv(), i, state_size, s_size_central,
+        workers.append(Worker(IndependentKilobotsJoinEnv(number_of_agents=number_of_agents), i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
                               global_episodes, amount_of_agents_to_send_message_to,
                               display=display and i == 0, comm=(comm_size != 0),
