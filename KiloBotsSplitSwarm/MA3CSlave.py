@@ -10,15 +10,22 @@ import math
 
 
 # Worker class
+from KiloBotsSplitSwarm.MA3CNetworkMPE import AC_NetworkMPE
+
+
 class Worker:
     def __init__(self, game, name, s_size, s_size_central, a_size, number_of_agents, trainer, model_path,
                  global_episodes, amount_of_agents_to_send_message_to,
                  display=False, comm=False, comm_size_per_agent=0, spread_messages=True,
                  critic_action=False, critic_comm=False,
-                 comm_delivery_failure_chance=0, comm_gaussian_noise=0, comm_jumble_chance=0):
+                 comm_delivery_failure_chance=0, comm_gaussian_noise=0, comm_jumble_chance=0,
+                 ordered_swarm_critic=False, mpe_swarm_critic=None):
         self.name = "worker_" + str(name)
         self.is_chief = self.name == 'worker_0'
         print(self.name)
+
+        self.ordered_swarm_critic = ordered_swarm_critic
+        self.mpe_swarm_critic = mpe_swarm_critic is not None
 
         self.number = name
         self.number_of_agents = number_of_agents
@@ -37,11 +44,17 @@ class Worker:
             self.summary_writer = tf.summary.FileWriter("train_" + str(self.number))
 
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
-        self.local_AC = \
-            AC_Network(s_size, s_size_central, number_of_agents, a_size,
+        if self.mpe_swarm_critic:
+            self.local_AC = AC_NetworkMPE(s_size, s_size_central, number_of_agents, a_size,
                        amount_of_agents_to_send_message_to * comm_size_per_agent,
                        amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
-                       self.name, trainer, critic_action=critic_action, critic_comm=critic_comm)
+                       self.name, trainer, critic_comm=critic_comm, reduce_type=mpe_swarm_critic)
+        else:
+            self.local_AC = \
+                AC_Network(s_size, s_size_central, number_of_agents, a_size,
+                           amount_of_agents_to_send_message_to * comm_size_per_agent,
+                           amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
+                           self.name, trainer, critic_action=critic_action, critic_comm=critic_comm)
         self.update_local_ops = update_target_graph('global', self.name)
 
         # Env Pursuit set-up
@@ -296,14 +309,18 @@ class Worker:
             current_screen = self.env.reset()
             info = self.env.get_state()
             current_screen_central= []
-            for x in info["kilobots"]:
-                current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
-            for x in info["objects"]:
-                current_screen_central.extend(x[0:2])
+            if self.mpe_swarm_critic:
+                current_screen_central = current_screen
+            else:
+                if self.ordered_swarm_critic:
+                    for x in info["kilobots"][np.argsort(squared_coords(info["kilobots"]))]:
+                        current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                else:
+                    for x in info["kilobots"]:
+                        current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                for x in info["objects"]:
+                    current_screen_central.extend(x[0:2])
             arrayed_current_screen_central = [current_screen_central for i in range(self.number_of_agents)]
-            #print(arrayed_current_screen_central)
-            #arrayed_current_screen_central = [np.hstack(np.append(info["kilobots"], info["objects"]))]*self.number_of_agents
-            #print(arrayed_current_screen_central)
 
             self.get_comm_map(episode_comm_maps, info)
 
@@ -350,10 +367,17 @@ class Worker:
                 current_screen, reward, terminal, _ = self.env.step(actions)
                 info = self.env.get_state()
                 current_screen_central = []
-                for x in info["kilobots"]:
-                    current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
-                for x in info["objects"]:
-                    current_screen_central.extend(x[0:2])
+                if self.mpe_swarm_critic:
+                    current_screen_central = current_screen
+                else:
+                    if self.ordered_swarm_critic:
+                        for x in info["kilobots"][np.argsort(squared_coords(info["kilobots"]))]:
+                            current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                    else:
+                        for x in info["kilobots"]:
+                            current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                    for x in info["objects"]:
+                        current_screen_central.extend(x[0:2])
                 arrayed_current_screen_central = [current_screen_central for i in range(self.number_of_agents)]
 
                 this_turns_comm_map = self.get_comm_map(episode_comm_maps, info)
@@ -515,3 +539,8 @@ def cartesian_dist(a,b):
     i = (a[0]-b[0])
     j = (a[1]-b[1])
     return np.sqrt((i*i)+(j*j))
+
+def squared_coords(a):
+    # x,y \in [-1, 1]
+    # returns z
+    return a[:,0]+a[:,1]

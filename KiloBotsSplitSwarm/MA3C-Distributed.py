@@ -8,7 +8,10 @@
 import argparse
 import os
 import tensorflow as tf
+
+from KiloBotsSplitSwarm.MA3CNetworkMPE import AC_NetworkMPE
 from simulator_kilobots.independent_kilobots_split_hard import IndependentKilobotsSplitEnv
+
 tf.logging.set_verbosity(tf.logging.ERROR)
 from KiloBotsSplitSwarm.MA3CNetwork import AC_Network
 from KiloBotsSplitSwarm.MA3CSlave import Worker
@@ -105,8 +108,8 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [4+2*4]
-s_size_central = [4*number_of_agents+2*4]
+state_size = [4 + 2 * 4]
+s_size_central = [number_of_agents, state_size[0]]
 action_size = 4
 
 critic_action = False
@@ -115,6 +118,9 @@ if FLAGS.critic == 1 or FLAGS.critic == 3:
     critic_action = True
 if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
+
+ordered_swarm_critic = False
+mpe_swarm_critic = "max"  # None
 
 # Create a cluster from the parameter server and worker hosts.
 hosts = []
@@ -133,24 +139,33 @@ if not os.path.exists(model_path):
 with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c/task:%d" % FLAGS.task_index, cluster=cluster)):
     global_episodes = tf.contrib.framework.get_or_create_global_step()
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    master_network = AC_Network(state_size, s_size_central, number_of_agents, action_size,
-                                amount_of_agents_to_send_message_to * comm_size,
-                                amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
-                                'global', None, critic_action=critic_action, critic_comm=critic_comm)  # Generate global network
+    if mpe_swarm_critic is not None:
+        master_network = AC_NetworkMPE(state_size, s_size_central, number_of_agents, action_size,
+                                       amount_of_agents_to_send_message_to * comm_size,
+                                       amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
+                                       'global', None, critic_comm=critic_comm, reduce_type=mpe_swarm_critic)
+    else:
+        master_network = AC_Network(state_size, s_size_central, number_of_agents, action_size,
+                                    amount_of_agents_to_send_message_to * comm_size,
+                                    amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
+                                    'global', None, critic_action=critic_action,
+                                    critic_comm=critic_comm)  # Generate global network
 
     # Master declares worker for all slaves
     for i in range(len(hosts)):
         print("Initializing variables for slave ", i)
         if i == FLAGS.task_index:
-            worker = Worker(IndependentKilobotsSplitEnv(number_of_agents=number_of_agents), i, state_size, s_size_central,
+            worker = Worker(IndependentKilobotsSplitEnv(number_of_agents=number_of_agents), i, state_size,
+                            s_size_central,
                             action_size, number_of_agents, trainer, model_path,
                             global_episodes, amount_of_agents_to_send_message_to,
                             display=display and i == 0, comm=(comm_size != 0),
                             comm_size_per_agent=comm_size, spread_messages=spread_messages,
                             critic_action=critic_action, critic_comm=critic_comm,
-                              comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
-                              comm_gaussian_noise=FLAGS.comm_gaussian_noise,
-                              comm_jumble_chance=FLAGS.comm_jumble_chance)
+                            comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
+                            comm_gaussian_noise=FLAGS.comm_gaussian_noise,
+                            comm_jumble_chance=FLAGS.comm_jumble_chance,
+                            ordered_swarm_critic=ordered_swarm_critic, mpe_swarm_critic=mpe_swarm_critic)
         else:
             Worker(None, i, state_size, s_size_central,
                    action_size, number_of_agents, trainer, model_path,
@@ -158,9 +173,10 @@ with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c/task:%d" %
                    display=display and i == 0, comm=(comm_size != 0),
                    comm_size_per_agent=comm_size, spread_messages=spread_messages,
                    critic_action=critic_action, critic_comm=critic_comm,
-                              comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
-                              comm_gaussian_noise=FLAGS.comm_gaussian_noise,
-                              comm_jumble_chance=FLAGS.comm_jumble_chance)
+                   comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
+                   comm_gaussian_noise=FLAGS.comm_gaussian_noise,
+                   comm_jumble_chance=FLAGS.comm_jumble_chance,
+                   ordered_swarm_critic=ordered_swarm_critic, mpe_swarm_critic=mpe_swarm_critic)
 
 print("Starting session", server.target, FLAGS.task_index)
 hooks = [tf.train.StopAtStepHook(last_step=FLAGS.max_epis)]

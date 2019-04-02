@@ -11,6 +11,7 @@ import threading
 from time import sleep
 import tensorflow as tf
 from KiloBotsSplitSwarm.MA3CNetwork import AC_Network
+from KiloBotsSplitSwarm.MA3CNetworkMPE import AC_NetworkMPE
 from KiloBotsSplitSwarm.MA3CSlave import Worker
 from simulator_kilobots.independent_kilobots_split_hard import IndependentKilobotsSplitEnv
 
@@ -22,7 +23,7 @@ batch_size = 25
 
 load_model = False
 model_path = './model'
-display = True
+display = False
 
 parser = argparse.ArgumentParser()
 parser.register("type", "bool", lambda v: v.lower() == "true")
@@ -94,8 +95,8 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [4+2*4]
-s_size_central = [4*number_of_agents+2*4]
+state_size = [4 + 2 * 4]
+s_size_central = [number_of_agents, state_size[0]]
 action_size = 4
 
 critic_action = False
@@ -104,6 +105,9 @@ if FLAGS.critic == 1 or FLAGS.critic == 3:
     critic_action = True
 if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
+
+ordered_swarm_critic = False
+mpe_swarm_critic = "max"  # None
 
 tf.reset_default_graph()
 
@@ -114,22 +118,35 @@ if not os.path.exists(model_path):
 with tf.device("/cpu:0"):
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    master_network = AC_Network(state_size, s_size_central, number_of_agents, action_size, amount_of_agents_to_send_message_to * comm_size,
-                                amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size, 'global',
-                                   None, critic_action=critic_action, critic_comm=critic_comm)  # Generate global network
+    if mpe_swarm_critic is not None:
+        master_network = AC_NetworkMPE(state_size, s_size_central, number_of_agents, action_size,
+                                       amount_of_agents_to_send_message_to * comm_size,
+                                       amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
+                                       'global',
+                                       None, critic_comm=critic_comm,
+                                       reduce_type=mpe_swarm_critic)  # Generate global network
+    else:
+        master_network = AC_Network(state_size, s_size_central, number_of_agents, action_size,
+                                    amount_of_agents_to_send_message_to * comm_size,
+                                    amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
+                                    'global',
+                                    None, critic_action=critic_action,
+                                    critic_comm=critic_comm)  # Generate global network
 
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(IndependentKilobotsSplitEnv(number_of_agents=number_of_agents), i, state_size, s_size_central,
-                              action_size, number_of_agents, trainer, model_path,
-                              global_episodes, amount_of_agents_to_send_message_to,
-                              display=display and i == 0, comm=(comm_size != 0),
-                              comm_size_per_agent=comm_size, spread_messages=spread_messages,
-                              critic_action=critic_action, critic_comm=critic_comm,
-                              comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
-                              comm_gaussian_noise=FLAGS.comm_gaussian_noise,
-                              comm_jumble_chance=FLAGS.comm_jumble_chance))
+        workers.append(
+            Worker(IndependentKilobotsSplitEnv(number_of_agents=number_of_agents), i, state_size, s_size_central,
+                   action_size, number_of_agents, trainer, model_path,
+                   global_episodes, amount_of_agents_to_send_message_to,
+                   display=display and i == 0, comm=(comm_size != 0),
+                   comm_size_per_agent=comm_size, spread_messages=spread_messages,
+                   critic_action=critic_action, critic_comm=critic_comm,
+                   comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
+                   comm_gaussian_noise=FLAGS.comm_gaussian_noise,
+                   comm_jumble_chance=FLAGS.comm_jumble_chance,
+                   ordered_swarm_critic=ordered_swarm_critic, mpe_swarm_critic=mpe_swarm_critic))
 
     saver = tf.train.Saver()
 
