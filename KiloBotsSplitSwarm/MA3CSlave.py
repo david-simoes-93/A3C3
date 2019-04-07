@@ -2,12 +2,12 @@ import random
 from time import time
 import tensorflow as tf
 from KiloBotsSplitSwarm.MA3CNetwork import AC_Network
-from Helper import update_target_graph, discount, get_empty_loss_arrays, gae, gae_0, adv, one_hot_encoding
+from Helper import update_target_graph, discount, get_empty_loss_arrays, gae, gae_0, adv, one_hot_encoding, \
+    squared_coords
 import numpy as np
 import matplotlib.pyplot as mpl
 from time import sleep
 import math
-
 
 # Worker class
 from KiloBotsSplitSwarm.MA3CNetworkMPE import AC_NetworkMPE
@@ -19,13 +19,13 @@ class Worker:
                  display=False, comm=False, comm_size_per_agent=0, spread_messages=True,
                  critic_action=False, critic_comm=False,
                  comm_delivery_failure_chance=0, comm_gaussian_noise=0, comm_jumble_chance=0,
-                 ordered_swarm_critic=False, mpe_swarm_critic=None):
+                 swarm_type=None):
         self.name = "worker_" + str(name)
         self.is_chief = self.name == 'worker_0'
         print(self.name)
 
-        self.ordered_swarm_critic = ordered_swarm_critic
-        self.mpe_swarm_critic = mpe_swarm_critic is not None
+        self.ordered_swarm_critic = swarm_type == "ordered"
+        self.swarm_type = not self.ordered_swarm_critic and swarm_type is not None
 
         self.number = name
         self.number_of_agents = number_of_agents
@@ -44,11 +44,11 @@ class Worker:
             self.summary_writer = tf.summary.FileWriter("train_" + str(self.number))
 
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
-        if self.mpe_swarm_critic:
+        if self.swarm_type:
             self.local_AC = AC_NetworkMPE(s_size, s_size_central, number_of_agents, a_size,
-                       amount_of_agents_to_send_message_to * comm_size_per_agent,
-                       amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
-                       self.name, trainer, critic_comm=critic_comm, reduce_type=mpe_swarm_critic)
+                                          amount_of_agents_to_send_message_to * comm_size_per_agent,
+                                          amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
+                                          self.name, trainer, critic_comm=critic_comm, reduce_type=swarm_type)
         else:
             self.local_AC = \
                 AC_Network(s_size, s_size_central, number_of_agents, a_size,
@@ -308,8 +308,8 @@ class Worker:
             # start new epi
             current_screen = self.env.reset()
             info = self.env.get_state()
-            current_screen_central= []
-            if self.mpe_swarm_critic:
+            current_screen_central = []
+            if self.swarm_type:
                 current_screen_central = current_screen
             else:
                 if self.ordered_swarm_critic:
@@ -367,7 +367,7 @@ class Worker:
                 current_screen, reward, terminal, _ = self.env.step(actions)
                 info = self.env.get_state()
                 current_screen_central = []
-                if self.mpe_swarm_critic:
+                if self.swarm_type:
                     current_screen_central = current_screen
                 else:
                     if self.ordered_swarm_critic:
@@ -535,12 +535,8 @@ class Worker:
 
         self.env.close()
 
-def cartesian_dist(a,b):
-    i = (a[0]-b[0])
-    j = (a[1]-b[1])
-    return np.sqrt((i*i)+(j*j))
 
-def squared_coords(a):
-    # x,y \in [-1, 1]
-    # returns z
-    return a[:,0]+a[:,1]
+def cartesian_dist(a, b):
+    i = (a[0] - b[0])
+    j = (a[1] - b[1])
+    return np.sqrt((i * i) + (j * j))

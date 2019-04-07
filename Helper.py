@@ -68,6 +68,12 @@ def gae_1(discount_factor, rewards, values):
     return advantages
 
 
+def squared_coords(a):
+    # x,y \in [-1, 1]
+    # returns z
+    return a[:,0]+a[:,1]
+
+
 # Regular advantages
 def adv(discounted_rewards, values):
     advantages = discounted_rewards - values[:-1]

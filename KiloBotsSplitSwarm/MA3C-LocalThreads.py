@@ -81,6 +81,12 @@ parser.add_argument(
     default=0,
     help="demo folder"
 )
+parser.add_argument(
+    "--swarm_type",
+    type=str,
+    default=None,
+    help="Whether to use MPE: 'max', 'mean', or 'softmax'; or 'ordered'"
+)
 FLAGS, unparsed = parser.parse_known_args()
 number_of_agents = FLAGS.num_agents
 comm_size = FLAGS.comm_size
@@ -95,8 +101,10 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
+swarm_type = FLAGS.swarm_type
 state_size = [4 + 2 * 4]
-s_size_central = [number_of_agents, state_size[0]]
+s_size_central = [4*number_of_agents + 2*4] if swarm_type is None or swarm_type == "ordered" else \
+    [number_of_agents, state_size[0]]
 action_size = 4
 
 critic_action = False
@@ -105,9 +113,6 @@ if FLAGS.critic == 1 or FLAGS.critic == 3:
     critic_action = True
 if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
-
-ordered_swarm_critic = False
-mpe_swarm_critic = "max"  # None
 
 tf.reset_default_graph()
 
@@ -118,13 +123,13 @@ if not os.path.exists(model_path):
 with tf.device("/cpu:0"):
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    if mpe_swarm_critic is not None:
+    if swarm_type is not None and swarm_type != "ordered":
         master_network = AC_NetworkMPE(state_size, s_size_central, number_of_agents, action_size,
                                        amount_of_agents_to_send_message_to * comm_size,
                                        amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
                                        'global',
                                        None, critic_comm=critic_comm,
-                                       reduce_type=mpe_swarm_critic)  # Generate global network
+                                       reduce_type=swarm_type)  # Generate global network
     else:
         master_network = AC_Network(state_size, s_size_central, number_of_agents, action_size,
                                     amount_of_agents_to_send_message_to * comm_size,
@@ -146,7 +151,7 @@ with tf.device("/cpu:0"):
                    comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
                    comm_gaussian_noise=FLAGS.comm_gaussian_noise,
                    comm_jumble_chance=FLAGS.comm_jumble_chance,
-                   ordered_swarm_critic=ordered_swarm_critic, mpe_swarm_critic=mpe_swarm_critic))
+                   swarm_type=swarm_type))
 
     saver = tf.train.Saver()
 

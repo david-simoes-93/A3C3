@@ -2,7 +2,8 @@ import random
 from time import time
 import tensorflow as tf
 from KiloBotsSwarm.MA3CNetwork import AC_Network
-from Helper import update_target_graph, discount, get_empty_loss_arrays, gae, gae_0, adv, one_hot_encoding
+from Helper import update_target_graph, discount, get_empty_loss_arrays, gae, gae_0, adv, one_hot_encoding, \
+    squared_coords
 import numpy as np
 import matplotlib.pyplot as mpl
 from time import sleep
@@ -10,15 +11,22 @@ import math
 
 
 # Worker class
+from KiloBotsSwarm.MA3CNetworkMPE import AC_NetworkMPE
+
+
 class Worker:
     def __init__(self, game, name, s_size, s_size_central, a_size, number_of_agents, trainer, model_path,
                  global_episodes, amount_of_agents_to_send_message_to,
                  display=False, comm=False, comm_size_per_agent=0, spread_messages=True,
                  critic_action=False, critic_comm=False,
-                 comm_delivery_failure_chance=0, comm_gaussian_noise=0, comm_jumble_chance=0):
+                 comm_delivery_failure_chance=0, comm_gaussian_noise=0, comm_jumble_chance=0,
+                 swarm_type=None):
         self.name = "worker_" + str(name)
         self.is_chief = self.name == 'worker_0'
         print(self.name)
+
+        self.ordered_swarm_critic = swarm_type == "ordered"
+        self.swarm_type = not self.ordered_swarm_critic and swarm_type is not None
 
         self.number = name
         self.number_of_agents = number_of_agents
@@ -37,8 +45,13 @@ class Worker:
             self.summary_writer = tf.summary.FileWriter("train_" + str(self.number))
 
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
-        self.local_AC = \
-            AC_Network(s_size, s_size_central, number_of_agents, a_size,
+        if self.swarm_type:
+            self.local_AC = AC_NetworkMPE(s_size, s_size_central, number_of_agents, a_size,
+                       amount_of_agents_to_send_message_to * comm_size_per_agent,
+                       amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
+                       self.name, trainer, critic_comm=critic_comm, reduce_type=swarm_type)
+        else:
+            self.local_AC = AC_Network(s_size, s_size_central, number_of_agents, a_size,
                        amount_of_agents_to_send_message_to * comm_size_per_agent,
                        amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
                        self.name, trainer, critic_action=critic_action, critic_comm=critic_comm)
@@ -296,10 +309,16 @@ class Worker:
             current_screen = self.env.reset()
             info = self.env.get_state()
             current_screen_central = []
-            # TODO maybe this needs to be ordered, so the network is permutation invariant
-            for x in info["kilobots"]:
-                current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
-            current_screen_central.extend(info["objects"][0][0:2])
+            if self.swarm_type:
+                current_screen_central = current_screen
+            else:
+                if self.ordered_swarm_critic:
+                    for x in info["kilobots"][np.argsort(squared_coords(info["kilobots"]))]:
+                        current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                else:
+                    for x in info["kilobots"]:
+                        current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                current_screen_central.extend(info["objects"][0][0:2])
             arrayed_current_screen_central = [current_screen_central for i in range(self.number_of_agents)]
 
             self.get_comm_map(episode_comm_maps, info)
@@ -347,9 +366,16 @@ class Worker:
                 current_screen, reward, terminal, _ = self.env.step(actions)
                 info = self.env.get_state()
                 current_screen_central = []
-                for x in info["kilobots"]:
-                    current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
-                current_screen_central.extend(info["objects"][0][0:2])
+                if self.swarm_type:
+                    current_screen_central = current_screen
+                else:
+                    if self.ordered_swarm_critic:
+                        for x in info["kilobots"][np.argsort(squared_coords(info["kilobots"]))]:
+                            current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                    else:
+                        for x in info["kilobots"]:
+                            current_screen_central.extend([x[0], x[1], np.math.sin(x[2]), np.math.cos(x[2])])
+                    current_screen_central.extend(info["objects"][0][0:2])
                 arrayed_current_screen_central = [current_screen_central for i in range(self.number_of_agents)]
 
                 this_turns_comm_map = self.get_comm_map(episode_comm_maps, info)
