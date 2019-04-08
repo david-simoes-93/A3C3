@@ -48,7 +48,7 @@ parser.add_argument(
 parser.add_argument(
     "--max_epis",
     type=int,
-    default=500000,
+    default=1000,
     help="training steps"
 )
 parser.add_argument(
