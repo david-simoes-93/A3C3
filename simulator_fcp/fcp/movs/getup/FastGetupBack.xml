@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1    "0"    >
+        <!ENTITY head2    "1"    >
+        <!ENTITY lleg1    "2"    >
+        <!ENTITY rleg1    "3"    >
+        <!ENTITY lleg3    "4"    >
+        <!ENTITY rleg3    "5"    >
+        <!ENTITY lleg2    "6"    >
+        <!ENTITY rleg2    "7"    >
+        <!ENTITY lleg4    "8"    >
+        <!ENTITY rleg4    "9"    >
+        <!ENTITY lleg5    "10"    >
+        <!ENTITY rleg5    "11"    >
+        <!ENTITY lleg6    "12"    >
+        <!ENTITY rleg6    "13"    >
+        <!ENTITY larm1    "14"    >
+        <!ENTITY rarm1    "15"    >
+        <!ENTITY larm2    "16"    >
+        <!ENTITY rarm2    "17"    >
+        <!ENTITY larm3    "18"    >
+        <!ENTITY rarm3    "19"    >
+        <!ENTITY larm4    "20"    >
+        <!ENTITY rarm4    "21"    >
+        <!ENTITY wait   "22"    >
+        ]>
+
+
+<!--
+<behavior name="teste" type="CPGBehavior">
+    <patterns>
+        &larm1;: 56.1017667008 0.375123308925 3.141592653588 -90.0;
+        &rarm1;: 56.1017667008 0.375123308925 6.283185307178 -90.0;
+        &lleg3;: 1.44255388625 0.375123308925 1.570796326798 0;
+        &rleg2;: 1.44255388625 0.375123308925 1.570796326798 0;
+        &lleg2;: 60.0 0.375123308925 0 28.4425898071;
+        &rleg3;: 60.0 0.375123308925 3.141592653588 28.4425898071;
+        &lleg6;: 1.44255388625 0.375123308925 4.712388980388 0;
+        &rleg6;: 1.44255388625 0.375123308925 4.712388980388 0;
+        &lleg4;: -36.5379933075 0.375123308925 1.124904133098 -46.3330531432;
+        &rleg4;: -36.5379933075 0.375123308925 4.266496786688 -46.3330531432;
+        &lleg5;: 37.3951914188 0.375123308925 2.141488952088 31.906596934;
+        &rleg5;: 37.3951914188 0.375123308925 5.283081605678 31.906596934;
+    </patterns>
+</behavior>
+-->
+
+<behavior name="GetupBack" type="StepBehavior">
+    <steps>
+        &rleg1;=0:-6, &rleg2;=40:-6, &rleg4;=0:-6, &rleg5;=-5:-6, &rarm1;=-119:-6, &rarm2;=-5:-6, &rarm3;=119:-6, &rarm4;=89:-6,
+        &lleg1;=0:-6, &lleg2;=40:-6, &lleg4;=0:-6, &lleg5;=-5:-6, &larm1;=-119:-6, &larm2;=5:-6, &larm3;=-119:-6, &larm4;=-89:-6_1:2:100:0.05;
+
+        <!-- >Armen terugduwen -->
+        &rarm4;=70:-6, &larm4;=-70:-6_1;
+        &larm4;=1:-6, &rarm4;=-1:-6_1;
+        &rarm4;=0:-6, &larm4;=0:-6, &lleg2;=100:-6, &rleg2;=100:-6, &lleg1;=-10:-6, &rleg1;=-10:-4_1:2:80:0.05;
+
+        <!-- Armen naar buiten en intrekken -->
+        &larm1;=20:-6, &rarm1;=20:-6, &larm4;=-78:-6, &rarm4;=78:-6_1:3:100:0.05;
+
+        <!-- Oksels dicht, armen vooruit -->
+        &larm2;=0:-6, &rarm2;=0:-6, &rarm4;=0:-6, &larm4;=0:-6_1:1.5:50:0.05;
+
+        <!-- Benen goed zetten (poep houding)-->
+        &lleg1;=-89:-2, &lleg2;=99:-2, &lleg3;=-24:-2, &lleg4;=-129:-2, &lleg5;=-15:-2,
+        &rleg1;=-89:-2, &rleg2;=99:-2, &rleg3;=24:-2, &rleg4;=-129:-2, &rleg5;=-15:-2_0:1.5;
+
+        &wait;=0.1;
+        &rleg1;=0:1.6, &rleg2;=10:1.6, &rleg3;=-10:4, &rleg4;=-10:2.4, &rleg5;=5:.8, &rleg6;=10:4,
+        &lleg1;=0:1.6, &lleg2;=10:1.6, &lleg3;=10:4, &lleg4;=-10:2.4, &lleg5;=5:.8, &lleg6;=-10:4_0;
+        &rleg1;=0:.6, &rleg2;=0:.6, &rleg3;=0:.3, &rleg4;=0:.3, &rleg5;=0:.3, &rleg6;=0:.6, &rarm3;=0, &rarm1;=-90,
+        &lleg1;=0:.6, &lleg2;=0:.6, &lleg3;=0:.3, &lleg4;=0:.3, &lleg5;=0:.3, &lleg6;=0:.6, &larm3;=0, &larm1;=-90;
+
+        &wait; = 0.1; <!-- nodig? -->
+    </steps>
+</behavior>

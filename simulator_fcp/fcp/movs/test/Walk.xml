@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1    "0"    >
+        <!ENTITY head2    "1"    >
+        <!ENTITY lleg1    "2"    >
+        <!ENTITY rleg1    "3"    >
+        <!ENTITY lleg3    "4"    >
+        <!ENTITY rleg3    "5"    >
+        <!ENTITY lleg2    "6"    >
+        <!ENTITY rleg2    "7"    >
+        <!ENTITY lleg4    "8"    >
+        <!ENTITY rleg4    "9"    >
+        <!ENTITY lleg5    "10"    >
+        <!ENTITY rleg5    "11"    >
+        <!ENTITY lleg6    "12"    >
+        <!ENTITY rleg6    "13"    >
+        <!ENTITY larm1    "14"    >
+        <!ENTITY rarm1    "15"    >
+        <!ENTITY larm2    "16"    >
+        <!ENTITY rarm2    "17"    >
+        <!ENTITY larm3    "18"    >
+        <!ENTITY rarm3    "19"    >
+        <!ENTITY larm4    "20"    >
+        <!ENTITY rarm4    "21"    >
+        <!ENTITY wait   "22"    >
+        <!ENTITY amp1 "12"> <!-- ankle + thigh amp -->
+        <!ENTITY amp2 "24"> <!-- knee amp -->
+        <!ENTITY amp3 "10"> <!-- right/left amp -->
+        <!ENTITY amp4 "20"> <!-- forward/backward amp -->
+        <!ENTITY amp5 "24"> <!-- forward/backward amp -->
+        <!ENTITY period "0.25">
+        ]>
+
+<behavior name="Walk" type="CPGBehavior">
+    <patterns>
+        &lleg1;: 0 1 0 0;
+        &rleg1;: 0 1 0 0;
+
+        &larm1;: 56.1017667008 &period; 3.141592653588 -90.0;
+        &rarm1;: 56.1017667008 &period; 6.283185307178 -90.0;
+        &lleg3;: 1.44255388625 &period; 1.570796326798 0;
+        &rleg3;: 1.44255388625 &period; 1.570796326798 0;
+        &lleg2;: 60.0 &period; 0 28.4425898071;
+        &rleg2;: 60.0 &period; 3.141592653588 28.4425898071;
+        &lleg6;: 1.44255388625 &period; 4.712388980388 0;
+        &rleg6;: 1.44255388625 &period; 4.712388980388 0;
+        &lleg4;: -36.5379933075 &period; 1.124904133098 -46.3330531432;
+        &rleg4;: -36.5379933075 &period; 4.266496786688 -46.3330531432;
+        &lleg5;: 37.3951914188 &period; 2.141488952088 31.906596934;
+        &rleg5;: 37.3951914188 &period; 5.283081605678 31.906596934;
+    </patterns>
+
+    <delta>&period;</delta>
+</behavior>

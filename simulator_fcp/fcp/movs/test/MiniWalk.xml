@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1    "0"    >
+        <!ENTITY head2    "1"    >
+        <!ENTITY lleg1    "2"    >
+        <!ENTITY rleg1    "3"    >
+        <!ENTITY lleg3    "4"    >
+        <!ENTITY rleg3    "5"    >
+        <!ENTITY lleg2    "6"    >
+        <!ENTITY rleg2    "7"    >
+        <!ENTITY lleg4    "8"    >
+        <!ENTITY rleg4    "9"    >
+        <!ENTITY lleg5    "10"    >
+        <!ENTITY rleg5    "11"    >
+        <!ENTITY lleg6    "12"    >
+        <!ENTITY rleg6    "13"    >
+        <!ENTITY larm1    "14"    >
+        <!ENTITY rarm1    "15"    >
+        <!ENTITY larm2    "16"    >
+        <!ENTITY rarm2    "17"    >
+        <!ENTITY larm3    "18"    >
+        <!ENTITY rarm3    "19"    >
+        <!ENTITY larm4    "20"    >
+        <!ENTITY rarm4    "21"    >
+        <!ENTITY amp1 "24"> <!-- ankle + thigh amp -->
+        <!ENTITY amp2 "48"> <!-- knee amp -->
+        <!ENTITY amp3 "16"> <!-- right/left amp -->
+        <!ENTITY amp4 "20"> <!-- forward/backward amp -->
+        <!ENTITY amp5 "24"> <!-- forward/backward amp -->
+        <!ENTITY period "0.375123308925">
+        ]>
+
+<behavior name="MiniWalk" type="CPGBehavior">
+    <patterns>
+        &larm1;: 0 &period; 0 -90;
+        &rarm1;: 0 &period; 0 -90;
+
+        &lleg2;: &amp1; &period; 0 60, -&amp4; &period; 1.570796327 0;
+        &rleg2;: -&amp1; &period; 0 60, &amp4; &period; 1.570796327 0;
+
+        &lleg4;: -&amp2; &period; 0 -50;
+        &rleg4;: &amp2; &period; 0 -50;
+
+        &lleg5;: &amp1; &period; 0 18, &amp4; &period; 1.570796327 0;
+        &rleg5;: -&amp1; &period; 0 18, -&amp4; &period; 1.570796327 0;
+    </patterns>
+</behavior>

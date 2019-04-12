@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        <!ENTITY amp1 "40"> <!-- ankle + thigh amp 24 -->
+        <!ENTITY amp2 "60"> <!-- knee amp 48 -->
+        <!ENTITY amp3 "0"> <!-- right/left amp  16 -->
+        <!ENTITY amp4 "50"> <!-- forward/backward amp 20 -->
+        <!ENTITY period "0.20">
+        ]>
+<!-- RotateLeftGoalie - Luis Rei - ~3.0s /turn -->
+<behavior name="RotateLeft" type="CPGBehavior">
+
+    <patterns>
+        &lleg2;: -&amp3; 0 0.5 0;
+        &rleg2;: &amp3; 0 0.5 0;
+
+        &lleg3;: &amp1; &period; 0 20;   <!--- era 30   zero walk 16-->
+        &rleg3;: -&amp1; &period; 0 20;
+
+        &lleg4;: -&amp2; &period; 0 -50; <!-- zero wlk -29 -->
+        &rleg4;: &amp2; &period; 0 -50;
+
+        &lleg5;: &amp1; &period; 0 28;  <!-- zero walk 25 -->
+        &rleg5;: -&amp1; &period; 0 28;
+
+        &lleg6;: &amp3; &period; 1.570796327 0;
+        &rleg6;: -&amp3; &period; 1.570796327 0;
+
+        &lleg1;: &amp4; &period; 1.570796327 -10;
+        &rleg1;: &amp4; &period; 1.570796327 -10;
+
+        &larm1;: 0 &period; 0 -90;
+        &rarm1;: 0 &period; 0 -90;
+    </patterns>
+
+    <delta>&period;</delta>
+
+</behavior>

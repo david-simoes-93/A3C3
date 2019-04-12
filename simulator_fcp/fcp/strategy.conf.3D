@@ -1,0 +1,96 @@
+# Common Framework Strategy Configuration File FC Portugal 2010 - Luis Paulo Reis
+2 # 1-2D, 2-3D, 3-MR - Strategy Type
+2 11 11 6 2 3 # Num_Tactics Num_Players Formations Player_Types Flux_Matrixes Sets_SetPlays
+0 # Opponent Number 0 - default
+2 2 # Number of Time Tactics and opponents - tactic depends on result, time and opponent
+000 399   0  1 1 1 1 1     1  1 1 1 1 1  # Opp Numb - Losing Bad, Losing, Drawing, Winning, Winning Bad
+400 600   0  1 1 1 1 1     1  1 1 1 1 1 
+# Tactics Definition --------------------------------------------------------------------------
+1 # Tactic 1 - Tactic Description - Exp1
+2 1 1   0.6 0.2 0.2    0.5 0.5 # Formation, Flux, SetPlans, WFlux, WSafe, WEasy, WPass, WDrib XXX
+2 2   3 4   6 5   9 10   2 2  2 2 2 2 6 2 2 2 # Form used in each situation (Att/Def, KickOff(O/T), CornKickIn, FKick, GFKick, Pen
+2 # Tactic 2 - Tactic Description - Exp2
+1 1 1   0.4 0.4 0.2    0.5 0.5 # Formation, Flux, SetPlans, WFlux, WSafe, WEasy
+0 # No Form used in each situation (Att/Def, KickOff(O/T), CornKickIn, FKick, GFKick, Pen 
+# Player Types Definition ----------------------------------------------------------------------
+   1     2      3     4     5     6   # PT Number
+ 0.0    0.7  0.75   0.6   0.6   0.6  # AttractionX
+ 0.3    0.7   0.7   0.4   0.4   0.4  # AttractionY
+ 0.0    0.2   0.2   0.2   0.2   0.2  # AreaAttrAttack (last 1/4)
+ 0.0    0.2   0.2   0.2   0.2   0.2  # AreaAttrDefense (last 1/4 of field)
+  1       1     0     0     0     0   # BehindBall
+-14.7 -14.7 -14.7 -14.7 -14.7 -14.7  # MinX
+-5.0   14.0  14.0  14.0  14.0  14.0  # MaxX
+-2.0  -10.0 -10.0 -10.0 -10.0 -10.0  # MinY
+ 2.0   10.0  10.0  10.0  10.0  10.0  # MaxY
+  1      2     2      2    2     2   # Decision Algorithm 1-Goa, 2-Def, 3-Att
+# Formations Definition ------------------------------------------------------------------------
+1 1 # 2-1-2 Formation 1 - Type 1 - SBSP 
+-13.7 -10.0 -10.0 -10.0 -10.0 -7.0 -5.0 -5.0  0.0  0.0  0.0  #Posx
+ 0.0   -2.8 -1.0   1.0   2.8   0.0  -2.0  2.0  0.0 -2.5  2.5  #Posy
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+2 2 # 2-1-2 Formation 2 - Type 2 - DT 
+formations/RoboCup2017_PlayOn.conf #name formations/11PlayersF5.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+3 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/RoboCup2016_OurKickOff.conf #name formations/11PlayersF5.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF..  formations/RoboCup2018_OurKickOff.conf .
+4 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/RoboCup2018_TheirKickOff.conf #name formations/11PlayersF5.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+5 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/RoboCup2018_TheirKickIn.conf #name formations/11PlayersF5.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+6 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/RoboCup2018_OurKickIn.conf #name formations/11PlayersF5.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+7 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/11PlayersF2GoalKick.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+8 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/11PlayersF2GoalKick.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+9 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/RoboCup2018_OurGoalieKick.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+10 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/RoboCup2018_TheirGoalieKick.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...
+11 2 # 2-1-2 Formation 3 - Type 2 - DT 
+formations/TheirKickInTest.conf # Name
+  1     2     2     3     3     3    3    3    3    3    3  #Type PT_GOA PT_MID PT_DEF...  
+# Flux Matrixes Definition ---------------------------------------------------------------------
+1 1 # Flux 1,Type 1 (old) - Types:Norm 1, Del 2 - Flux Description - Normal
+ 22 27 35 43 51 58 63 65 65
+ 15 22 29 36 45 54 63 72 75
+ 05 16 23 33 43 52 62 80 90
+ 00 05 20 33 45 52 62 82 100
+ 05 16 23 33 43 52 62 80 90
+ 15 22 29 36 45 54 63 72 75
+ 22 27 35 43 51 58 63 65 65
+2 1 # Flux 2,Type 1 - Flux Description - Test go back with ball
+100 90 80 70 50 40 30 20 0
+ 90 80 70 60 40 30 20 10 0
+ 80 60 50 40 30 20 10 00 0
+ 70 60 40 30 20 10 10 00 0
+ 60 40 20 20 10 10 00 00 0
+ 20 20 10 10 10 00 00 00 0
+ 10 00 00 00 00 00 00 00 0
+# SetPlays Definition ("setplay.conf")------------------------------------------------------------
+1 2 # Set Number and Type (1 - Old Setplays, 2 - New Setplays) - Set Description
+1 2 3 4 5 6 7 8
+2 2 # Set Number and Type 2 - New Setplays - Set Description
+1 2 3 4
+3 2 # Set Number and Type 2 - New Setplays - Set Description
+1 2 8
+# General Domain Parameters
+600 300 # Game Time, Extra Time
+30 20 # Field Size
+1.8 3.9 2.0 # Penalty Area Size and goal width
+15.0 0.8 0.4 # max kick distance, running speed/sec, agentsize
+# Pass and Kick Parameters
+5 # 4 - right back plus 3 - right back 2 - Braganca 1- Direct - Not used
+6  -10.0  -0 0 #Player 11 - PASSER Numb and Position
+11   -0.32  0.52  66  #Player 8 - KICKER Numb and Position
+0.3   0.0  0.0   0.01  -0.25   0.0 #Kick Time, Ball target players 1(x,y) and ball prev for kick, BallDist for kick
+# END OF CONFIGURATION FILE ----------------------------------------------------------------------

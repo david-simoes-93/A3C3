@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        ]>
+
+<behavior name="5mKickLeftVer2 VERSION 3RPF" type="ExpediteSlotBehavior2">
+    <!--
+        <slot name="Knee" delta="0.2">
+
+
+            <move id="&rleg1;" angle="0"    />
+            <move id="&rleg2;" angle="-12"    />
+            <move id="&rleg3;" angle="28.44"    />
+            <move id="&rleg4;" angle="-186.33"    />
+            <move id="&rleg5;" angle="90"    />
+            <move id="&rleg6;" angle="12"    />
+
+             <move id="&lleg1;" angle="0"    />
+            <move id="&lleg2;" angle="-12"    />
+            <move id="&lleg3;" angle="28.44"    />
+            <move id="&lleg4;" angle="-46.33"    />
+            <move id="&lleg5;" angle="31"    />
+            <move id="&lleg6;" angle="12"    />
+
+            <move id="&larm1;" angle="-50"  />
+            <move id="&rarm1;" angle="-50"  />
+            <move id="&larm2;" angle="0"   />
+            <move id="&rarm2;" angle="0"  />
+            <move id="&larm3;" angle="0"  />
+            <move id="&rarm3;" angle="0"   />
+            <move id="&larm4;" angle="0"    />
+            <move id="&rarm4;" angle="0"    />
+
+        </slot>
+    -->
+
+    <slot name="KneeUp" delta="1">
+
+        <move id="&rleg1;" angle="0" o_angle="5"/>  <!-- -90 -->
+        <move id="&rleg2;" angle="-11.3004" o_angle="6"/>
+        <move id="&rleg3;" angle="-41.2526" o_angle="7"/>
+        <move id="&rleg4;" angle="-144.6853" o_angle="8"/>
+        <move id="&rleg5;" angle="-43.3518" o_angle="9"/>
+        <move id="&rleg6;" angle="5.9652" o_angle="10"/>
+
+        <move id="&lleg1;" angle="0" o_angle="11"/>
+        <move id="&lleg2;" angle="-11.3004" o_angle="12"/>
+        <move id="&lleg3;" angle="6.1675" o_angle="13"/>
+        <move id="&lleg4;" angle="3.8534" o_angle="14"/>
+        <move id="&lleg5;" angle="-0.0368" o_angle="15"/>
+        <move id="&lleg6;" angle="13.6746" o_angle="16"/>
+
+        <move id="&larm1;" angle="-50"/>
+        <move id="&rarm1;" angle="-50"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+
+    <slot name="Pause" delta="0.1">
+    </slot>
+
+    <slot name="KICK" delta="0.0607" o_delta="2">
+        <move id="&rleg1;" angle="0q" o_angle="17"/>
+        <move id="&rleg2;" angle="3.0423" o_angle="18"/>
+        <move id="&rleg3;" angle="88.7333" o_angle="19"/>
+        <move id="&rleg4;" angle="2.2351" o_angle="20"/>
+        <move id="&rleg5;" angle="29.6716" o_angle="21"/>
+        <move id="&rleg6;" angle="5.9652" o_angle="22"/>
+
+        <move id="&lleg1;" angle="0" o_angle="23"/>
+        <move id="&lleg2;" angle="1.9258" o_angle="24"/>
+        <move id="&lleg3;" angle="-28.6545" o_angle="25"/>
+        <move id="&lleg4;" angle="-52.8377" o_angle="26"/>
+        <move id="&lleg5;" angle="-41.2760" o_angle="27"/>
+        <move id="&lleg6;" angle="13.6746" o_angle="28"/>
+
+        <move id="&larm1;" angle="-150"/>
+        <move id="&rarm1;" angle="-150"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+    <!--
+    <slot name="KICK" delta="-0.0349" o_delta="1">
+
+            <move id="&rleg1;" angle="0"    o_angle="5"/>
+            <move id="&rleg2;" angle="3.0423"    o_angle="16"/>
+            <move id="&rleg3;" angle="88.7333 "   o_angle="17" />
+            <move id="&rleg4;" angle="2.2351"    o_angle="18"/>
+            <move id="&rleg5;" angle="-4.9699"   o_angle="19" />
+            <move id="&rleg6;" angle="12"   o_angle="10" />
+
+            <move id="&lleg1;" angle="0.3694"    o_angle="20"/>
+            <move id="&lleg2;" angle="1.9258"    o_angle="21"/>
+            <move id="&lleg3;" angle="-9.2477"   o_angle="22"/>
+            <move id="&lleg4;" angle="-7.6135"    o_angle="23"/>
+            <move id="&lleg5;" angle="-34.3981"    o_angle="24"/>
+            <move id="&lleg6;" angle="12"   o_angle="15" />
+
+            <move id="&larm1;" angle="-120"  />
+            <move id="&rarm1;" angle="-120"  />
+            <move id="&larm2;" angle="0"   />
+            <move id="&rarm2;" angle="0"  />
+            <move id="&larm3;" angle="0"  />
+            <move id="&rarm3;" angle="0  "   />
+            <move id="&larm4;" angle="0"    />
+            <move id="&rarm4;" angle="0"    />
+        </slot>
+    -->
+
+
+    <slot name="Pause" delta="0.5">
+    </slot>
+
+</behavior>

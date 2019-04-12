@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- ALL THE LEG JOINTS (leg1 TO leg6) AND arm1 (in the joints[]) HAVE BEEN SWITCHED FROM LEFT TO RIGHT -->
+<!-- THE SIGNS (+/-) OF THE ANGLE AND WEIGHTS OF leg2 AND leg6 MUST BE INVERSED -->
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY rleg1  "2" >
+        <!ENTITY lleg1  "3" >
+        <!ENTITY rleg2  "4" >
+        <!ENTITY lleg2  "5" >
+        <!ENTITY rleg3  "6" >
+        <!ENTITY lleg3  "7" >
+        <!ENTITY rleg4  "8" >
+        <!ENTITY lleg4  "9" >
+        <!ENTITY rleg5  "10"    >
+        <!ENTITY lleg5  "11"    >
+        <!ENTITY rleg6  "12"    >
+        <!ENTITY lleg6  "13"    >
+        <!ENTITY rarm1  "14"    >
+        <!ENTITY larm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        ]>
+
+<behavior name="5mKickRightLeft VERSION 3" type="ExpediteSlotBehavior2">
+
+    <slot name="crouch" delta="0.020">
+    </slot>
+
+    <slot name="4_leftLegPushBack" delta="0.160">
+        <move id="&rleg1;" angle="-11.608435" o_angle="1" contextWeight1="-132.981517" contextWeight2="209.899234"/>
+        <move id="&lleg1;" angle="-66.346730" o_angle="2" contextWeight1="0.417178" contextWeight2="480.036285"/>
+        <move id="&rleg2;" angle="-169.635390" o_angle="3" contextWeight1="450.248043" contextWeight2="405.922441"/>
+        <move id="&lleg2;" angle="106.332292" o_angle="4" contextWeight1="-191.681176" contextWeight2="-94.582552"/>
+        <move id="&rleg3;" angle="24.844746" o_angle="5" contextWeight1="-172.661266" contextWeight2="65.317231"/>
+        <move id="&lleg3;" angle="4.163713" o_angle="6" contextWeight1="-16.614962" contextWeight2="301.420388"/>
+        <move id="&rleg4;" angle="-116.713691" o_angle="7" contextWeight1="32.947284" contextWeight2="-96.133573"/>
+        <move id="&lleg4;" angle="29.462712" o_angle="8" contextWeight1="-184.763769" contextWeight2="447.101337"/>
+        <move id="&rleg5;" angle="28.677468" o_angle="9" contextWeight1="323.433672" contextWeight2="-153.813772"/>
+        <move id="&lleg5;" angle="-2.523429" o_angle="10" contextWeight1="149.397008" contextWeight2="-271.003694"/>
+        <move id="&rleg6;" angle="-75.023126" o_angle="11" contextWeight1="954.260826" contextWeight2="-986.903708"/>
+        <move id="&lleg6;" angle="-7.158375" o_angle="12" contextWeight1="-21.846243" contextWeight2="90.483848"/>
+        <move id="&larm1;" angle="-83.3908"/>
+        <move id="&rarm1;" angle="-99.6936"/>
+    </slot>
+
+    <slot name="keep_calm" delta="0.04"/> <!-- 0.04 -->
+
+
+    <slot name="5_kickLeft1" delta="0.020">
+
+        <move id="&rleg1;" angle="265.779953" o_angle="13" contextWeight1="-1023.502223" contextWeight2="-423.686316"/>
+        <move id="&lleg1;" angle="-32.751731" o_angle="14" contextWeight1="-14.920026" contextWeight2="-8.874793"/>
+        <move id="&rleg2;" angle="-32.873096" o_angle="15" contextWeight1="-27.484219" contextWeight2="-101.293340"/>
+        <move id="&lleg2;" angle="122.172763" o_angle="16" contextWeight1="-319.083400" contextWeight2="-257.100885"/>
+        <move id="&rleg3;" angle="201.536634" o_angle="17" contextWeight1="-812.853961" contextWeight2="284.821438"/>
+        <move id="&lleg3;" angle="-142.731493" o_angle="18" contextWeight1="469.662104" contextWeight2="-64.842525"/>
+        <move id="&rleg4;" angle="-115.110898" o_angle="19" contextWeight1="99.646994" contextWeight2="-146.287529"/>
+        <move id="&lleg4;" angle="75.366147" o_angle="20" contextWeight1="-111.977637" contextWeight2="-799.387050"/>
+        <move id="&rleg5;" angle="-37.152919" o_angle="21" contextWeight1="96.400499" contextWeight2="969.008812"/>
+        <move id="&lleg5;" angle="25.956184" o_angle="22" contextWeight1="51.628827" contextWeight2="-141.994246"/>
+        <move id="&rleg6;" angle="-41.142226" o_angle="23" contextWeight1="-25.744678" contextWeight2="-489.560135"/>
+        <move id="&lleg6;" angle="-197.285702" o_angle="24" contextWeight1="552.888250" contextWeight2="404.647832"/>
+        <move id="&larm1;" angle="1.9101"/>
+        <move id="&rarm1;" angle="-2.653"/>
+
+    </slot>
+
+    <slot name="6_kickLeft1wait1" delta="0.04"/> <!-- 0.04 -->
+
+
+    <slot name="7_kickLeft2" delta="0.020">
+
+        <move id="&rleg1;" angle="22.951144" o_angle="25" contextWeight1="-459.115419" contextWeight2="451.090336"/>
+        <move id="&lleg1;" angle="12.212082" o_angle="26" contextWeight1="459.811273" contextWeight2="-261.090183"/>
+        <move id="&rleg2;" angle="-51.658207" o_angle="27" contextWeight1="191.767008" contextWeight2="1509.317367"/>
+        <move id="&lleg2;" angle="57.757078" o_angle="28" contextWeight1="-425.711507" contextWeight2="-383.862537"/>
+        <move id="&rleg3;" angle="144.576490" o_angle="29" contextWeight1="-36.584156" contextWeight2="-887.973794"/>
+        <move id="&lleg3;" angle="-127.820408" o_angle="30" contextWeight1="430.773184" contextWeight2="-784.464119"/>
+        <move id="&rleg4;" angle="-58.925254" o_angle="31" contextWeight1="315.577113" contextWeight2="-737.101570"/>
+        <move id="&lleg4;" angle="10.299348" o_angle="32" contextWeight1="-140.819050" contextWeight2="-420.045205"/>
+        <move id="&rleg5;" angle="106.949392" o_angle="33" contextWeight1="-720.518468" contextWeight2="-447.395658"/>
+        <move id="&lleg5;" angle="-25.558177" o_angle="34" contextWeight1="166.527777" contextWeight2="664.952853"/>
+        <move id="&rleg6;" angle="-2.656484" o_angle="35" contextWeight1="127.190579" contextWeight2="-198.156498"/>
+        <move id="&lleg6;" angle="-96.059858" o_angle="36" contextWeight1="18.975362" contextWeight2="654.052813"/>
+
+    </slot>
+
+    <slot name="8_kickLeft1wait2" delta="0.150"> <!-- 0.160  -->
+        <!--<move id="&rleg7;" angle="0"  /> -->
+    </slot>
+
+</behavior>

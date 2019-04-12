@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        ]>
+
+
+<!-- Same as left super kick 64 but with r and l switched and signal changed for leg joints 2 and 6 -->
+
+<behavior name="SuperKickRight" type="ExpediteSlotBehavior">
+
+    <slot name="shiftToLeft" delta="0.400">
+        <move id="&lleg2;" angle="-11"/>
+        <move id="&lleg6;" angle="11"/>
+        <move id="&rleg2;" angle="-11"/>
+        <move id="&rleg6;" angle="11"/>
+    </slot>
+
+    <slot name="rightLegUp" delta="0.200">
+        <move id="&rleg3;" angle="21"/>
+        <move id="&rleg4;" angle="-39"/>
+        <move id="&rleg5;" angle="30"/>
+    </slot>
+
+    <slot name="rightLegPushBack" delta="0.470">
+        <move id="&rarm1;" angle="-90"/>
+        <move id="&larm1;" angle="-90"/>
+
+        <move id="&lleg2;" angle="-12"/>
+        <move id="&lleg6;" angle="12"/>
+
+        <move id="&lleg3;" angle="30"/>
+        <move id="&lleg4;" angle="-1"/>
+        <move id="&lleg5;" angle="4"/>
+
+        <move id="&rleg3;" angle="-40"/>
+        <move id="&rleg4;" angle="-70"/>
+        <move id="&rleg5;" angle="75"/>
+    </slot>
+
+    <slot name="kickRight1" delta="0.020">
+        <move id="&rarm1;" angle="0"/>
+        <move id="&larm1;" angle="0"/>
+
+        <move id="&lleg3;" angle="-20"/>
+        <move id="&lleg4;" angle="-20"/>
+
+        <move id="&rleg3;" angle="20"/>
+        <move id="&rleg4;" angle="-120"/>
+        <move id="&rleg5;" angle="58"/>
+    </slot>
+
+    <slot name="kickRight1wait1" delta="0.041"/>
+
+    <slot name="kickRight2" delta="0.020">
+        <move id="&rleg3;" angle="89"/>
+        <move id="&rleg4;" angle="-1"/>
+        <move id="&rleg5;" angle="-40"/>
+    </slot>
+
+    <slot name="kickRight1wait2" delta="0.150"/>
+
+    <slot name="getLow" delta="0.115">
+
+        <move id="&lleg3;" angle="90"/>
+        <move id="&rleg3;" angle="90"/>
+        <move id="&lleg4;" angle="-120"/>
+        <move id="&rleg4;" angle="-120"/>
+        <move id="&lleg5;" angle="60"/>
+        <move id="&rleg5;" angle="60"/>
+        <move id="&larm1;" angle="120"/>
+        <move id="&rarm1;" angle="120"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+
+        <move id="&lleg2;" angle="-11"/>
+        <move id="&lleg6;" angle="11"/>
+        <move id="&rleg2;" angle="-11"/>
+        <move id="&rleg6;" angle="11"/>
+    </slot>
+
+    <slot name="getSimmetric" delta="0.300">
+        <move id="&lleg2;" angle="0"/>
+        <move id="&rleg2;" angle="0"/>
+        <move id="&lleg6;" angle="0"/>
+        <move id="&rleg6;" angle="0"/>
+    </slot>
+
+    <slot name="zerowalkagain" delta="1.000">
+        <move id="&lleg3;" angle="16"/>
+        <move id="&rleg3;" angle="16"/>
+        <move id="&lleg4;" angle="-29"/>
+        <move id="&rleg4;" angle="-29"/>
+        <move id="&lleg5;" angle="25"/>
+        <move id="&rleg5;" angle="25"/>
+        <move id="&larm1;" angle="-90"/>
+        <move id="&rarm1;" angle="-90"/>
+    </slot>
+
+</behavior>

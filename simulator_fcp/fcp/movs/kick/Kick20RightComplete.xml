@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        ]>
+<!--
+= 17.3141 17.3141  Param: -5.16309 -0.00719 -21.04    Prev: -5.1642 -0.00728 -21.3 
+Final EVal = 17.2751  Param: -5.1642 -0.00728 -21.33 
+Final EVal = 17.2593  Param: -5.1655 -0.00791 -22.175 
+Final EVal = 17.1931  Param: -5.165 -0.00771 -22.415 
+Final EVal = 17.1835  Param: -5.1652 -0.00702 -21.945 
+Final EVal = 17.1039  Param: -5.1637 -0.00812 -22.83 
+Final EVal = 17.0109  Param: -5.1633 -0.00743 -22.8 
+Final EVal = 17.147  Param: -5.1625 -0.00864 -21.165 
+Final EVal = 17.0272  Param: -5.164 -0.00702 -23.865 
+Final EVal = 17.0571  Param: -5.16375 -0.00704 -22.34 
+Final EVal = 17.1012  Param: -5.1655 -0.00676 -22.4 
+Final EVal = 16.9541  Param: -5.1635 -0.00884 -21.98 
+Final EVal = 16.9201  Param: -5.1619 -0.00888 -20.84 
+Final EVal = 16.6003  Param: -5.165 -0.00737 -21.975 
+Final EVal = 16.7089  Param: -5.1627 -0.00869 -23.355 
+Final EVal = 16.6776  Param: -5.1652 -0.00761 -21.585 
+Final EVal = 16.7282  Param: -5.16115 -0.0072 -22.895 
+Final EVal = 16.9543  Param: -5.1649 -0.00799 -22.785 
+Final EVal = 16.8614  Param: -5.16365 -0.00752 -22.315 
+Final EVal = 16.9601  Param: -5.1619 -0.00663 -21.985 
+Final EVal = 16.7972  Param: -5.1639 -0.00731 -22.35 
+Final EVal = 16.4389  Param: -5.16505 -0.00778 -21.54 
+Final EVal = 16.5432  Param: -5.1613 -0.00616 -21 
+Final EVal = 16.5201  Param: -5.16745 -0.0078 -22.5 
+Final EVal = 16.649  Param: -5.16565 -0.00745 -21.63 
+Final EVal = 16.5521  Param: -5.16375 -0.00712 -22.29 
+Final EVal = 16.8203  Param: -5.16305 -0.00708 -21.515 
+Final EVal = 16.3782  Param: -5.16435 -0.00706 -22.37 
+Final EVal = 14.0136  Param: -5.16115 -0.00715 -21.76 
+Final EVal = 14.171  Param: -5.1595 -0.00645 -21.665 
+Final EVal = 10.5898  Param: -5.16745 -0.00644 -21.88 
+Final EVal = 14.2799  Param: -5.1629 -0.0064 -21.865 
+Final EVal = 11.0125  Param: -5.1595 -0.0063 -22.33 
+Final EVal = 12.3391  Param: -5.1661 -0.00785 -21.81 
+Final EVal = 10.8832  Param: -5.159 -0.00739 -22.5 
+Final EVal = 10.873  Param: -5.16065 -0.00677 -22.395 
+Final EVal = 10.9673  Param: -5.1606 -0.0063 -22.115 
+
+Final EVal = 15.4776  Param: -5.16165 -0.00751 -22.13 
+Final EVal = 10.4858  Param: -5.1619 -0.00835 -22.72 
+Final EVal = 10.6227  Param: -5.1617 -0.0069 -22.855 
+Final EVal = 14.1312  Param: -5.163 -0.00826 -22.995 
+Final EVal = 15.0028  Param: -5.16985 -0.00754 -22.74 
+Final EVal = 14.3354  Param: -5.16205 -0.00764 -22.425 
+Final EVal = 14.075  Param: -5.1685 -0.00789 -22.13 
+Final EVal = 2.45378  Param: -5.1668 -0.00822 -22.535 
+Final EVal = 14.3029  Param: -5.1681 -0.0081 -22.105 
+Final EVal = 15.9068  Param: -5.16525 -0.00794 -22.205 
+Final EVal = 14.7924  Param: -5.1613 -0.00805 -22.985 
+Final EVal = 15.8665  Param: -5.1612 -0.00801 -22.15 
+Final EVal = 10.5177  Param: -5.1661 -0.00698 -22.545 
+
+inal EVal = 4.98475  Param: -5.16055 -0.00703 -23.625 
+Final EVal = 14.2979  Param: -5.161 -0.00764 -21.84 
+Final EVal = 10.9098  Param: -5.15935 -0.00824 -22.185 
+Final EVal = 15.7625  Param: -5.16765 -0.00885 -21.99 
+Final EVal = 15.5507  Param: -5.1689 -0.00756 -21.78 
+Final EVal = 15.7112  Param: -5.16125 -0.00812 -21.645 
+Final EVal = 10.9152  Param: -5.15905 -0.00802 -22.02 
+Final EVal = 10.2389  Param: -5.1594 -0.00872 -21.615 
+Final EVal = 10.8981  Param: -5.15995 -0.0088 -22.875 
+Final EVal = 15.2531  Param: -5.1614 -0.00802 -22.8 
+Final EVal = 9.89684  Param: -5.16475 -0.00705 -22.62 
+Final EVal = 10.822  Param: -5.16335 -0.00779 -22.8 
+Final EVal = 14.1423  Param: -5.166 -0.0085 -21.09 
+
+Final EVal = 15.53  Param: -5.16775 -0.0079 -21.16 
+Final EVal = 10.3801  Param: -5.1659 -0.00624 -20.28 
+Final EVal = 14.3563  Param: -5.16765 -0.00824 -20.64 
+Final EVal = 14.7901  Param: -5.1613 -0.00544 -23.04 
+Final EVal = 15.2496  Param: -5.1633 -0.00816 -22.6 
+Final EVal = 13.5167  Param: -5.16895 -0.00908 -21.28 
+Final EVal = 10.8646  Param: -5.16075 -0.00872 -19.78 
+Final EVal = 10.7562  Param: -5.15925 -0.00722 -23.28 
+Final EVal = 14.3903  Param: -5.16595 -0.00722 -19.92 
+Final EVal = 15.3618  Param: -5.1668 -0.00904 -20.68 
+Final EVal = 14.7968  Param: -5.1612 -0.00652 -22.72 
+Final EVal = 12.9691  Param: -5.1594 -0.0054 -21.5 
+Final EVal = 15.4021  Param: -5.16185 -0.00906 -20.94 
+Final EVal = 10.7405  Param: -5.1606 -0.00808 -21.88 
+-->
+
+<behavior name="5mKickRightComp VERSION 3" type="ExpediteSlotBehavior2">
+
+
+    <slot name="Knee" delta="0.2">
+        <move id="&lleg1;" angle="0"/>
+        <move id="&lleg2;" angle="12"/>
+        <move id="&lleg3;" angle="28.44"/>
+        <move id="&lleg4;" angle="-186.33"/>
+        <move id="&lleg5;" angle="90"/>
+        <move id="&lleg6;" angle="-12"/>
+
+        <move id="&rleg1;" angle="0"/>
+        <move id="&rleg2;" angle="12"/>
+        <move id="&rleg3;" angle="28.44"/>
+        <move id="&rleg4;" angle="-46.33"/>
+        <move id="&rleg5;" angle="31"/>
+        <move id="&rleg6;" angle="-12"/>
+
+        <move id="&larm1;" angle="-50"/>
+        <move id="&rarm1;" angle="-50"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+
+    </slot>
+
+    <slot name="KneeUp" delta="0.5">
+        <move id="&lleg1;" angle="0"/>
+        <move id="&lleg2;" angle="12"/>
+        <move id="&lleg3;" angle="-40"/>
+        <move id="&lleg4;" angle="-150"/>
+        <move id="&lleg5;" angle="-50"/>
+        <move id="&lleg6;" angle="-12"/>
+
+        <move id="&rleg1;" angle="-50"/>  <!-- -90 -->
+        <move id="&rleg2;" angle="12"/>
+        <move id="&rleg3;" angle="0"/>
+        <move id="&rleg4;" angle="0"/>
+        <move id="&rleg5;" angle="0"/>
+        <move id="&rleg6;" angle="-12"/>
+
+        <move id="&larm1;" angle="-50"/>
+        <move id="&rarm1;" angle="-50"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+
+    <slot name="Pause" delta="0.1">
+    </slot>
+
+    <slot name="KICK" delta="0.102">
+
+        <move id="&rleg1;" angle="0"/>
+        <move id="&rleg2;" angle="-12"/>
+        <move id="&rleg3;" angle="90"/>
+        <move id="&rleg4;" angle="0"/>
+        <move id="&rleg5;" angle="-10"/>
+        <move id="&rleg6;" angle="12"/>
+
+        <move id="&lleg1;" angle="0"/>
+        <move id="&lleg2;" angle="-12"/>
+        <move id="&lleg3;" angle="-10"/>
+        <move id="&lleg4;" angle="-30"/>
+        <move id="&lleg5;" angle="-10"/>
+        <move id="&lleg6;" angle="12"/>
+
+        <move id="&larm1;" angle="-120"/>
+        <move id="&rarm1;" angle="-120"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0  "/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+
+    <slot name="KICK" delta="0.04">
+        <move id="&rleg1;" angle="-40"/>
+        <move id="&rleg2;" angle="-12"/>
+        <move id="&rleg3;" angle="90"/>
+        <move id="&rleg4;" angle="0"/>
+        <move id="&rleg5;" angle="40"/>
+        <move id="&rleg6;" angle="12"/>
+
+        <move id="&lleg1;" angle="0"/>
+        <move id="&lleg2;" angle="-12"/>
+        <move id="&lleg3;" angle="-30"/>
+        <move id="&lleg4;" angle="-60"/>
+        <move id="&lleg5;" angle="-30"/>
+        <move id="&lleg6;" angle="12"/>
+
+        <move id="&larm1;" angle="-150"/>
+        <move id="&rarm1;" angle="-150"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+
+    <slot name="Pause" delta="0.5">
+    </slot>
+
+</behavior>

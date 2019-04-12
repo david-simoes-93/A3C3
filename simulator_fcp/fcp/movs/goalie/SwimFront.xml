@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0"     >
+        <!ENTITY head2  "1"     >
+        <!ENTITY lleg1  "2"     >
+        <!ENTITY rleg1  "3"     >
+        <!ENTITY lleg2  "4"     >
+        <!ENTITY rleg2  "5"     >
+        <!ENTITY lleg3  "6"     >
+        <!ENTITY rleg3  "7"     >
+        <!ENTITY lleg4  "8"     >
+        <!ENTITY rleg4  "9"     >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        ]>
+
+<behavior name="FallToSide" type="SlotBehavior">
+    <slot delta="1.0">
+        <move id="&head1;" angle="0"/>
+        <move id="&head2;" angle="0"/>
+        <move id="&lleg1;" angle="-30"/>
+        <move id="&rleg1;" angle="-30"/>
+        <move id="&lleg2;" angle="0"/>
+        <move id="&rleg2;" angle="0"/>
+        <move id="&lleg3;" angle="0"/>
+        <move id="&rleg3;" angle="0"/>
+        <move id="&lleg4;" angle="0"/>
+        <move id="&rleg4;" angle="0"/>
+        <move id="&lleg5;" angle="-90"/>
+        <move id="&rleg5;" angle="-90"/>
+        <move id="&lleg6;" angle="0"/>
+        <move id="&rleg6;" angle="0"/>
+        <move id="&larm1;" angle="110"/>
+        <move id="&rarm1;" angle="110"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+
+    <slot delta="1.0">
+        <move id="&head1;" angle="0"/>
+        <move id="&head2;" angle="0"/>
+        <move id="&lleg1;" angle="0"/>
+        <move id="&rleg1;" angle="0"/>
+        <move id="&lleg2;" angle="0"/>
+        <move id="&rleg2;" angle="0"/>
+        <move id="&lleg3;" angle="0"/>
+        <move id="&rleg3;" angle="0"/>
+        <move id="&lleg4;" angle="-90"/>
+        <move id="&rleg4;" angle="-90"/>
+        <move id="&lleg5;" angle="90"/>
+        <move id="&rleg5;" angle="90"/>
+        <move id="&lleg6;" angle="0"/>
+        <move id="&rleg6;" angle="0"/>
+        <move id="&larm1;" angle="90"/>
+        <move id="&rarm1;" angle="90"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+
+    <slot delta="0.5">
+        <move id="&head1;" angle="0"/>
+        <move id="&head2;" angle="0"/>
+        <move id="&lleg1;" angle="-30"/>
+        <move id="&rleg1;" angle="-30"/>
+        <move id="&lleg2;" angle="0"/>
+        <move id="&rleg2;" angle="0"/>
+        <move id="&lleg3;" angle="0"/>
+        <move id="&rleg3;" angle="0"/>
+        <move id="&lleg4;" angle="0"/>
+        <move id="&rleg4;" angle="0"/>
+        <move id="&lleg5;" angle="0"/>
+        <move id="&rleg5;" angle="0"/>
+        <move id="&lleg6;" angle="0"/>
+        <move id="&rleg6;" angle="0"/>
+        <move id="&larm1;" angle="90"/>
+        <move id="&rarm1;" angle="90"/>
+        <move id="&larm2;" angle="0"/>
+        <move id="&rarm2;" angle="0"/>
+        <move id="&larm3;" angle="0"/>
+        <move id="&rarm3;" angle="0"/>
+        <move id="&larm4;" angle="0"/>
+        <move id="&rarm4;" angle="0"/>
+    </slot>
+
+</behavior>

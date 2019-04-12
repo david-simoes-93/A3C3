@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1    "0"    >
+        <!ENTITY head2    "1"    >
+        <!ENTITY lleg1    "2"    >
+        <!ENTITY rleg1    "3"    >
+        <!ENTITY lleg3    "4"    >
+        <!ENTITY rleg3    "5"    >
+        <!ENTITY lleg2    "6"    >
+        <!ENTITY rleg2    "7"    >
+        <!ENTITY lleg4    "8"    >
+        <!ENTITY rleg4    "9"    >
+        <!ENTITY lleg5    "10"    >
+        <!ENTITY rleg5    "11"    >
+        <!ENTITY lleg6    "12"    >
+        <!ENTITY rleg6    "13"    >
+        <!ENTITY larm1    "14"    >
+        <!ENTITY rarm1    "15"    >
+        <!ENTITY larm2    "16"    >
+        <!ENTITY rarm2    "17"    >
+        <!ENTITY larm3    "18"    >
+        <!ENTITY rarm3    "19"    >
+        <!ENTITY larm4    "20"    >
+        <!ENTITY rarm4    "21"    >
+        <!ENTITY wait   "22"    >
+        ]>
+
+
+<!--
+<behavior name="teste" type="CPGBehavior">
+    <patterns>
+        &larm1;: 56.1017667008 0.375123308925 3.141592653588 -90.0;
+        &rarm1;: 56.1017667008 0.375123308925 6.283185307178 -90.0;
+        &lleg3;: 1.44255388625 0.375123308925 1.570796326798 0;
+        &rleg2;: 1.44255388625 0.375123308925 1.570796326798 0;
+        &lleg2;: 60.0 0.375123308925 0 28.4425898071;
+        &rleg3;: 60.0 0.375123308925 3.141592653588 28.4425898071;
+        &lleg6;: 1.44255388625 0.375123308925 4.712388980388 0;
+        &rleg6;: 1.44255388625 0.375123308925 4.712388980388 0;
+        &lleg4;: -36.5379933075 0.375123308925 1.124904133098 -46.3330531432;
+        &rleg4;: -36.5379933075 0.375123308925 4.266496786688 -46.3330531432;
+        &lleg5;: 37.3951914188 0.375123308925 2.141488952088 31.906596934;
+        &rleg5;: 37.3951914188 0.375123308925 5.283081605678 31.906596934;
+    </patterns>
+</behavior>
+-->
+
+<behavior name="GetupBack" type="StepBehavior">
+    <steps>
+        &larm1;=30:-4, &rarm1;=30:-4;
+        &wait;=0.5;
+        &larm1;=0:-4, &rarm1;=0:-4;
+
+        <!-- op je rug terecht komen  (en dan dus ostaan)-->
+        <!--&rleg1;=-70:-4, &lleg1;=-70:-4, &rleg2;=80:-4, &lleg2;=80:-4;
+        &wait; = 1;
+        &rleg1;=0, &lleg1;=0, &rleg2;=0, &lleg2;=0;-->
+
+
+        <!-- staat op in 4sec-->
+        <!--&rleg1;=-60:-4, &lleg1;=-60:-4, &rleg2;=70:-4, &lleg2;=70:-4, &lleg6;=-20, &rleg6;=20;
+        &wait; = .5;
+        &rleg1;=0:-4, &lleg1;=0:-4;
+        &rleg2;=0:1.5, &lleg2;=0:1.5, &rleg6;=0, &lleg6;=0;
+        -->
+
+
+        <!-- staat op in 3sec-->
+        &rleg1;=-60:-4, &lleg1;=-60:-4, &rleg2;=70:-4, &lleg2;=70:-4, &lleg6;=-20:-4, &rleg6;=20:-4, &rleg5;=20:-4, &lleg5;=20:-4, &rleg4;=-10, &lleg4;=-10;
+        &rleg5;=0:-4, &lleg5;=0:-4;
+        &wait; = .25;
+        &rleg1;=-40:-4, &lleg1;=-40:-4;
+        &rleg1;=0:-1.5, &lleg1;=0:-1.5, &rleg2;=0:1.5, &lleg2;=0:1.5, &rleg6;=0:-1, &lleg6;=0:-1, &rleg4;=0:.1, &lleg4;=0:.1, &rarm1;=-90, &larm1;=-90;
+
+
+        <!-- TEST: test kijeken of misschien sneller kan als je knieen (eventueel armen) ook gebruikt -->
+        <!--&rleg1;=-60:-4, &rleg2;=70:-4, &rleg6;=20:-4, &rleg5;=20:-4, &rleg4;=-10:-4, &larm1;=-50:-4;
+        &larm1;=50:-4;
+        &lleg1;=-60:-4, &lleg2;=70:-4, &lleg6;=-20:-4, &lleg5;=20:-4,  &lleg4;=-10:-4, &larm1;=0:-4;
+
+        &rleg5;=0:-4, &lleg5;=0:-4;
+        &rleg1;=-40:-4, &lleg1;=-40:-4;
+        &rleg1;=0:-1.5, &lleg1;=0:-1.5, &rleg2;=0:1.5, &lleg2;=0:1.5, &rleg6;=0:-1, &lleg6;=0:-1, &rleg4;=0:.1, &lleg4;=0:.1;
+        -->
+    </steps>
+</behavior>

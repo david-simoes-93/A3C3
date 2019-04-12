@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+<behavior name="Sol" type="ImprovedExpediteSlotBehavior">
+    <constant name="d" value="25"/>
+    <slot name="0" delta="2">
+        <move id="2" angle="0"/>
+        <move id="3" angle="0"/>
+        <move id="4" angle="-11"/>
+        <move id="5" angle="-11"/>
+        <move id="6" angle="16"/>
+        <move id="7" angle="16"/>
+        <move id="8" angle="-29"/>
+        <move id="9" angle="-29"/>
+        <move id="10" angle="25"/>
+        <move id="11" angle="25"/>
+        <move id="12" angle="11"/>
+        <move id="13" angle="11"/>
+        <move id="14" angle="d*15-90"/>
+        <move id="15" angle="-(d*15-90)"/>
+        <move id="16" angle="0"/>
+        <move id="17" angle="0"/>
+        <move id="18" angle="0"/>
+        <move id="19" angle="0"/>
+        <move id="20" angle="0"/>
+        <move id="21" angle="0"/>
+    </slot>
+    <slot name="0" delta="0.6">
+        <move id="2" angle="0"/>
+        <move id="3" angle="0"/>
+        <move id="4" angle="-11"/>
+        <move id="5" angle="-11"/>
+        <move id="6" angle="16"/>
+        <move id="7" angle="16"/>
+        <move id="8" angle="-29"/>
+        <move id="9" angle="-29"/>
+        <move id="10" angle="25"/>
+        <move id="11" angle="25"/>
+        <move id="12" angle="11"/>
+        <move id="13" angle="11"/>
+        <move id="14" angle="-90"/>
+        <move id="15" angle="-90"/>
+        <move id="16" angle="0"/>
+        <move id="17" angle="0"/>
+        <move id="18" angle="0"/>
+        <move id="19" angle="0"/>
+        <move id="20" angle="0"/>
+        <move id="21" angle="0"/>
+    </slot>
+
+
+</behavior>

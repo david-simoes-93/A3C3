@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        ]>
+
+<behavior name="PrepareKickRight" type="SlotBehavior">
+
+    <slot name="afterWalk" delta="1.0">
+        <move id="&lleg1;" angle="-10.5"/>
+        <move id="&rleg1;" angle="-10.5"/>
+        <move id="&lleg2;" angle="0.5"/>
+        <move id="&rleg2;" angle="0.5"/>
+        <move id="&lleg3;" angle="30.25"/>
+        <move id="&rleg3;" angle="30.25"/>
+        <move id="&lleg4;" angle="-50.5"/>
+        <move id="&rleg4;" angle="-50.5"/>
+        <move id="&lleg5;" angle="20.25"/>
+        <move id="&rleg5;" angle="20.25"/>
+        <move id="&lleg6;" angle="-0.5"/>
+        <move id="&rleg6;" angle="-0.5"/>
+    </slot>
+
+    <slot name="shiftWeight" delta="0.600">
+        <move id="&lleg3;" angle="0"/>
+        <move id="&rleg3;" angle="0"/>
+        <move id="&lleg4;" angle="0"/>
+        <move id="&rleg4;" angle="0"/>
+        <move id="&lleg5;" angle="0"/>
+        <move id="&rleg5;" angle="0"/>
+        <move id="&lleg2;" angle="-11"/>
+        <move id="&lleg6;" angle="11"/>
+        <move id="&rleg2;" angle="-11"/>
+        <move id="&rleg6;" angle="11"/>
+    </slot>
+
+    <slot name="kickLegUp" delta="0.300">
+        <move id="&rleg3;" angle="15"/>
+        <move id="&rleg4;" angle="-30"/>
+        <move id="&rleg5;" angle="15"/>
+    </slot>
+
+    <slot name="kickLegSpread" delta="1.0">
+        <move id="&larm2;" angle="30"/>
+        <move id="&rleg2;" angle="-30"/>
+        <!-- <move id="&rleg6;" angle="45" /> -->
+    </slot>
+
+    <slot delta="1.0"/>
+    <!--
+        <slot name="kickLegUp" delta="0.300">
+            <move id="&rleg3;" angle="55" />
+            <move id="&rleg4;" angle="-110" />
+            <move id="&rleg5;" angle="55" />
+        </slot>
+
+
+        <slot name="kickLegPushBack" delta=".500">
+            <move id="&lleg2;" angle="-12" />
+            <move id="&lleg6;" angle="12" />
+
+            <move id="&rleg3;" angle="-20" />
+            <move id="&rleg4;" angle="-70" />
+            <move id="&rleg5;" angle="75" />
+        </slot>
+
+        <slot name="kick1" delta=".0814">
+            <move id="&rleg3;" angle="88.7" />
+            <move id="&rleg4;" angle="-71.4" />
+            <move id="&rleg5;" angle="-9.04" />
+        </slot>
+
+        <slot name="kick2" delta=".021">
+            <move id="&rleg3;" angle="90" />
+            <move id="&rleg4;" angle="0" />
+            <move id="&rleg5;" angle="-60" />
+        </slot>
+
+        <slot delta=".2" />
+
+        <slot name="kickLegReward" delta=".500">
+            <move id="&lleg3;" angle="0" />
+            <move id="&rleg2;" angle="-10" />
+            <move id="&rleg6;" angle="10" />
+            <move id="&rleg3;" angle="40" />
+            <move id="&rleg4;" angle="-80" />
+            <move id="&rleg5;" angle="40" />
+        </slot>
+
+        <slot name="kickLegDown" delta="1.000">
+
+            <move id="&rleg3;" angle="0" />
+            <move id="&rleg4;" angle="0" />
+            <move id="&rleg5;" angle="0" />
+        </slot>
+
+        <slot name="shiftBack" delta=".500">
+            <move id="&lleg2;" angle="0" />
+            <move id="&lleg6;" angle="0" />
+            <move id="&rleg2;" angle="0" />
+            <move id="&rleg6;" angle="0" />
+        </slot>
+    -->
+    <slot delta=".500"/>
+
+</behavior>

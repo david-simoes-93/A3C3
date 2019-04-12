@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        <!ENTITY amp1 "18"> <!-- ankle + thigh amp 24 -->
+        <!ENTITY amp2 "32"> <!-- knee amp 48 -->
+        <!ENTITY amp3 "25"> <!-- right/left amp  16 -->
+        <!ENTITY amp4 "40"> <!-- forward/backward amp 20 - decrease for bigger ray (lrei)-->
+        <!ENTITY amp5 "0"> <!-- forward/backward amp 24 -->
+        <!ENTITY period "0.2">  <!-- era 0.37 -->
+        ]>
+
+<!-- RotateLeft - rotates around himself - Luis Rei 20JUN2010 -->
+
+<behavior name="RotateLeft" type="CPGBehavior">
+
+    <patterns>
+        &lleg2;: -&amp3; &period; 1.570796327 0;
+        &rleg2;: &amp3; &period; 1.570796327 0;
+
+        &lleg3;: &amp1; &period; 0 28.44;
+        &rleg3;: -&amp1; &period; 0 28.44;
+
+        &lleg4;: -&amp2; &period; 0 -46.33;
+        &rleg4;: &amp2; &period; 0 -46.33;
+
+        &lleg5;: &amp1; &period; 0 31;
+        &rleg5;: -&amp1; &period; 0 31;
+
+        &lleg6;: &amp3; &period; 1.570796327 0;
+        &rleg6;: -&amp3; &period; 1.570796327 0;
+
+        &lleg1;: -&amp4; &period; 1.570796327 -10;
+        &rleg1;: -&amp4; &period; 1.570796327 -10;
+
+        &larm1;: 0 &period; 0 -90;
+        &rarm1;: 0 &period; 0 -90;
+    </patterns>
+
+    <delta>&period;</delta>
+
+</behavior>

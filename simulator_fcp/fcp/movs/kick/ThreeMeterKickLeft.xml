@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Range of the best results for kick: position of the ball related to the position of the agent
+x=0.19, yE[-0.02, 0.02]
+x=0.20, yE[-0.04, 0.04]
+x=0.21, yE[-0.01, 0.01]
+x=0.22, yE[0.04, 0.07]
+x=0.23, yE[-0.02, 0.06]
+x=0.24, yE[0.04, 0.06]
+x=0.25, yE[0.05, 0.07]
+-->
+
+<behavior name="Sol" type="ExpediteSlotBehavior">
+
+    <slot name="0" delta="0.2">
+        <move id="2" angle="0"/>
+        <move id="3" angle="0"/>
+        <move id="5" angle="0"/>
+        <move id="4" angle="0"/>
+        <move id="7" angle="16"/>
+        <move id="6" angle="16"/>
+        <move id="9" angle="-29"/>
+        <move id="8" angle="-29"/>
+        <move id="11" angle="25"/>
+        <move id="10" angle="25"/>
+        <move id="13" angle="0"/>
+        <move id="12" angle="0"/>
+        <move id="15" angle="-90"/>
+        <move id="14" angle="-90"/>
+        <move id="17" angle="-0"/>
+        <move id="16" angle="0"/>
+        <move id="19" angle="0"/>
+        <move id="18" angle="0"/>
+        <move id="20" angle="0"/>
+        <move id="21" angle="0"/>
+    </slot>
+    <slot name="1" delta="0.07">
+    </slot>
+    <slot name="2" delta="0.2">
+        <move id="5" angle="6"/>
+        <move id="4" angle="6"/>
+        <move id="13" angle="-6"/>
+        <move id="12" angle="-6"/>
+    </slot>
+    <slot name="3" delta="0.15">
+        <move id="6" angle="21"/>
+        <move id="8" angle="-39"/>
+        <move id="10" angle="30"/>
+
+        <move id="5" angle="11"/>
+        <move id="4" angle="11"/>
+        <move id="13" angle="-11"/>
+        <move id="12" angle="-11"/>
+
+    </slot>
+    <slot name="4" delta="0.4">
+        <move id="3" angle="-1.09434"/>
+        <move id="2" angle="0"/>
+        <move id="5" angle="12"/>
+        <move id="4" angle="4.73688"/>
+        <move id="7" angle="31.1591"/>
+        <move id="6" angle="-2.03294"/>
+        <move id="9" angle="-0.13196"/>
+        <move id="8" angle="-70.4176"/>
+        <move id="11" angle="10.5019"/>
+        <move id="10" angle="74.1248"/>
+        <move id="13" angle="-12"/>
+        <move id="12" angle="-18.4201"/>
+        <move id="15" angle="-120.583"/>
+        <move id="14" angle="-70"/>
+    </slot>
+    <slot name="5" delta="0.08">
+        <move id="3" angle="-0.9512"/>
+        <move id="2" angle="0"/>
+        <move id="5" angle="12"/>
+        <move id="4" angle="11"/>
+        <move id="7" angle="2.57636"/>
+        <move id="6" angle="14.7258"/>
+        <move id="9" angle="-21.1081"/>
+        <move id="8" angle="-120"/>
+        <move id="11" angle="10.2808"/>
+        <move id="10" angle="54.9463"/>
+        <move id="13" angle="-12"/>
+        <move id="12" angle="-39.5865"/>
+        <move id="15" angle="-98.4075"/>
+        <move id="14" angle="-90"/>
+    </slot>
+    <slot name="6" delta="0.021">
+    </slot>
+    <slot name="7" delta="0.02">
+        <move id="3" angle="0"/>
+        <move id="2" angle="-1"/>
+        <move id="5" angle="12"/>
+        <move id="4" angle="6.29877"/>
+        <move id="7" angle="0"/>
+        <move id="6" angle="59"/>
+        <move id="9" angle="-20"/>
+        <move id="8" angle="0.19696"/>
+        <move id="11" angle="10.5019"/>
+        <move id="10" angle="-39.1064"/>
+        <move id="13" angle="-12.622"/>
+        <move id="12" angle="-11"/>
+        <move id="15" angle="-70"/>
+        <move id="14" angle="-110"/>
+    </slot>
+
+    <slot name="8" delta="0.15">
+    </slot>
+    <slot name="11_old10" delta="0.4">
+        <move id="3" angle="0"/>
+        <move id="2" angle="0"/>
+        <move id="5" angle="0"/>
+        <move id="4" angle="0"/>
+        <move id="7" angle="28.44"/>
+        <move id="6" angle="28.44"/>
+        <move id="9" angle="-46.33"/>
+        <move id="8" angle="-46.33"/>
+        <move id="11" angle="35"/>
+        <move id="10" angle="35"/>
+        <move id="13" angle="0"/>
+        <move id="12" angle="0"/>
+        <move id="15" angle="-90"/>
+        <move id="14" angle="-90"/>
+        <move id="17" angle="0"/>
+        <move id="16" angle="0"/>
+        <move id="19" angle="0"/>
+        <move id="18" angle="0"/>
+        <move id="20" angle="0"/>
+        <move id="21" angle="0"/>
+    </slot>
+    <slot name="10_new" delta="0.23">
+        <move id="10" angle="30"/>
+        <move id="11" angle="30"/>
+    </slot>
+</behavior>

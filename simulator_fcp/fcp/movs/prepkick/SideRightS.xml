@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        <!ENTITY amp1 "6"> <!-- ankle + thigh amp -->
+        <!ENTITY amp2 "12"> <!-- knee amp -->
+        <!ENTITY amp3 "5"> <!-- right/left amp -->
+        <!ENTITY amp4 "4"> <!-- forward/backward amp -->
+        <!ENTITY amp5 "24"> <!-- forward/backward amp -->
+        <!ENTITY period "0.2">
+        ]>
+
+<behavior name="SideRightS" type="CPGBehavior">
+
+    <patterns>
+        &lleg2;: -&amp3; &period; 1.570796327 0;
+        &rleg2;: &amp3; &period; 1.570796327 0;
+
+        &lleg3;: -&amp1; &period; 0 28.44;
+        &rleg3;: &amp1; &period; 0 28.44;  <!-- era 30 -->
+
+        &lleg4;: &amp2; &period; 0 -46.33;
+        &rleg4;: -&amp2; &period; 0 -46.33;  <!-- era -50 -->
+
+        &lleg5;: -&amp1; &period; 0 31;
+        &rleg5;: &amp1; &period; 0 31;  <!--era 30 -->
+
+        &lleg6;: &amp3; &period; 1.570796327 0;
+        &rleg6;: -&amp3; &period; 1.570796327 0;
+
+        &lleg1;: &amp4; &period; 1.570796327 0;
+        &rleg1;: &amp4; &period; 1.570796327 0;
+
+        &larm1;: 0 &period; 0 -90;
+        &rarm1;: 0 &period; 0 -90;
+    </patterns>
+
+    <delta>&period;</delta>
+
+</behavior>

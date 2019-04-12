@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE joints [
+        <!ENTITY head1  "0" >
+        <!ENTITY head2  "1" >
+        <!ENTITY lleg1  "2" >
+        <!ENTITY rleg1  "3" >
+        <!ENTITY lleg2  "4" >
+        <!ENTITY rleg2  "5" >
+        <!ENTITY lleg3  "6" >
+        <!ENTITY rleg3  "7" >
+        <!ENTITY lleg4  "8" >
+        <!ENTITY rleg4  "9" >
+        <!ENTITY lleg5  "10"    >
+        <!ENTITY rleg5  "11"    >
+        <!ENTITY lleg6  "12"    >
+        <!ENTITY rleg6  "13"    >
+        <!ENTITY larm1  "14"    >
+        <!ENTITY rarm1  "15"    >
+        <!ENTITY larm2  "16"    >
+        <!ENTITY rarm2  "17"    >
+        <!ENTITY larm3  "18"    >
+        <!ENTITY rarm3  "19"    >
+        <!ENTITY larm4  "20"    >
+        <!ENTITY rarm4  "21"    >
+        ]>
+
+<behavior name="KickLeft" type="SlotBehavior">
+
+    <!--    POSICAO DO ZERO-WALK:
+
+            <move id="&lleg1;" angle="0"    />
+            <move id="&rleg1;" angle="0"    />
+            <move id="&lleg2;" angle="0"    />
+            <move id="&rleg2;" angle="0"    />
+            <move id="&lleg3;" angle="16"    />
+            <move id="&rleg3;" angle="16"    />
+            <move id="&lleg4;" angle="-29"    />
+            <move id="&rleg4;" angle="-29"    />
+            <move id="&lleg5;" angle="25"    />
+            <move id="&rleg5;" angle="25"    />
+            <move id="&lleg6;" angle="0"    />
+            <move id="&rleg6;" angle="0"    />
+            <move id="&larm1;" angle="-90"  />
+            <move id="&rarm1;" angle="-90"  />
+            <move id="&larm2;" angle="0"   />
+            <move id="&rarm2;" angle="0"  />
+            <move id="&larm3;" angle="0"  />
+            <move id="&rarm3;" angle="0"   />
+            <move id="&larm4;" angle="0"    />
+            <move id="&rarm4;" angle="0"    />
+    -->
+
+    <slot delta="0.170"/>
+
+    <slot name="shiftWeight" delta="0.400">
+        <move id="&rleg2;" angle="11"/>
+        <move id="&rleg6;" angle="-11"/>
+        <move id="&lleg2;" angle="11"/>
+        <move id="&lleg6;" angle="-11"/>
+
+        <move id="&rleg3;" angle="8"/>
+        <move id="&lleg3;" angle="8"/>
+        <move id="&rleg4;" angle="-14.5"/>
+        <move id="&lleg4;" angle="-14.5"/>
+        <move id="&rleg5;" angle="12.5"/>
+        <move id="&lleg5;" angle="12.5"/>
+
+    </slot>
+
+    <!--<slot name="kickLegUp" delta="0.350">
+    -->
+
+    <slot name="kickLegUp" delta="0.500">
+        <move id="&lleg3;" angle="20"/>
+        <move id="&lleg4;" angle="-40"/>
+        <move id="&lleg5;" angle="20"/>
+
+        <move id="&rleg3;" angle="0"/>
+        <move id="&rleg4;" angle="0"/>
+        <move id="&rleg5;" angle="0"/>
+    </slot>
+
+    <!--    <slot name="kickLegPushBack" delta="0.300">
+            <move id="&rleg2;" angle="12" />
+            <move id="&rleg6;" angle="-12" />
+
+            <move id="&lleg3;" angle="-20" />
+            <move id="&lleg4;" angle="-70" />
+            <move id="&lleg5;" angle="75" />
+        </slot>
+    -->
+    <slot name="kick1" delta="0.0814">
+
+        <move id="&lleg3;" angle="88.7"/>
+        <move id="&lleg4;" angle="-71.4"/>
+        <move id="&lleg5;" angle="-9.04"/>
+    </slot>
+
+    <slot name="kick2" delta="0.021">
+        <move id="&lleg3;" angle="90"/>
+        <move id="&lleg4;" angle="0"/>
+        <move id="&lleg5;" angle="-60"/>
+    </slot>
+
+    <slot delta="0.200"/>
+
+    <slot name="kickLegReward" delta="0.400">
+        <move id="&lleg2;" angle="10"/>
+        <move id="&lleg6;" angle="-10"/>
+        <move id="&lleg3;" angle="20"/>
+        <move id="&lleg4;" angle="-40"/>
+        <move id="&lleg5;" angle="20"/>
+    </slot>
+
+    <slot name="kickLegDown" delta="0.350">
+
+        <move id="&rleg2;" angle="11"/>
+        <move id="&rleg6;" angle="-11"/>
+        <move id="&lleg2;" angle="11"/>
+        <move id="&lleg6;" angle="-11"/>
+
+        <move id="&rleg3;" angle="8"/>
+        <move id="&lleg3;" angle="8"/>
+        <move id="&rleg4;" angle="-14.5"/>
+        <move id="&lleg4;" angle="-14.5"/>
+        <move id="&rleg5;" angle="12.5"/>
+        <move id="&lleg5;" angle="12.5"/>
+
+        <move id="&rleg1;" angle="0"/>
+        <move id="&lleg1;" angle="0"/>
+    </slot>
+
+    <slot name="shiftBack" delta="0.350">
+        <move id="&rleg1;" angle="0"/>
+        <move id="&lleg1;" angle="0"/>
+        <move id="&rleg2;" angle="0"/>
+        <move id="&lleg2;" angle="0"/>
+        <move id="&rleg3;" angle="16"/>
+        <move id="&lleg3;" angle="16"/>
+        <move id="&rleg4;" angle="-29"/>
+        <move id="&lleg4;" angle="-29"/>
+        <move id="&rleg5;" angle="25"/>
+        <move id="&lleg5;" angle="25"/>
+        <move id="&rleg6;" angle="0"/>
+        <move id="&lleg6;" angle="0"/>
+    </slot>
+
+</behavior>
