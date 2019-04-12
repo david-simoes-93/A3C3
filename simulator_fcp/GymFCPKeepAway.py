@@ -183,7 +183,8 @@ class GymFCPKeepAway(gym.Env):
                 # print("going for agent2")
                 self.agent_process2, self.client_socket2 = self.spawn(args2)
                 # self.debug = False
-        print("Syncing agents")
+        if self.debug:
+            print("Syncing agents")
         self.refresh_agents()
         sleep(1)
         # state, game_state = self.read_state_from_rcss()
