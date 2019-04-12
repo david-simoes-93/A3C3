@@ -315,11 +315,11 @@ class GymFCPKeepAway(gym.Env):
         game_state_updated = [self.game_state0.my_pos_x, self.game_state0.my_pos_y,
                               self.game_state1.my_pos_x, self.game_state1.my_pos_y,
                               self.game_state2.my_pos_x, self.game_state2.my_pos_y]
-        if len(state0) != 1:
+        if state0 is not None and len(state0) != 1:
             game_state_updated.extend([self.game_state0.ball_x, self.game_state0.ball_y])
-        elif len(state1) != 1:
+        elif state1 is not None and len(state1) != 1:
             game_state_updated.extend([self.game_state1.ball_x, self.game_state1.ball_y])
-        elif len(state2) != 1:
+        elif state2 is not None and len(state2) != 1:
             game_state_updated.extend([self.game_state2.ball_x, self.game_state2.ball_y])
         else:
             print("incomplete game state, wtf")
