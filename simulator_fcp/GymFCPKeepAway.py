@@ -351,7 +351,8 @@ class GymFCPKeepAway(gym.Env):
                 print("Crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
                 return [np.zeros(len(self.observation_space.low)),
                         np.zeros(len(self.observation_space.low)),
-                        np.zeros(len(self.observation_space.low))], 0, True, {}
+                        np.zeros(len(self.observation_space.low))], 0, True, \
+                       {"state_central": self.get_central_state(state0, state1, state2)}
 
         terminal, reward = self.scenario.get_terminal_reward([self.state0, self.state1, self.state2],
                                                              [self.game_state0, self.game_state1, self.game_state2])

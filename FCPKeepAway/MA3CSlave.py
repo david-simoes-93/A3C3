@@ -36,7 +36,8 @@ class Worker:
 
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
         self.local_AC = \
-            AC_Network(s_size, s_size_central, number_of_agents, a_size, amount_of_agents_to_send_message_to * comm_size_per_agent,
+            AC_Network(s_size, s_size_central, number_of_agents, a_size,
+                       amount_of_agents_to_send_message_to * comm_size_per_agent,
                        amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
                        self.name, trainer, critic_action=critic_action, critic_comm=critic_comm)
         self.update_local_ops = update_target_graph('global', self.name)
@@ -267,17 +268,22 @@ class Worker:
 
             for episode_step_count in range(max_episode_length):
                 # feedforward pass
-                #print(current_screen)
-                #print(curr_comm)
+                # print(current_screen)
+                # print(curr_comm)
                 actions = [-1, -1, -1]
                 message = [[], [], []]
                 action_distribution = [None, None, None]
                 for i in range(self.number_of_agents):
                     if current_screen[i] is not None:
-                        [action_distribution[i]], [message[i]] = sess.run([self.local_AC.policy, self.local_AC.message],
-                                                                       feed_dict={self.local_AC.inputs: [current_screen[i]],
-                                                                                  self.local_AC.inputs_comm: [curr_comm[i]]})
-                        actions[i] = np.random.choice(action_indexes, p=action_distribution[i])
+                        [action_distribution[i]], [message[i]] = \
+                            sess.run([self.local_AC.policy, self.local_AC.message],
+                                     feed_dict={self.local_AC.inputs: [current_screen[i]],
+                                                self.local_AC.inputs_comm: [curr_comm[i]]})
+                        if np.isnan(action_distribution[i]).any():
+                            print("Found NaN! Input:", current_screen[i], "Output:", action_distribution[i])
+                            actions[i] = 0
+                        else:
+                            actions[i] = np.random.choice(action_indexes, p=action_distribution[i])
 
                 value = sess.run(self.local_AC.value,
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
@@ -292,7 +298,7 @@ class Worker:
                 current_screen, reward, terminal, info = self.env.step(actions)
 
                 for i in range(self.number_of_agents):
-                    if len(current_screen[i])==1:
+                    if len(current_screen[i]) == 1:
                         current_screen[i] = None
 
                 arrayed_current_screen_central = [info["state_central"] for _ in range(self.number_of_agents)]
@@ -327,7 +333,7 @@ class Worker:
                                   feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                     for i in range(self.number_of_agents):
                         if len(episode_buffer[i]) == batch_size:
-                            #print("optimizing",i,"with",len(episode_buffer[i]),"samples")
+                            # print("optimizing",i,"with",len(episode_buffer[i]),"samples")
                             partial_obs[i], partial_mess_rec[i], sent_message[i], mgrad_per_received[i], \
                             v_l[i], p_l[i], e_l[i], g_n[i], v_n[i] = \
                                 self.train_weights_and_get_comm_gradients(episode_buffer[i], sess, gamma, self.local_AC,
