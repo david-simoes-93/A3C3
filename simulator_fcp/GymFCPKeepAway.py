@@ -66,6 +66,7 @@ class GymFCPKeepAway(gym.Env):
 
         # start RCSS
         self.rcss_process = None
+        self.original_server_ports = serverports
         self.server_port = serverports[0]
         self.server_monitor_port = serverports[1]
         self.start_rcss()
@@ -210,8 +211,8 @@ class GymFCPKeepAway(gym.Env):
         self.crash_counter += 1
         print("Recovering from crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
         self.close()  # Close everything
-        self.server_port = 3100 + self.crash_counter % 100
-        self.server_monitor_port = 3200 + self.crash_counter % 100
+        self.server_port = self.original_server_ports[0] + self.crash_counter % 100
+        self.server_monitor_port = self.original_server_ports[1] + self.crash_counter % 100
         self.start_rcss()  # Start server again
         return self.reset()  # Reset environment
 

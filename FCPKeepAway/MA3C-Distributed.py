@@ -14,9 +14,7 @@ from FCPKeepAway.MA3CSlave import Worker
 from simulator_fcp.GymFCPKeepAway import GymFCPKeepAway, gym_fcp_kill_all
 from simulator_fcp.Scenario import KeepAway
 
-gym_fcp_kill_all()
-
-max_episode_length = 100
+max_episode_length = 500
 gamma = 0.9  # discount rate for advantage estimation and reward discounting
 learning_rate = 1e-4
 spread_messages = False
@@ -64,6 +62,10 @@ parser.add_argument(
     help="demo folder"
 )
 FLAGS, unparsed = parser.parse_known_args()
+
+if FLAGS.task_index == 0:
+    gym_fcp_kill_all()
+
 number_of_agents = 3
 comm_size = FLAGS.comm_size
 amount_of_agents_to_send_message_to = number_of_agents - 1
