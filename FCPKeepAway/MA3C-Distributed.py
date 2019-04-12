@@ -83,7 +83,7 @@ if FLAGS.demo != "":
 state_size = [14]
 s_size_central = [8]
 action_size = 5
-
+env = GymFCPKeepAway(scenario=KeepAway(), serverports=[3100+FLAGS.task_index*200, 3200+FLAGS.task_index*200])
 critic_action = False
 critic_comm = False
 
@@ -113,7 +113,7 @@ with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c/task:%d" %
     for i in range(len(hosts)):
         print("Initializing variables for slave ", i)
         if i == FLAGS.task_index:
-            worker = Worker(GymFCPKeepAway(scenario=KeepAway(), serverports=[3100+i*200, 3200+i*200]), i, state_size, s_size_central,
+            worker = Worker(env, i, state_size, s_size_central,
                             action_size, number_of_agents, trainer, model_path,
                             global_episodes, amount_of_agents_to_send_message_to,
                             display=display and i == 0, comm=(comm_size != 0),
