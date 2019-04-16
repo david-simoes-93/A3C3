@@ -60,7 +60,7 @@ class GymFCPKeepAway(gym.Env):
         self.scenario_time = self.cycles_per_second * 3
 
         # current working dir
-        self.cwd = os.getcwd().split("A3C3")[0]+"A3C3/simulator_fcp/fcp/"
+        self.cwd = os.getcwd().split("A3C3")[0] + "A3C3/simulator_fcp/fcp/"
         if self.debug:
             print("CWD: ", self.cwd)
 
@@ -258,14 +258,17 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer0) != 0:
             state = [float(x) for x in buffer0.strip().split(" ")]
             if len(state) != 1:
-                joints = state[15:]
-                prev_act = []
-                game_state0 = GameState(state[0:15])
+                if np.isnan(state).any():
+                    print("NaN state!", state, "Derived from", buffer0)
+                else:
+                    joints = state[15:]
+                    prev_act = []
+                    game_state0 = GameState(state[0:15])
 
-                specific_state0 = self.scenario.get_state(joints, prev_act, game_state0)
+                    specific_state0 = self.scenario.get_state(joints, prev_act, game_state0)
 
-                self.state0 = specific_state0
-                self.game_state0 = game_state0
+                    self.state0 = specific_state0
+                    self.game_state0 = game_state0
             else:
                 specific_state0 = [0]
         else:
@@ -274,14 +277,17 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer1) != 0:
             state = [float(x) for x in buffer1.strip().split(" ")]
             if len(state) != 1:
-                joints = state[15:]
-                prev_act = []
-                game_state1 = GameState(state[0:15])
+                if np.isnan(state).any():
+                    print("NaN state!", state, "Derived from", buffer1)
+                else:
+                    joints = state[15:]
+                    prev_act = []
+                    game_state1 = GameState(state[0:15])
 
-                specific_state1 = self.scenario.get_state(joints, prev_act, game_state1)
+                    specific_state1 = self.scenario.get_state(joints, prev_act, game_state1)
 
-                self.state1 = specific_state1
-                self.game_state1 = game_state1
+                    self.state1 = specific_state1
+                    self.game_state1 = game_state1
             else:
                 specific_state1 = [0]
         else:
@@ -290,14 +296,17 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer2) != 0:
             state = [float(x) for x in buffer2.strip().split(" ")]
             if len(state) != 1:
-                joints = state[15:]
-                prev_act = []
-                game_state2 = GameState(state[0:15])
+                if np.isnan(state).any():
+                    print("NaN state!", state, "Derived from", buffer2)
+                else:
+                    joints = state[15:]
+                    prev_act = []
+                    game_state2 = GameState(state[0:15])
 
-                specific_state2 = self.scenario.get_state(joints, prev_act, game_state2)
+                    specific_state2 = self.scenario.get_state(joints, prev_act, game_state2)
 
-                self.state2 = specific_state2
-                self.game_state2 = game_state2
+                    self.state2 = specific_state2
+                    self.game_state2 = game_state2
             else:
                 specific_state2 = [0]
         else:
@@ -322,7 +331,7 @@ class GymFCPKeepAway(gym.Env):
         elif state2 is not None and len(state2) != 1:
             game_state_updated.extend([self.game_state2.ball_x, self.game_state2.ball_y])
         else:
-            print("incomplete game state, wtf")
+            print("incomplete game state, wtf", state0, state1, state2)
             game_state_updated.extend([0, 0])
 
         return game_state_updated
@@ -349,10 +358,11 @@ class GymFCPKeepAway(gym.Env):
                 # Agent crashed
                 self.crash_counter += 1
                 print("Crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
+                self.kill_agents()
                 return [np.zeros(len(self.observation_space.low)),
                         np.zeros(len(self.observation_space.low)),
                         np.zeros(len(self.observation_space.low))], 0, True, \
-                       {"state_central": self.get_central_state(state0, state1, state2)}
+                       {"state_central": [0, 0, 0, 0, 0, 0, 0, 0]}
 
         terminal, reward = self.scenario.get_terminal_reward([self.state0, self.state1, self.state2],
                                                              [self.game_state0, self.game_state1, self.game_state2])
