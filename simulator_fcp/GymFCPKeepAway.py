@@ -8,7 +8,7 @@ from time import sleep
 import random
 import signal
 import sys
-
+import traceback
 from simulator_fcp.Scenario import GameState
 
 
@@ -91,6 +91,8 @@ class GymFCPKeepAway(gym.Env):
         self.episode_counter = 0
         self.crash_counter = 0
 
+        self.counter = 0
+
         signal.signal(signal.SIGINT, signal_handler)
 
     def start_rcss(self):
@@ -158,12 +160,14 @@ class GymFCPKeepAway(gym.Env):
     def reset(self):
         self.episode_counter += 1
 
-        # close FCP
+        # resets agents
         self.reset_agent()
 
         if self.agent_process0 is None or self.agent_process1 is None or self.agent_process2 is None:
             print("starting agents")
             # restart FCP
+            self.start_rcss()
+
             global_args = "./deepAgent -p " + str(self.server_port) + " " + str(self.server_monitor_port) + \
                           " -dp " + str(self.server_socket_port)
             args0 = global_args + self.scenario.args0
@@ -200,7 +204,9 @@ class GymFCPKeepAway(gym.Env):
         if specific_state0 is None or specific_state1 is None or specific_state2 is None:
             # Agent crashed
             print("Someone crashed!", specific_state0, specific_state1, specific_state2)
-            return self.recover_from_crash()
+            self.recover_from_crash()
+            return self.reset()
+            # return self.check_crash()
 
         self.rewards_sum = 0
 
@@ -214,7 +220,7 @@ class GymFCPKeepAway(gym.Env):
         self.server_port = self.original_server_ports[0] + self.crash_counter % 100
         self.server_monitor_port = self.original_server_ports[1] + self.crash_counter % 100
         self.start_rcss()  # Start server again
-        return self.reset()  # Reset environment
+        # return self.reset()  # Reset environment
 
     def read_message(self):
         buffer0 = ""
@@ -248,9 +254,12 @@ class GymFCPKeepAway(gym.Env):
         if self.debug:
             print("PYTHON READ: " + buffer0 + buffer1 + buffer2)
 
-        return buffer0, buffer1, buffer2
+        return buffer0.replace("nan", "0").replace("inf", "0"), \
+               buffer1.replace("nan", "0").replace("inf", "0"), \
+               buffer2.replace("nan", "0").replace("inf", "0")
 
     def read_state_from_rcss(self):
+        self.counter += 1
         buffer0, buffer1, buffer2 = self.read_message()
 
         specific_state0, specific_state1, specific_state2 = None, None, None
@@ -258,17 +267,14 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer0) != 0:
             state = [float(x) for x in buffer0.strip().split(" ")]
             if len(state) != 1:
-                if np.isnan(state).any():
-                    print("NaN state!", state, "Derived from", buffer0)
-                else:
-                    joints = state[15:]
-                    prev_act = []
-                    game_state0 = GameState(state[0:15])
+                joints = state[15:]
+                prev_act = []
+                game_state0 = GameState(state[0:15])
 
-                    specific_state0 = self.scenario.get_state(joints, prev_act, game_state0)
+                specific_state0 = self.scenario.get_state(joints, prev_act, game_state0)
 
-                    self.state0 = specific_state0
-                    self.game_state0 = game_state0
+                self.state0 = specific_state0
+                self.game_state0 = game_state0
             else:
                 specific_state0 = [0]
         else:
@@ -277,17 +283,14 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer1) != 0:
             state = [float(x) for x in buffer1.strip().split(" ")]
             if len(state) != 1:
-                if np.isnan(state).any():
-                    print("NaN state!", state, "Derived from", buffer1)
-                else:
-                    joints = state[15:]
-                    prev_act = []
-                    game_state1 = GameState(state[0:15])
+                joints = state[15:]
+                prev_act = []
+                game_state1 = GameState(state[0:15])
 
-                    specific_state1 = self.scenario.get_state(joints, prev_act, game_state1)
+                specific_state1 = self.scenario.get_state(joints, prev_act, game_state1)
 
-                    self.state1 = specific_state1
-                    self.game_state1 = game_state1
+                self.state1 = specific_state1
+                self.game_state1 = game_state1
             else:
                 specific_state1 = [0]
         else:
@@ -296,17 +299,14 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer2) != 0:
             state = [float(x) for x in buffer2.strip().split(" ")]
             if len(state) != 1:
-                if np.isnan(state).any():
-                    print("NaN state!", state, "Derived from", buffer2)
-                else:
-                    joints = state[15:]
-                    prev_act = []
-                    game_state2 = GameState(state[0:15])
+                joints = state[15:]
+                prev_act = []
+                game_state2 = GameState(state[0:15])
 
-                    specific_state2 = self.scenario.get_state(joints, prev_act, game_state2)
+                specific_state2 = self.scenario.get_state(joints, prev_act, game_state2)
 
-                    self.state2 = specific_state2
-                    self.game_state2 = game_state2
+                self.state2 = specific_state2
+                self.game_state2 = game_state2
             else:
                 specific_state2 = [0]
         else:
@@ -321,20 +321,32 @@ class GymFCPKeepAway(gym.Env):
         self.client_socket.sendall(st.encode("utf-8"))
 
     def get_central_state(self, state0, state1, state2):
-        game_state_updated = [self.game_state0.my_pos_x, self.game_state0.my_pos_y,
-                              self.game_state1.my_pos_x, self.game_state1.my_pos_y,
-                              self.game_state2.my_pos_x, self.game_state2.my_pos_y]
+        game_state_updated = [self.game_state0.my_pos_x/10, self.game_state0.my_pos_y/10,
+                              self.game_state1.my_pos_x/10, self.game_state1.my_pos_y/10,
+                              self.game_state2.my_pos_x/10, self.game_state2.my_pos_y/10]
         if state0 is not None and len(state0) != 1:
-            game_state_updated.extend([self.game_state0.ball_x, self.game_state0.ball_y])
+            game_state_updated.extend([self.game_state0.ball_x/10, self.game_state0.ball_y/10])
         elif state1 is not None and len(state1) != 1:
-            game_state_updated.extend([self.game_state1.ball_x, self.game_state1.ball_y])
+            game_state_updated.extend([self.game_state1.ball_x/10, self.game_state1.ball_y/10])
         elif state2 is not None and len(state2) != 1:
-            game_state_updated.extend([self.game_state2.ball_x, self.game_state2.ball_y])
+            game_state_updated.extend([self.game_state2.ball_x/10, self.game_state2.ball_y/10])
         else:
-            print("incomplete game state, wtf", state0, state1, state2)
+            print("Incomplete game state:", state0, state1, state2)
+            traceback.print_stack()
             game_state_updated.extend([0, 0])
 
         return game_state_updated
+
+    def check_crash(self):
+        # Agent crashed
+        self.recover_from_crash()
+        # self.crash_counter += 1
+        # print("Crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
+        # self.kill_agents()
+        return [np.zeros(len(self.observation_space.low)),
+                np.zeros(len(self.observation_space.low)),
+                np.zeros(len(self.observation_space.low))], 0, True, \
+               {"state_central": [0, 0, 0, 0, 0, 0, 0, 0]}
 
     def step(self, actions):
         if actions[0] is not None:
@@ -348,6 +360,9 @@ class GymFCPKeepAway(gym.Env):
             print("Python sent", actions)
 
         state0, state1, state2, game_state0, game_state1, game_state2 = self.read_state_from_rcss()
+        if state0 is None or state1 is None or state2 is None:
+            return self.check_crash()
+
         while len(state0) == 1 and len(state1) == 1 and len(state2) == 1:
             # print("reading")
             self.refresh_agents()
@@ -355,14 +370,7 @@ class GymFCPKeepAway(gym.Env):
             # print("read", state0, state1, state2, game_state)
 
             if state0 is None or state1 is None or state2 is None:
-                # Agent crashed
-                self.crash_counter += 1
-                print("Crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
-                self.kill_agents()
-                return [np.zeros(len(self.observation_space.low)),
-                        np.zeros(len(self.observation_space.low)),
-                        np.zeros(len(self.observation_space.low))], 0, True, \
-                       {"state_central": [0, 0, 0, 0, 0, 0, 0, 0]}
+                return self.check_crash()
 
         terminal, reward = self.scenario.get_terminal_reward([self.state0, self.state1, self.state2],
                                                              [self.game_state0, self.game_state1, self.game_state2])
@@ -396,7 +404,12 @@ class GymFCPKeepAway(gym.Env):
 
     def kill_agent(self, client_socket, agent_process):
         if client_socket is not None:
-            client_socket.sendall("kill".encode("utf-8"))
+            try:
+                client_socket.sendall("kill".encode("utf-8"))
+            except BrokenPipeError:
+                print("Socket was already closed")
+            except Exception as e:
+                print("Error killing agent:", e)
             client_socket.close()
             sleep(2)
 

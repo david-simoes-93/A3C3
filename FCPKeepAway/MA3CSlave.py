@@ -267,6 +267,7 @@ class Worker:
                     curr_comm[curr_agent].extend([0] * self.message_size)
 
             for episode_step_count in range(max_episode_length):
+                #print(current_screen, arrayed_current_screen_central)
                 # feedforward pass
                 # print(current_screen)
                 # print(curr_comm)
@@ -279,11 +280,18 @@ class Worker:
                             sess.run([self.local_AC.policy, self.local_AC.message],
                                      feed_dict={self.local_AC.inputs: [current_screen[i]],
                                                 self.local_AC.inputs_comm: [curr_comm[i]]})
-                        if np.isnan(action_distribution[i]).any():
+                        """if np.isnan(action_distribution[i]).any():
                             print("Found NaN! Input:", current_screen[i], "Output:", action_distribution[i])
                             actions[i] = 0
+                        else:"""
+                        actions[i] = np.random.choice(action_indexes, p=action_distribution[i])
+                        """# TODO
+                        if current_screen[i][12] < current_screen[i][13] and \
+                                        current_screen[i][12] < current_screen[i][14]:
+                            actions[i] = 1
+                            #print("kicker:", i)
                         else:
-                            actions[i] = np.random.choice(action_indexes, p=action_distribution[i])
+                            actions[i] = 4"""
 
                 value = sess.run(self.local_AC.value,
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})

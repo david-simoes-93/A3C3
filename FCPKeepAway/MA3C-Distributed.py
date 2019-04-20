@@ -16,7 +16,7 @@ from simulator_fcp.Scenario import KeepAway
 
 max_episode_length = 500
 gamma = 0.9  # discount rate for advantage estimation and reward discounting
-learning_rate = 1e-4
+learning_rate = 1e-3
 spread_messages = False
 batch_size = 25
 
@@ -80,7 +80,7 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [14]
+state_size = [15]
 s_size_central = [8]
 action_size = 5
 env = GymFCPKeepAway(scenario=KeepAway(), serverports=[3100+FLAGS.task_index*200, 3200+FLAGS.task_index*200])

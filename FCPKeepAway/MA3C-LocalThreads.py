@@ -67,7 +67,7 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [14]
+state_size = [15]
 s_size_central = [8]
 action_size = 5
 

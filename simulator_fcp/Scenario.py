@@ -50,38 +50,51 @@ class KeepAway(Scenario):
         self.scenario_time = 10
 
     def get_state(self, joints, prev_actions, game_state):
-        prevPlayerPos = joints[0:2]
-        nextPlayerPos = joints[2:4]
+        prevPlayerPos = [joints[0]/10, joints[1]/10]
+        nextPlayerPos = [joints[2]/10, joints[3]/10]
 
-        ballPosAfterStopping = joints[4:6]
-        myDistToBall = joints[6]
-        prevPlayerDistToBall = joints[7]
-        nextPlayerDistToBall = joints[8]
+        ballPosAfterStopping = [joints[4]/10, joints[5]/10]
+        #print("get state",joints[6:9])
+        myDistToBall = joints[6]/10
+        prevPlayerDistToBall = joints[7]/10
+        nextPlayerDistToBall = joints[8]/10
 
-        return [game_state.my_pos_x, game_state.my_pos_y] + prevPlayerPos + nextPlayerPos + \
-               [game_state.rel_ball_x, game_state.rel_ball_y] + ballPosAfterStopping + \
-               [game_state.my_ori, myDistToBall, prevPlayerDistToBall, nextPlayerDistToBall]
+        radian_ori = np.math.radians(game_state.my_ori)
+        #TODO polar coords?
+        return [game_state.my_pos_x/10, game_state.my_pos_y/10] + prevPlayerPos + nextPlayerPos + \
+               [game_state.rel_ball_x/10, game_state.rel_ball_y/10] + ballPosAfterStopping + \
+               [np.math.cos(radian_ori), np.math.sin(radian_ori),
+                myDistToBall, prevPlayerDistToBall, nextPlayerDistToBall]
 
     def get_terminal_reward(self, joints, game_states):
+        dist0 = joints[0][12]*10
+        dist1 = joints[1][12]*10
+        dist2 = joints[2][12]*10
+
         reward = 0
-        if self.last_next_to_ball == 0 and joints[0][6] > 2 and joints[1][6] < 1:
+        if self.last_next_to_ball == 0 and dist0 > 2 and dist1 < 1:
             reward = 1
             self.last_next_to_ball = 1
-        elif self.last_next_to_ball == 0 and joints[0][6] > 2 and joints[2][6] < 1:
+        elif self.last_next_to_ball == 0 and dist0 > 2 and dist2 < 1:
             reward = 1
             self.last_next_to_ball = 2
-        elif self.last_next_to_ball == 1 and joints[1][6] > 2 and joints[0][6] < 1:
+        elif self.last_next_to_ball == 1 and dist1 > 2 and dist0 < 1:
             reward = 1
             self.last_next_to_ball = 0
-        elif self.last_next_to_ball == 1 and joints[1][6] > 2 and joints[2][6] < 1:
+        elif self.last_next_to_ball == 1 and dist1 > 2 and dist2 < 1:
             reward = 1
             self.last_next_to_ball = 2
-        elif self.last_next_to_ball == 2 and joints[2][6] > 2 and joints[0][6] < 1:
+        elif self.last_next_to_ball == 2 and dist2 > 2 and dist0 < 1:
             reward = 1
             self.last_next_to_ball = 0
-        elif self.last_next_to_ball == 2 and joints[2][6] > 2 and joints[1][6] < 1:
+        elif self.last_next_to_ball == 2 and dist2 > 2 and dist1 < 1:
             reward = 1
             self.last_next_to_ball = 1
+
+        """if reward == 1:
+            print("reward! ",self.last_next_to_ball)
+        else:
+            print("prev:",self.last_next_to_ball,"dists:",dist0,dist1,dist2)"""
 
         terminal = game_states[0].game_time > 100 or game_states[1].game_time > 100 or game_states[2].game_time > 100
 
