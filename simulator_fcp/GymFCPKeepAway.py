@@ -254,9 +254,7 @@ class GymFCPKeepAway(gym.Env):
         if self.debug:
             print("PYTHON READ: " + buffer0 + buffer1 + buffer2)
 
-        return buffer0.replace("nan", "0").replace("inf", "0"), \
-               buffer1.replace("nan", "0").replace("inf", "0"), \
-               buffer2.replace("nan", "0").replace("inf", "0")
+        return buffer0, buffer1, buffer2
 
     def read_state_from_rcss(self):
         self.counter += 1
@@ -265,7 +263,7 @@ class GymFCPKeepAway(gym.Env):
         specific_state0, specific_state1, specific_state2 = None, None, None
         game_state0, game_state1, game_state2 = None, None, None
         if len(buffer0) != 0:
-            state = [float(x) for x in buffer0.strip().split(" ")]
+            state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer0.strip().split(" ")]
             if len(state) != 1:
                 joints = state[15:]
                 prev_act = []
@@ -281,7 +279,7 @@ class GymFCPKeepAway(gym.Env):
             print("agent0 got empty message")
 
         if len(buffer1) != 0:
-            state = [float(x) for x in buffer1.strip().split(" ")]
+            state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer1.strip().split(" ")]
             if len(state) != 1:
                 joints = state[15:]
                 prev_act = []
@@ -297,7 +295,7 @@ class GymFCPKeepAway(gym.Env):
             print("agent1 got empty message")
 
         if len(buffer2) != 0:
-            state = [float(x) for x in buffer2.strip().split(" ")]
+            state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer2.strip().split(" ")]
             if len(state) != 1:
                 joints = state[15:]
                 prev_act = []
@@ -321,15 +319,15 @@ class GymFCPKeepAway(gym.Env):
         self.client_socket.sendall(st.encode("utf-8"))
 
     def get_central_state(self, state0, state1, state2):
-        game_state_updated = [self.game_state0.my_pos_x/10, self.game_state0.my_pos_y/10,
-                              self.game_state1.my_pos_x/10, self.game_state1.my_pos_y/10,
-                              self.game_state2.my_pos_x/10, self.game_state2.my_pos_y/10]
+        game_state_updated = [self.game_state0.my_pos_x / 10, self.game_state0.my_pos_y / 10,
+                              self.game_state1.my_pos_x / 10, self.game_state1.my_pos_y / 10,
+                              self.game_state2.my_pos_x / 10, self.game_state2.my_pos_y / 10]
         if state0 is not None and len(state0) != 1:
-            game_state_updated.extend([self.game_state0.ball_x/10, self.game_state0.ball_y/10])
+            game_state_updated.extend([self.game_state0.ball_x / 10, self.game_state0.ball_y / 10])
         elif state1 is not None and len(state1) != 1:
-            game_state_updated.extend([self.game_state1.ball_x/10, self.game_state1.ball_y/10])
+            game_state_updated.extend([self.game_state1.ball_x / 10, self.game_state1.ball_y / 10])
         elif state2 is not None and len(state2) != 1:
-            game_state_updated.extend([self.game_state2.ball_x/10, self.game_state2.ball_y/10])
+            game_state_updated.extend([self.game_state2.ball_x / 10, self.game_state2.ball_y / 10])
         else:
             print("Incomplete game state:", state0, state1, state2)
             traceback.print_stack()
