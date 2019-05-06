@@ -333,6 +333,10 @@ class GymFCPKeepAway(gym.Env):
             traceback.print_stack()
             game_state_updated.extend([0, 0])
 
+        if np.isnan(game_state_updated).any():
+            print("Found NaN, game_state_updated:")
+            print(game_state_updated, state0, state1, state2)
+
         return game_state_updated
 
     def check_crash(self):

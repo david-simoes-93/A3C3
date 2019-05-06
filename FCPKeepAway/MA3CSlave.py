@@ -364,6 +364,9 @@ class Worker:
                             len(episode_buffer[2]) == batch_size) and not terminal and \
                                 episode_step_count < max_episode_length - 1:
 
+                    if np.isnan(arrayed_current_screen_central).any():
+                        print("Found NaN, arrayed_current_screen_central:")
+                        print(arrayed_current_screen_central)
                     v1 = sess.run(self.local_AC.value,
                                   feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                     for i in range(self.number_of_agents):
