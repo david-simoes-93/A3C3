@@ -58,6 +58,10 @@ class Worker:
         self.comm_jumble_chance = comm_jumble_chance
 
     def train_weights_and_get_comm_gradients(self, rollout, sess, gamma, ac_network, bootstrap_value=0):
+        if np.isnan(rollout).any():
+            print("Found NaN, Rollout:")
+            print(rollout)
+
         rollout = np.array(rollout)
         observations = np.stack(rollout[:, 0])
         observations_central = np.stack(rollout[:, 1])
