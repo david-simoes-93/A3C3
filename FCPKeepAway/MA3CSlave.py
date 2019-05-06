@@ -58,11 +58,10 @@ class Worker:
         self.comm_jumble_chance = comm_jumble_chance
 
     def train_weights_and_get_comm_gradients(self, rollout, sess, gamma, ac_network, bootstrap_value=0):
-        if np.isnan(rollout).any():
-            print("Found NaN, Rollout:")
-            print(rollout)
+
 
         rollout = np.array(rollout)
+
         observations = np.stack(rollout[:, 0])
         observations_central = np.stack(rollout[:, 1])
         mess_received = np.stack(rollout[:, 2])  # state t
@@ -73,6 +72,28 @@ class Worker:
         # next_mess_received = np.stack(rollout[:, 7])  # state t+1
         # terminals = rollout[:, 8]  # whether timestep t was terminal
         values = rollout[:, 9]
+
+        if np.isnan(observations).any():
+            print("Found NaN, observations:")
+            print(observations)
+        if np.isnan(observations_central).any():
+            print("Found NaN, observations_central:")
+            print(observations_central)
+        if np.isnan(rewards).any():
+            print("Found NaN, rewards:")
+            print(rewards)
+        if np.isnan(values).any():
+            print("Found NaN, values:")
+            print(values)
+        if np.isnan(mess_received).any():
+            print("Found NaN, mess_received:")
+            print(mess_received)
+        if np.isnan(actions).any():
+            print("Found NaN, actions:")
+            print(actions)
+        if np.isnan(sent_message).any():
+            print("Found NaN, sent_message:")
+            print(sent_message)
 
         # print("VALUE GRADS")
         # for i in range(len(observations)):

@@ -32,7 +32,7 @@ parser.register("type", "bool", lambda v: v.lower() == "true")
 parser.add_argument(
     "--num_slaves",
     type=int,
-    default=2,
+    default=1,
     help="Set number of available CPU threads"
 )
 parser.add_argument(
