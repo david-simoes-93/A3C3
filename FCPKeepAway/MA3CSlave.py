@@ -79,22 +79,22 @@ class Worker:
         if np.isnan(observations_central).any():
             print("Found NaN, observations_central:")
             print(observations_central)
-        if np.isnan(rewards).any():
+        if np.isnan(np.array(list(rewards))).any():
             print("Found NaN, rewards:")
             print(rewards)
-        if np.isnan(values).any():
+        if np.isnan(np.array(list(values))).any():
             print("Found NaN, values:")
             print(values)
         if np.isnan(mess_received).any():
             print("Found NaN, mess_received:")
             print(mess_received)
-        if np.isnan(actions).any():
+        if np.isnan(np.array(list(actions))).any():
             print("Found NaN, actions:")
             print(actions)
         if np.isnan(sent_message).any():
             print("Found NaN, sent_message:")
             print(sent_message)
-
+        #print("done")
         # print("VALUE GRADS")
         # for i in range(len(observations)):
         #    print("\t", observations[i], mess_received[i], "\n\t", sent_message[i])
