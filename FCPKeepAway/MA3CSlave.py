@@ -330,6 +330,7 @@ class Worker:
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                 if np.isnan(value).any():
                     print("Found NaN, value:")
+                    print(arrayed_current_screen_central)
                     print(value)
 
                 for i in range(self.number_of_agents):
@@ -380,6 +381,7 @@ class Worker:
                                   feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                     if np.isnan(v1).any():
                         print("Found NaN, v1:")
+                        print(arrayed_current_screen_central)
                         print(v1)
                     for i in range(self.number_of_agents):
                         if len(episode_buffer[i]) == batch_size:
