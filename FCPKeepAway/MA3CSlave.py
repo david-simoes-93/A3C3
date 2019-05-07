@@ -59,7 +59,6 @@ class Worker:
 
     def train_weights_and_get_comm_gradients(self, rollout, sess, gamma, ac_network, bootstrap_value=0):
 
-
         rollout = np.array(rollout)
 
         observations = np.stack(rollout[:, 0])
@@ -74,30 +73,39 @@ class Worker:
         values = rollout[:, 9]
 
         if np.isnan(observations).any():
-            print("Found NaN, observations:")
+            print(self.name, "Found NaN, observations:")
             print(observations)
         if np.isnan(observations_central).any():
-            print("Found NaN, observations_central:")
+            print(self.name, "Found NaN, observations_central:")
             print(observations_central)
         if np.isnan(np.array(list(rewards))).any():
-            print("Found NaN, rewards:")
+            print(self.name, "Found NaN, rewards:")
             print(rewards)
         if np.isnan(np.array(list(values))).any():
-            print("Found NaN, values:")
+            print(self.name, "Found NaN, values:")
             print(values)
             for v in values:
                 if np.isnan(v[0]):
-                    v[0]=0
+                    print("fixing", v[0])
+                    v[0] = 0
+                else:
+                    print("not fixing", v[0])
+            print(values)
         if np.isnan(mess_received).any():
-            print("Found NaN, mess_received:")
+            print(self.name, "Found NaN, mess_received:")
             print(mess_received)
         if np.isnan(np.array(list(actions))).any():
-            print("Found NaN, actions:")
+            print(self.name, "Found NaN, actions:")
             print(actions)
         if np.isnan(sent_message).any():
-            print("Found NaN, sent_message:")
+            print(self.name, "Found NaN, sent_message:")
             print(sent_message)
-        #print("done")
+
+        if np.isnan(bootstrap_value):
+            print(self.name, "Found NaN, bootstrap_value:")
+            print(bootstrap_value)
+            bootstrap_value = 0
+        # print("done")
         # print("VALUE GRADS")
         # for i in range(len(observations)):
         #    print("\t", observations[i], mess_received[i], "\n\t", sent_message[i])
@@ -295,7 +303,7 @@ class Worker:
                     curr_comm[curr_agent].extend([0] * self.message_size)
 
             for episode_step_count in range(max_episode_length):
-                #print(current_screen, arrayed_current_screen_central)
+                # print(current_screen, arrayed_current_screen_central)
                 # feedforward pass
                 # print(current_screen)
                 # print(curr_comm)
@@ -310,7 +318,7 @@ class Worker:
                                                 self.local_AC.inputs_comm: [curr_comm[i]]})
 
                         if np.isnan(action_distribution[i]).any():
-                            print("Found NaN! Input:", current_screen[i], "Output:", action_distribution[i])
+                            print(self.name, "Found NaN! Input:", current_screen[i], "Output:", action_distribution[i])
                             actions[i] = 0
                             exit()
                         else:
@@ -324,14 +332,17 @@ class Worker:
                             actions[i] = 4"""
 
                 if np.isnan(arrayed_current_screen_central).any():
-                    print("Found NaN, arrayed_current_screen_central:")
+                    print(self.name, "Found NaN, arrayed_current_screen_central:")
                     print(arrayed_current_screen_central)
                 value = sess.run(self.local_AC.value,
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                 if np.isnan(value).any():
-                    print("Found NaN, value:")
+                    print(self.name, "Found NaN, value:")
                     print(arrayed_current_screen_central)
                     print(value)
+                    for v in value:
+                        if np.isnan(v[0]):
+                            v[0] = 0
 
                 for i in range(self.number_of_agents):
                     if current_screen[i] is not None:
@@ -375,12 +386,12 @@ class Worker:
                                 episode_step_count < max_episode_length - 1:
 
                     if np.isnan(arrayed_current_screen_central).any():
-                        print("Found NaN, arrayed_current_screen_central:")
+                        print(self.name, "Found NaN, arrayed_current_screen_central:")
                         print(arrayed_current_screen_central)
                     v1 = sess.run(self.local_AC.value,
                                   feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                     if np.isnan(v1).any():
-                        print("Found NaN, v1:")
+                        print(self.name, "Found NaN, v1:")
                         print(arrayed_current_screen_central)
                         print(v1)
                     for i in range(self.number_of_agents):
@@ -425,6 +436,7 @@ class Worker:
 
                 # If both prey and predator have acknowledged game is over, then break from episode
                 if terminal:
+                    print("terminal @", episode_step_count)
                     break
 
             # print("0ver ",episode_step_count,episode_reward)
