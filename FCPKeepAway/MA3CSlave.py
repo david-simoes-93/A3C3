@@ -320,6 +320,9 @@ class Worker:
                         else:
                             actions[i] = 4"""
 
+                if np.isnan(arrayed_current_screen_central).any():
+                    print("Found NaN, arrayed_current_screen_central:")
+                    print(arrayed_current_screen_central)
                 value = sess.run(self.local_AC.value,
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
 
