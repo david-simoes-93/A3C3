@@ -85,6 +85,9 @@ class Worker:
         if np.isnan(np.array(list(values))).any():
             print("Found NaN, values:")
             print(values)
+            for v in values:
+                if np.isnan(v[0]):
+                    v[0]=0
         if np.isnan(mess_received).any():
             print("Found NaN, mess_received:")
             print(mess_received)
@@ -325,6 +328,9 @@ class Worker:
                     print(arrayed_current_screen_central)
                 value = sess.run(self.local_AC.value,
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
+                if np.isnan(value).any():
+                    print("Found NaN, value:")
+                    print(value)
 
                 for i in range(self.number_of_agents):
                     if current_screen[i] is not None:
@@ -372,6 +378,9 @@ class Worker:
                         print(arrayed_current_screen_central)
                     v1 = sess.run(self.local_AC.value,
                                   feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
+                    if np.isnan(v1).any():
+                        print("Found NaN, v1:")
+                        print(v1)
                     for i in range(self.number_of_agents):
                         if len(episode_buffer[i]) == batch_size:
                             # print("optimizing",i,"with",len(episode_buffer[i]),"samples")
