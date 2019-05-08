@@ -219,7 +219,7 @@ class GymFCPKeepAway(gym.Env):
         self.close()  # Close everything
         self.server_port = self.original_server_ports[0] + self.crash_counter % 100
         self.server_monitor_port = self.original_server_ports[1] + self.crash_counter % 100
-        self.start_rcss()  # Start server again
+        #self.start_rcss()  # Start server again
         # return self.reset()  # Reset environment
 
     def read_message(self):

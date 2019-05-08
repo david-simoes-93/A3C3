@@ -436,7 +436,7 @@ class Worker:
 
                 # If both prey and predator have acknowledged game is over, then break from episode
                 if terminal:
-                    print("terminal @", episode_step_count)
+                    print(self.name, "terminal @", episode_step_count)
                     break
 
             # print("0ver ",episode_step_count,episode_reward)
