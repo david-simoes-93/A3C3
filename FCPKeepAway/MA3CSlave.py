@@ -84,13 +84,6 @@ class Worker:
         if np.isnan(np.array(list(values))).any():
             print(self.name, "Found NaN, values:")
             print(values)
-            for v in values:
-                if np.isnan(v[0]):
-                    print("fixing", v[0])
-                    v[0] = 0
-                else:
-                    print("not fixing", v[0])
-            print(values)
         if np.isnan(mess_received).any():
             print(self.name, "Found NaN, mess_received:")
             print(mess_received)
@@ -100,7 +93,6 @@ class Worker:
         if np.isnan(sent_message).any():
             print(self.name, "Found NaN, sent_message:")
             print(sent_message)
-
         if np.isnan(bootstrap_value):
             print(self.name, "Found NaN, bootstrap_value:")
             print(bootstrap_value)
@@ -127,6 +119,13 @@ class Worker:
         else:
             advantages = gae(gamma, epsilon, rewards, value_plus)
             advantages = discount(advantages, gamma)
+
+        if np.isnan(discounted_rewards).any():
+            print(self.name, "Found NaN, discounted_rewards:")
+            print(discounted_rewards)
+        if np.isnan(np.array(list(advantages))).any():
+            print(self.name, "Found NaN, advantages:")
+            print(advantages)
 
         # Update the global network using gradients from loss
         # Generate network statistics to periodically save
@@ -331,9 +330,9 @@ class Worker:
                         else:
                             actions[i] = 4"""
 
-                if np.isnan(arrayed_current_screen_central).any():
+                """if np.isnan(arrayed_current_screen_central).any():
                     print(self.name, "Found NaN, arrayed_current_screen_central:")
-                    print(arrayed_current_screen_central)
+                    print(arrayed_current_screen_central)"""
                 value = sess.run(self.local_AC.value,
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                 if np.isnan(value).any():
@@ -385,15 +384,18 @@ class Worker:
                             len(episode_buffer[2]) == batch_size) and not terminal and \
                                 episode_step_count < max_episode_length - 1:
 
-                    if np.isnan(arrayed_current_screen_central).any():
+                    """if np.isnan(arrayed_current_screen_central).any():
                         print(self.name, "Found NaN, arrayed_current_screen_central:")
-                        print(arrayed_current_screen_central)
+                        print(arrayed_current_screen_central)"""
                     v1 = sess.run(self.local_AC.value,
                                   feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
                     if np.isnan(v1).any():
                         print(self.name, "Found NaN, v1:")
                         print(arrayed_current_screen_central)
                         print(v1)
+                        for v in v1:
+                            if np.isnan(v[0]):
+                                v[0] = 0
                     for i in range(self.number_of_agents):
                         if len(episode_buffer[i]) == batch_size:
                             # print("optimizing",i,"with",len(episode_buffer[i]),"samples")
