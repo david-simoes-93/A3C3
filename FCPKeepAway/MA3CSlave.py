@@ -447,8 +447,8 @@ class Worker:
             self.episode_mean_values.append(np.mean([np.mean(x) for x in episode_values]))
 
             # Update the network using the experience buffer at the end of the episode.
+            print(self.name, "final opti", len(episode_buffer[0]), len(episode_buffer[1]), len(episode_buffer[2]))
             for i in range(self.number_of_agents):
-                print(self.name, "final opti", len(episode_buffer[0]), len(episode_buffer[1]), len(episode_buffer[2]))
                 partial_obs[i], partial_mess_rec[i], sent_message[i], mgrad_per_received[i], \
                 v_l[i], p_l[i], e_l[i], g_n[i], v_n[i] = \
                     self.train_weights_and_get_comm_gradients(episode_buffer[i], sess, gamma, self.local_AC)
