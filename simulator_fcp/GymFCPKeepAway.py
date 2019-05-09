@@ -69,7 +69,7 @@ class GymFCPKeepAway(gym.Env):
         self.original_server_ports = serverports
         self.server_port = serverports[0]
         self.server_monitor_port = serverports[1]
-        self.start_rcss()
+        #self.start_rcss()
 
         self.rewards_sum = 0
 

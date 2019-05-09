@@ -136,6 +136,8 @@ class Worker:
                      ac_network.actions: actions,
                      ac_network.advantages: advantages}
 
+        print(self.name, "optimizing", feed_dict)
+
         v_l, p_l, grads_m, e_l, g_n, v_n, _ = sess.run([ac_network.value_loss,
                                                         ac_network.policy_loss,
                                                         ac_network.gradients_q_message,
