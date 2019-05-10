@@ -160,9 +160,7 @@ class GymFCPKeepAway(gym.Env):
     def reset(self):
         self.episode_counter += 1
 
-        # resets agents
-        self.reset_agent()
-
+        # starts/resets agents
         if self.agent_process0 is None or self.agent_process1 is None or self.agent_process2 is None:
             print("starting agents")
             # restart FCP
@@ -176,7 +174,8 @@ class GymFCPKeepAway(gym.Env):
 
             # print("Waiting for FCP Agent to be started")
 
-            # self.debug = True
+            #self.debug = True
+
             while self.agent_process0 is None:
                 self.agent_process0, self.client_socket0 = self.spawn(args0)
 
@@ -187,26 +186,27 @@ class GymFCPKeepAway(gym.Env):
             while self.agent_process2 is None:
                 # print("going for agent2")
                 self.agent_process2, self.client_socket2 = self.spawn(args2)
-                # self.debug = False
+
+            #self.debug = False
+        else:
+            self.reset_agent()
+
         if self.debug:
             print("Syncing agents")
+
         self.refresh_agents()
         sleep(1)
-        # state, game_state = self.read_state_from_rcss()
-        # self.reset_agent() #close fcp again
+
         specific_state0, specific_state1, specific_state2, \
-        game_state0, game_state1, game_state2 = self.read_state_from_rcss()
+            game_state0, game_state1, game_state2 = self.read_state_from_rcss()
         self.state0, self.state1, self.state2 = specific_state0, specific_state1, specific_state2
         self.game_state0, self.game_state1, self.game_state2 = game_state0, game_state1, game_state2
-
-        # state[-20:] = [0]*20
 
         if specific_state0 is None or specific_state1 is None or specific_state2 is None:
             # Agent crashed
             print("Someone crashed!", specific_state0, specific_state1, specific_state2)
             self.recover_from_crash()
             return self.reset()
-            # return self.check_crash()
 
         self.rewards_sum = 0
 
@@ -219,33 +219,44 @@ class GymFCPKeepAway(gym.Env):
         self.close()  # Close everything
         self.server_port = self.original_server_ports[0] + self.crash_counter % 100
         self.server_monitor_port = self.original_server_ports[1] + self.crash_counter % 100
-        #self.start_rcss()  # Start server again
+        # self.start_rcss()  # Start server again
         # return self.reset()  # Reset environment
 
     def read_message(self):
+        #sleep(1)
+
         buffer0 = ""
         buffer1 = ""
         buffer2 = ""
 
         try:
-            msg_bytes = self.client_socket0.recv(1024)
+            msg_bytes = self.client_socket0.recv(4)
+            #print("reading ",msg_bytes, int.from_bytes(msg_bytes, "big"))
+            msg_bytes = self.client_socket0.recv(int.from_bytes(msg_bytes, "big"))
             buffer0 += msg_bytes.decode("utf-8")
+            #print(len(buffer0), buffer0, len(buffer0.split(" ")))
             # print("py 0:", buffer0)
         except socket.error as err:
             print("Socket 0 timeout?")
             print(err)
 
         try:
-            msg_bytes = self.client_socket1.recv(1024)
+            msg_bytes = self.client_socket1.recv(4)
+            #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
+            msg_bytes = self.client_socket1.recv(int.from_bytes(msg_bytes, "big"))
             buffer1 += msg_bytes.decode("utf-8")
+            #print(len(buffer1), buffer1, len(buffer1.split(" ")))
             # print("py 1:", buffer1)
         except socket.error as err:
             print("Socket 1 timeout?")
             print(err)
 
         try:
-            msg_bytes = self.client_socket2.recv(1024)
+            msg_bytes = self.client_socket2.recv(4)
+            #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
+            msg_bytes = self.client_socket2.recv(int.from_bytes(msg_bytes, "big"))
             buffer2 += msg_bytes.decode("utf-8")
+            #print(len(buffer2), buffer2, len(buffer2.split(" ")))
             # print("py 2:", buffer2)
         except socket.error as err:
             print("Socket 2 timeout?")

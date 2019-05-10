@@ -83,7 +83,7 @@ if FLAGS.demo != "":
 state_size = [15]
 s_size_central = [8]
 action_size = 5
-env = GymFCPKeepAway(scenario=KeepAway(), serverports=[3100+FLAGS.task_index*200, 3200+FLAGS.task_index*200])
+env = GymFCPKeepAway(scenario=KeepAway(), serverports=[3100+FLAGS.task_index*1000, 3200+FLAGS.task_index*1000])
 critic_action = False
 critic_comm = False
 
