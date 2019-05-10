@@ -69,7 +69,7 @@ class GymFCPKeepAway(gym.Env):
         self.original_server_ports = serverports
         self.server_port = serverports[0]
         self.server_monitor_port = serverports[1]
-        #self.start_rcss()
+        # self.start_rcss()
 
         self.rewards_sum = 0
 
@@ -174,7 +174,7 @@ class GymFCPKeepAway(gym.Env):
 
             # print("Waiting for FCP Agent to be started")
 
-            #self.debug = True
+            # self.debug = True
 
             while self.agent_process0 is None:
                 self.agent_process0, self.client_socket0 = self.spawn(args0)
@@ -187,7 +187,7 @@ class GymFCPKeepAway(gym.Env):
                 # print("going for agent2")
                 self.agent_process2, self.client_socket2 = self.spawn(args2)
 
-            #self.debug = False
+                # self.debug = False
         else:
             self.reset_agent()
 
@@ -198,7 +198,7 @@ class GymFCPKeepAway(gym.Env):
         sleep(1)
 
         specific_state0, specific_state1, specific_state2, \
-            game_state0, game_state1, game_state2 = self.read_state_from_rcss()
+        game_state0, game_state1, game_state2 = self.read_state_from_rcss()
         self.state0, self.state1, self.state2 = specific_state0, specific_state1, specific_state2
         self.game_state0, self.game_state1, self.game_state2 = game_state0, game_state1, game_state2
 
@@ -223,7 +223,7 @@ class GymFCPKeepAway(gym.Env):
         # return self.reset()  # Reset environment
 
     def read_message(self):
-        #sleep(1)
+        # sleep(1)
 
         buffer0 = ""
         buffer1 = ""
@@ -231,8 +231,14 @@ class GymFCPKeepAway(gym.Env):
 
         try:
             msg_bytes = self.client_socket0.recv(4)
+            if len(msg_bytes) == 0:
+                raise socket.error("FCP closed conn")
+            bytes_to_read = int.from_bytes(msg_bytes, "big")
             #print("reading ",msg_bytes, int.from_bytes(msg_bytes, "big"))
-            msg_bytes = self.client_socket0.recv(int.from_bytes(msg_bytes, "big"))
+            msg_bytes = self.client_socket0.recv(bytes_to_read)
+            while len(msg_bytes) < bytes_to_read:
+                #print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
+                msg_bytes += self.client_socket0.recv(bytes_to_read - len(msg_bytes))
             buffer0 += msg_bytes.decode("utf-8")
             #print(len(buffer0), buffer0, len(buffer0.split(" ")))
             # print("py 0:", buffer0)
@@ -242,8 +248,14 @@ class GymFCPKeepAway(gym.Env):
 
         try:
             msg_bytes = self.client_socket1.recv(4)
+            if len(msg_bytes) == 0:
+                raise socket.error("FCP closed conn")
+            bytes_to_read = int.from_bytes(msg_bytes, "big")
             #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
             msg_bytes = self.client_socket1.recv(int.from_bytes(msg_bytes, "big"))
+            while len(msg_bytes) < bytes_to_read:
+                #print("read only",len(msg_bytes), "reading further",bytes_to_read - len(msg_bytes))
+                msg_bytes += self.client_socket1.recv(bytes_to_read - len(msg_bytes))
             buffer1 += msg_bytes.decode("utf-8")
             #print(len(buffer1), buffer1, len(buffer1.split(" ")))
             # print("py 1:", buffer1)
@@ -253,8 +265,14 @@ class GymFCPKeepAway(gym.Env):
 
         try:
             msg_bytes = self.client_socket2.recv(4)
+            if len(msg_bytes) == 0:
+                raise socket.error("FCP closed conn")
+            bytes_to_read = int.from_bytes(msg_bytes, "big")
             #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
             msg_bytes = self.client_socket2.recv(int.from_bytes(msg_bytes, "big"))
+            while len(msg_bytes) < bytes_to_read:
+                #print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
+                msg_bytes += self.client_socket2.recv(bytes_to_read - len(msg_bytes))
             buffer2 += msg_bytes.decode("utf-8")
             #print(len(buffer2), buffer2, len(buffer2.split(" ")))
             # print("py 2:", buffer2)
@@ -356,10 +374,10 @@ class GymFCPKeepAway(gym.Env):
         # self.crash_counter += 1
         # print("Crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
         # self.kill_agents()
-        return [np.zeros(len(self.observation_space.low)),
-                np.zeros(len(self.observation_space.low)),
-                np.zeros(len(self.observation_space.low))], 0, True, \
-               {"state_central": [0, 0, 0, 0, 0, 0, 0, 0]}
+        return [np.ones(len(self.observation_space.low)),
+                np.ones(len(self.observation_space.low)),
+                np.ones(len(self.observation_space.low))], -1, True, \
+               {"state_central": [1, 1, 1, 1, 1, 1, 1, 1]}
 
     def step(self, actions):
         if actions[0] is not None:

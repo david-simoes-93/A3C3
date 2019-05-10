@@ -35,14 +35,8 @@ class KeepAway(Scenario):
 
         self.action_space = spaces.Tuple((spaces.Discrete(5), spaces.Discrete(5), spaces.Discrete(5)))
         self.observation_space = spaces.Box(
-            low=np.array([-90, -90, -25, -45, -25, -25, -130, -130, -45, -45, -45, -25,  # legs
-                          -120, -120, -1, -95, -120, -120, -90, -1,  # arms
-                          -360, -360, -360,  # gyro
-                          -180, -15, -10, 0]),  # orient, x, y, z
-            high=np.array([1, 1, 45, 25, 100, 100, 1, 1, 75, 75, 25, 45,  # legs
-                           120, 120, 95, 1, 120, 120, 1, 90,  # arms
-                           360, 360, 360,  # gyro
-                           180, 15, 10, 1]), dtype=np.float32)
+            low=np.array([-1, -1, -1, -1, -1, -1,   -1, -1, -1, -1, -1, -1,   -1, -1, -1]),  # orient, x, y, z
+            high=np.array([1, 1, 1, 1, 1, 1,  1, 1, 1, 1, 1, 1,   1, 1, 1]), dtype=np.float32)
         self.args0 = " -ds keepaway -u 4 -dbeam 0 -9 0 -r 4 -dball 0 -8.9 0"
         self.args1 = " -ds keepaway -u 3 -dbeam -9 9 0 -r 4 -dball 0 -8.9 0"
         self.args2 = " -ds keepaway -u 2 -dbeam 9 9 0 -r 4 -dball 0 -8.9 0"  # doesnt beam there
