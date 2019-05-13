@@ -140,7 +140,8 @@ class Worker:
                      ac_network.advantages: advantages}
 
         print(self.name, "optimizing", feed_dict[ac_network.target_v], feed_dict[ac_network.inputs],
-              feed_dict[ac_network.inputs_central], feed_dict[ac_network.actions], feed_dict[ac_network.advantages])
+              feed_dict[ac_network.inputs_central], feed_dict[ac_network.actions], feed_dict[ac_network.advantages],
+              [bootstrap_value])
 
         v_l, p_l, grads_m, e_l, g_n, v_n, _ = sess.run([ac_network.value_loss,
                                                         ac_network.policy_loss,

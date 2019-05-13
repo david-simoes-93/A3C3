@@ -366,6 +366,14 @@ class GymFCPKeepAway(gym.Env):
             print("Found NaN, game_state_updated:")
             print(game_state_updated, state0, state1, state2)
 
+        low = [-1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1]
+        high = [1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1]
+        for i in range(len(game_state_updated)):
+            if game_state_updated[i] < low[i]:
+                game_state_updated[i] = low[i]
+            elif game_state_updated[i] > high[i]:
+                game_state_updated[i] = high[i]
+
         return game_state_updated
 
     def check_crash(self):

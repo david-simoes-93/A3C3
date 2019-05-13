@@ -35,8 +35,8 @@ class KeepAway(Scenario):
 
         self.action_space = spaces.Tuple((spaces.Discrete(5), spaces.Discrete(5), spaces.Discrete(5)))
         self.observation_space = spaces.Box(
-            low=np.array([-1.5, -1, -1.5, -1, -1.5, -1,   -1.5, -1, -1.5, -1, -1, -1,   0, 0, 0]),  # orient, x, y, z
-            high=np.array([1.5, 1, 1.5, 1, 1.5, 1,  1.5, 1, 1.5, 1, 1, 1,   1.5, 1.5, 1.5]), dtype=np.float32)
+            low=np.array([-1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1, -1, 0, 0, 0]),  # orient, x, y, z
+            high=np.array([1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1, 1, 1, 1.5, 1.5, 1.5]), dtype=np.float32)
         self.args0 = " -ds keepaway -u 4 -dbeam 0 -9 0 -r 4 -dball 0 -8.9 0"
         self.args1 = " -ds keepaway -u 3 -dbeam -9 9 0 -r 4 -dball 0 -8.9 0"
         self.args2 = " -ds keepaway -u 2 -dbeam 9 9 0 -r 4 -dball 0 -8.9 0"  # doesnt beam there
@@ -44,28 +44,28 @@ class KeepAway(Scenario):
         self.scenario_time = 10
 
     def get_state(self, joints, prev_actions, game_state):
-        prevPlayerPos = [joints[0]/10, joints[1]/10]
-        nextPlayerPos = [joints[2]/10, joints[3]/10]
+        prevPlayerPos = [joints[0] / 10, joints[1] / 10]
+        nextPlayerPos = [joints[2] / 10, joints[3] / 10]
 
-        ballPosAfterStopping = [joints[4]/10, joints[5]/10]
-        #print("get state",joints[6:9])
-        myDistToBall = joints[6]/10
-        prevPlayerDistToBall = joints[7]/10
-        nextPlayerDistToBall = joints[8]/10
+        ballPosAfterStopping = [joints[4] / 10, joints[5] / 10]
+        # print("get state",joints[6:9])
+        myDistToBall = joints[6] / 10
+        prevPlayerDistToBall = joints[7] / 10
+        nextPlayerDistToBall = joints[8] / 10
 
         radian_ori = np.math.radians(game_state.my_ori)
 
         # TODO polar coords?
-        state = [game_state.my_pos_x/10, game_state.my_pos_y/10] + prevPlayerPos + nextPlayerPos + \
-               [game_state.rel_ball_x/10, game_state.rel_ball_y/10] + ballPosAfterStopping + \
-               [np.math.cos(radian_ori), np.math.sin(radian_ori),
-                myDistToBall, prevPlayerDistToBall, nextPlayerDistToBall]
+        state = [game_state.my_pos_x / 10, game_state.my_pos_y / 10] + prevPlayerPos + nextPlayerPos + \
+                [game_state.rel_ball_x / 10, game_state.rel_ball_y / 10] + ballPosAfterStopping + \
+                [np.math.cos(radian_ori), np.math.sin(radian_ori),
+                 myDistToBall, prevPlayerDistToBall, nextPlayerDistToBall]
 
         # truncate
         for i in range(len(state)):
-            if state[i]<self.observation_space.low[i]:
+            if state[i] < self.observation_space.low[i]:
                 state[i] = self.observation_space.low[i]
-            elif state[i]>self.observation_space.high[i]:
+            elif state[i] > self.observation_space.high[i]:
                 state[i] = self.observation_space.high[i]
 
         if np.isnan(state).any():
@@ -75,9 +75,9 @@ class KeepAway(Scenario):
         return state
 
     def get_terminal_reward(self, joints, game_states):
-        dist0 = joints[0][12]*10
-        dist1 = joints[1][12]*10
-        dist2 = joints[2][12]*10
+        dist0 = joints[0][12] * 10
+        dist1 = joints[1][12] * 10
+        dist2 = joints[2][12] * 10
 
         reward = 0
         if self.last_next_to_ball == 0 and dist0 > 2:
