@@ -90,6 +90,9 @@ class Worker:
         if np.isnan(np.array(list(actions))).any():
             print(self.name, "Found NaN, actions:")
             print(actions)
+        if np.array([x == -1 for x in actions]).any():
+            print(self.name, "Found -1, actions:")
+            print(actions)
         if np.isnan(sent_message).any():
             print(self.name, "Found NaN, sent_message:")
             print(sent_message)
@@ -136,7 +139,8 @@ class Worker:
                      ac_network.actions: actions,
                      ac_network.advantages: advantages}
 
-        print(self.name, "optimizing", feed_dict)
+        print(self.name, "optimizing", feed_dict[ac_network.target_v], feed_dict[ac_network.inputs],
+              feed_dict[ac_network.inputs_central], feed_dict[ac_network.actions], feed_dict[ac_network.advantages])
 
         v_l, p_l, grads_m, e_l, g_n, v_n, _ = sess.run([ac_network.value_loss,
                                                         ac_network.policy_loss,
@@ -289,6 +293,7 @@ class Worker:
             # start new epi
             current_screen, info = self.env.reset()
             previous_screen = [None, None, None]
+            previous_actions = [-1, -1, -1]
             arrayed_current_screen_central = [info["state_central"] for _ in range(self.number_of_agents)]
             for i in range(self.number_of_agents):
                 comm_map = list(range(self.number_of_agents))
@@ -348,6 +353,7 @@ class Worker:
                 for i in range(self.number_of_agents):
                     if current_screen[i] is not None:
                         previous_screen[i] = current_screen[i]
+                        previous_actions[i] = actions[i]
                 previous_arrayed_screen_central = arrayed_current_screen_central
                 previous_comm = curr_comm
 
@@ -374,8 +380,9 @@ class Worker:
 
                 for i in range(self.number_of_agents):
                     if current_screen[i] is not None:
+                        #print( previous_actions[i])
                         episode_buffer[i].append([previous_screen[i], previous_arrayed_screen_central[i],
-                                                  previous_comm[i], actions[i], message[i],
+                                                  previous_comm[i], previous_actions[i], message[i],
                                                   reward[i] if self.spread_rewards else reward,
                                                   current_screen[i], curr_comm[i], terminal, value[i]])
                         episode_values[i].append(np.max(value[i]))
