@@ -37,9 +37,9 @@ class KeepAway(Scenario):
         self.observation_space = spaces.Box(
             low=np.array([-1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1, -1, 0, 0, 0]),  # orient, x, y, z
             high=np.array([1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1, 1, 1, 1.5, 1.5, 1.5]), dtype=np.float32)
-        self.args0 = " -ds keepaway -u 4 -dbeam 0 -9 0 -r 4 -dball 0 -8.9 0"
-        self.args1 = " -ds keepaway -u 3 -dbeam -9 9 0 -r 4 -dball 0 -8.9 0"
-        self.args2 = " -ds keepaway -u 2 -dbeam 9 9 0 -r 4 -dball 0 -8.9 0"  # doesnt beam there
+        self.args0 = " -ds keepaway -u 4 -dbeam 0 -9 0 -r 4 -dball 0 -8.7 0"
+        self.args1 = " -ds keepaway -u 3 -dbeam -9 9 0 -r 4 -dball 0 -8.7 0"
+        self.args2 = " -ds keepaway -u 2 -dbeam 9 9 0 -r 4 -dball 0 -8.7 0"  # doesnt beam there
         self.last_next_to_ball = 2
         self.scenario_time = 10
 

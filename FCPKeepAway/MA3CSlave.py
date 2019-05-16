@@ -72,7 +72,7 @@ class Worker:
         # terminals = rollout[:, 8]  # whether timestep t was terminal
         values = rollout[:, 9]
 
-        if np.isnan(observations).any():
+        """if np.isnan(observations).any():
             print(self.name, "Found NaN, observations:")
             print(observations)
         if np.isnan(observations_central).any():
@@ -99,7 +99,7 @@ class Worker:
         if np.isnan(bootstrap_value):
             print(self.name, "Found NaN, bootstrap_value:")
             print(bootstrap_value)
-            bootstrap_value = 0
+            bootstrap_value = 0"""
         # print("done")
         # print("VALUE GRADS")
         # for i in range(len(observations)):
@@ -123,12 +123,12 @@ class Worker:
             advantages = gae(gamma, epsilon, rewards, value_plus)
             advantages = discount(advantages, gamma)
 
-        if np.isnan(discounted_rewards).any():
+        """if np.isnan(discounted_rewards).any():
             print(self.name, "Found NaN, discounted_rewards:")
             print(discounted_rewards)
         if np.isnan(np.array(list(advantages))).any():
             print(self.name, "Found NaN, advantages:")
-            print(advantages)
+            print(advantages)"""
 
         # Update the global network using gradients from loss
         # Generate network statistics to periodically save
@@ -139,9 +139,9 @@ class Worker:
                      ac_network.actions: actions,
                      ac_network.advantages: advantages}
 
-        print(self.name, "optimizing", feed_dict[ac_network.target_v], feed_dict[ac_network.inputs],
+        """print(self.name, "optimizing", feed_dict[ac_network.target_v], feed_dict[ac_network.inputs],
               feed_dict[ac_network.inputs_central], feed_dict[ac_network.actions], feed_dict[ac_network.advantages],
-              [bootstrap_value])
+              [bootstrap_value])"""
 
         v_l, p_l, grads_m, e_l, g_n, v_n, _ = sess.run([ac_network.value_loss,
                                                         ac_network.policy_loss,
@@ -301,9 +301,6 @@ class Worker:
                 comm_map.remove(i)
                 episode_comm_maps[i].append(comm_map)
 
-            if self.is_chief and self.display:
-                self.env.render()
-
             curr_comm = [[] for _ in range(self.number_of_agents)]
             for curr_agent in range(self.number_of_agents):
                 for from_agent in range(self.amount_of_agents_to_send_message_to):
@@ -324,12 +321,12 @@ class Worker:
                                      feed_dict={self.local_AC.inputs: [current_screen[i]],
                                                 self.local_AC.inputs_comm: [curr_comm[i]]})
 
-                        if np.isnan(action_distribution[i]).any():
+                        """if np.isnan(action_distribution[i]).any():
                             print(self.name, "Found NaN! Input:", current_screen[i], "Output:", action_distribution[i])
                             actions[i] = 0
                             exit()
-                        else:
-                            actions[i] = np.random.choice(action_indexes, p=action_distribution[i])
+                        else:"""
+                        actions[i] = np.random.choice(action_indexes, p=action_distribution[i])
                         """# TODO
                         if current_screen[i][12] < current_screen[i][13] and \
                                         current_screen[i][12] < current_screen[i][14]:
@@ -343,13 +340,13 @@ class Worker:
                     print(arrayed_current_screen_central)"""
                 value = sess.run(self.local_AC.value,
                                  feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
-                if np.isnan(value).any():
+                """if np.isnan(value).any():
                     print(self.name, "Found NaN, value:")
                     print(arrayed_current_screen_central)
                     print(value)
                     for v in value:
                         if np.isnan(v[0]):
-                            v[0] = 0
+                            v[0] = 0"""
 
                 for i in range(self.number_of_agents):
                     if current_screen[i] is not None:
@@ -374,9 +371,6 @@ class Worker:
                     this_turns_comm_map.append(surviving_comms)
                 curr_comm = self.output_mess_to_input_mess(message, this_turns_comm_map)
 
-                if self.is_chief and self.display:
-                    self.env.render()
-                    sleep(0.2)
                 episode_reward += sum(reward) if self.spread_rewards else reward
 
                 for i in range(self.number_of_agents):
@@ -399,13 +393,13 @@ class Worker:
                         print(arrayed_current_screen_central)"""
                     v1 = sess.run(self.local_AC.value,
                                   feed_dict={self.local_AC.inputs_central: arrayed_current_screen_central})
-                    if np.isnan(v1).any():
+                    """if np.isnan(v1).any():
                         print(self.name, "Found NaN, v1:")
                         print(arrayed_current_screen_central)
                         print(v1)
                         for v in v1:
                             if np.isnan(v[0]):
-                                v[0] = 0
+                                v[0] = 0"""
                     for i in range(self.number_of_agents):
                         if len(episode_buffer[i]) == batch_size:
                             # print("optimizing",i,"with",len(episode_buffer[i]),"samples")
@@ -457,7 +451,7 @@ class Worker:
             self.episode_mean_values.append(np.mean([np.mean(x) for x in episode_values]))
 
             # Update the network using the experience buffer at the end of the episode.
-            print(self.name, "final opti", len(episode_buffer[0]), len(episode_buffer[1]), len(episode_buffer[2]))
+            """print(self.name, "final opti", len(episode_buffer[0]), len(episode_buffer[1]), len(episode_buffer[2]))"""
             for i in range(self.number_of_agents):
                 partial_obs[i], partial_mess_rec[i], sent_message[i], mgrad_per_received[i], \
                 v_l[i], p_l[i], e_l[i], g_n[i], v_n[i] = \
