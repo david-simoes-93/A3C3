@@ -67,8 +67,8 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [15]
-s_size_central = [8]
+state_size = [17]
+s_size_central = [10]
 action_size = 5
 
 critic_action = False
@@ -90,7 +90,7 @@ with tf.device("/cpu:0"):
     workers = []
     # Create worker classes
     for i in range(FLAGS.num_slaves):
-        workers.append(Worker(GymFCPKeepAway(scenario=KeepAway(), serverports=[3100+i*1000, 3200+i*1000]),
+        workers.append(Worker(GymFCPKeepAway(serverports=[3100+i*1000, 3200+i*1000]),
                               i, state_size, s_size_central,
                               action_size, number_of_agents, trainer, model_path,
                               global_episodes, amount_of_agents_to_send_message_to,

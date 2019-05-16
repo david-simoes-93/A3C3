@@ -382,10 +382,10 @@ class GymFCPPassing(gym.Env):
         # self.crash_counter += 1
         # print("Crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
         # self.kill_agents()
-        return [np.ones(len(self.observation_space.low)),
-                np.ones(len(self.observation_space.low)),
-                np.ones(len(self.observation_space.low))], -1, True, \
-               {"state_central": [1, 1, 1, 1, 1, 1, 1, 1]}
+        return [np.zeros(len(self.observation_space.low)),
+                np.zeros(len(self.observation_space.low)),
+                np.zeros(len(self.observation_space.low))], -1, True, \
+               {"state_central": [0, 0, 0, 0, 0, 0, 0, 0]}
 
     def step(self, actions):
         if actions[0] is not None:

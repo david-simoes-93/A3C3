@@ -9,7 +9,7 @@ import random
 import signal
 import sys
 import traceback
-from simulator_fcp.Scenario import GameState
+from simulator_fcp.Scenario import GameState, KeepAway
 
 
 def signal_handler(sig, frame):
@@ -34,8 +34,8 @@ def gym_fcp_kill_all():
 
 
 class GymFCPKeepAway(gym.Env):
-    def __init__(self, scenario=None, debug=False, serverports=[3100, 3200]):
-        self.scenario = scenario
+    def __init__(self, debug=False, serverports=[3100, 3200]):
+        self.scenario = KeepAway()
         self.debug = debug
 
         # kill any existing rcss in this port
@@ -56,6 +56,7 @@ class GymFCPKeepAway(gym.Env):
         self.client_socket0 = None
         self.client_socket1 = None
         self.client_socket2 = None
+        self.client_socket_oppo = None
         self.cycles_per_second = 50
         self.scenario_time = self.cycles_per_second * 3
 
@@ -76,6 +77,7 @@ class GymFCPKeepAway(gym.Env):
         self.agent_process0 = None
         self.agent_process1 = None
         self.agent_process2 = None
+        self.agent_process_oppo = None
 
         # GUI
         self.metadata = {'render.modes': []}
@@ -130,6 +132,10 @@ class GymFCPKeepAway(gym.Env):
             # print(self.client_socket2.recv(1024).decode("utf-8"))
             self.client_socket2.sendall(zero_op)
 
+        if self.client_socket_oppo is not None:
+            # print(self.client_socket2.recv(1024).decode("utf-8"))
+            self.client_socket_oppo.sendall(zero_op)
+
     def spawn(self, args):
         # self.refresh_agents()
         # agent_process = 0
@@ -161,24 +167,26 @@ class GymFCPKeepAway(gym.Env):
         self.episode_counter += 1
 
         # starts/resets agents
-        if self.agent_process0 is None or self.agent_process1 is None or self.agent_process2 is None:
-            print("starting agents")
+        if self.agent_process0 is None or self.agent_process1 is None or self.agent_process2 is None \
+                or self.agent_process_oppo is None:
+
             # restart FCP
             self.start_rcss()
-
+            print("starting agents")
             global_args = "./deepAgent -p " + str(self.server_port) + " " + str(self.server_monitor_port) + \
                           " -dp " + str(self.server_socket_port)
             args0 = global_args + self.scenario.args0
             args1 = global_args + self.scenario.args1
             args2 = global_args + self.scenario.args2
+            args_oppo = global_args + self.scenario.args_oppo
 
             # print("Waiting for FCP Agent to be started")
 
-            # self.debug = True
+            #self.debug = True
 
             while self.agent_process0 is None:
                 self.agent_process0, self.client_socket0 = self.spawn(args0)
-
+            #self.debug = False
             while self.agent_process1 is None:
                 # print("going for agent1")
                 self.agent_process1, self.client_socket1 = self.spawn(args1)
@@ -186,6 +194,10 @@ class GymFCPKeepAway(gym.Env):
             while self.agent_process2 is None:
                 # print("going for agent2")
                 self.agent_process2, self.client_socket2 = self.spawn(args2)
+
+            while self.agent_process_oppo is None:
+                # print("going for agent2")
+                self.agent_process_oppo, self.client_socket_oppo = self.spawn(args_oppo)
 
                 # self.debug = False
         else:
@@ -197,14 +209,14 @@ class GymFCPKeepAway(gym.Env):
         self.refresh_agents()
         sleep(1)
 
-        specific_state0, specific_state1, specific_state2, \
-        game_state0, game_state1, game_state2 = self.read_state_from_rcss()
+        specific_state0, specific_state1, specific_state2, specific_state_oppo, \
+            game_state0, game_state1, game_state2 = self.read_state_from_rcss()
         self.state0, self.state1, self.state2 = specific_state0, specific_state1, specific_state2
         self.game_state0, self.game_state1, self.game_state2 = game_state0, game_state1, game_state2
 
-        if specific_state0 is None or specific_state1 is None or specific_state2 is None:
+        if specific_state0 is None or specific_state1 is None or specific_state2 is None or specific_state_oppo is None:
             # Agent crashed
-            print("Someone crashed!", specific_state0, specific_state1, specific_state2)
+            print("Someone crashed!", specific_state0, specific_state1, specific_state2, specific_state_oppo)
             self.recover_from_crash()
             return self.reset()
 
@@ -228,6 +240,7 @@ class GymFCPKeepAway(gym.Env):
         buffer0 = ""
         buffer1 = ""
         buffer2 = ""
+        buffer_oppo = ""
 
         try:
             msg_bytes = self.client_socket0.recv(4)
@@ -280,25 +293,41 @@ class GymFCPKeepAway(gym.Env):
             print("Socket 2 timeout?")
             print(err)
 
+        try:
+            msg_bytes = self.client_socket_oppo.recv(4)
+            if len(msg_bytes) == 0:
+                raise socket.error("FCP closed conn")
+            bytes_to_read = int.from_bytes(msg_bytes, "big")
+            #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
+            msg_bytes = self.client_socket_oppo.recv(int.from_bytes(msg_bytes, "big"))
+            while len(msg_bytes) < bytes_to_read:
+                #print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
+                msg_bytes += self.client_socket_oppo.recv(bytes_to_read - len(msg_bytes))
+            buffer_oppo += msg_bytes.decode("utf-8")
+            #print(len(buffer2), buffer2, len(buffer2.split(" ")))
+            # print("py 2:", buffer2)
+        except socket.error as err:
+            print("Socket oppo timeout?")
+            print(err)
+
         if self.debug:
             print("PYTHON READ: " + buffer0 + buffer1 + buffer2)
 
-        return buffer0, buffer1, buffer2
+        return buffer0, buffer1, buffer2, buffer_oppo
 
     def read_state_from_rcss(self):
         self.counter += 1
-        buffer0, buffer1, buffer2 = self.read_message()
+        buffer0, buffer1, buffer2, buffer_oppo = self.read_message()
 
-        specific_state0, specific_state1, specific_state2 = None, None, None
+        specific_state0, specific_state1, specific_state2, specific_state_oppo = None, None, None, None
         game_state0, game_state1, game_state2 = None, None, None
         if len(buffer0) != 0:
             state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer0.strip().split(" ")]
             if len(state) != 1:
-                joints = state[15:]
-                prev_act = []
+                my_state0 = state[15:]
                 game_state0 = GameState(state[0:15])
 
-                specific_state0 = self.scenario.get_state(joints, prev_act, game_state0)
+                specific_state0 = self.scenario.get_state(my_state0, game_state0)
 
                 self.state0 = specific_state0
                 self.game_state0 = game_state0
@@ -310,11 +339,10 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer1) != 0:
             state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer1.strip().split(" ")]
             if len(state) != 1:
-                joints = state[15:]
-                prev_act = []
+                my_state1 = state[15:]
                 game_state1 = GameState(state[0:15])
 
-                specific_state1 = self.scenario.get_state(joints, prev_act, game_state1)
+                specific_state1 = self.scenario.get_state(my_state1, game_state1)
 
                 self.state1 = specific_state1
                 self.game_state1 = game_state1
@@ -326,11 +354,10 @@ class GymFCPKeepAway(gym.Env):
         if len(buffer2) != 0:
             state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer2.strip().split(" ")]
             if len(state) != 1:
-                joints = state[15:]
-                prev_act = []
+                my_state2 = state[15:]
                 game_state2 = GameState(state[0:15])
 
-                specific_state2 = self.scenario.get_state(joints, prev_act, game_state2)
+                specific_state2 = self.scenario.get_state(my_state2, game_state2)
 
                 self.state2 = specific_state2
                 self.game_state2 = game_state2
@@ -339,10 +366,16 @@ class GymFCPKeepAway(gym.Env):
         else:
             print("agent2 got empty message")
 
-        if self.debug:
-            print("AGENT STATE:", specific_state0, specific_state1, specific_state2)
+        if len(buffer_oppo) != 0:
+            specific_state_oppo = [0]
+        else:
+            print("agent oppo got empty message")
 
-        return specific_state0, specific_state1, specific_state2, game_state0, game_state1, game_state2
+        if self.debug:
+            print("AGENT STATE:", specific_state0, specific_state1, specific_state2, specific_state_oppo)
+
+        return specific_state0, specific_state1, specific_state2, specific_state_oppo, \
+               game_state0, game_state1, game_state2
 
     def debugsend(self, st):
         self.client_socket.sendall(st.encode("utf-8"))
@@ -352,22 +385,22 @@ class GymFCPKeepAway(gym.Env):
                               self.game_state1.my_pos_x / 10, self.game_state1.my_pos_y / 10,
                               self.game_state2.my_pos_x / 10, self.game_state2.my_pos_y / 10]
         if state0 is not None and len(state0) != 1:
-            game_state_updated.extend([self.game_state0.ball_x / 10, self.game_state0.ball_y / 10])
+            game_state_updated.extend([self.game_state0.ball_x / 10, self.game_state0.ball_y / 10, state0[15], state0[16]])
         elif state1 is not None and len(state1) != 1:
-            game_state_updated.extend([self.game_state1.ball_x / 10, self.game_state1.ball_y / 10])
+            game_state_updated.extend([self.game_state1.ball_x / 10, self.game_state1.ball_y / 10, state1[15], state1[16]])
         elif state2 is not None and len(state2) != 1:
-            game_state_updated.extend([self.game_state2.ball_x / 10, self.game_state2.ball_y / 10])
+            game_state_updated.extend([self.game_state2.ball_x / 10, self.game_state2.ball_y / 10, state2[15], state2[16]])
         else:
             print("Incomplete game state:", state0, state1, state2)
             traceback.print_stack()
-            game_state_updated.extend([0, 0])
+            game_state_updated.extend([0, 0, 0, 0])
 
         if np.isnan(game_state_updated).any():
             print("Found NaN, game_state_updated:")
             print(game_state_updated, state0, state1, state2)
 
-        low = [-1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1]
-        high = [1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1]
+        low = [-1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1, -1.5, -1]
+        high = [1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1, 1.5, 1]
         for i in range(len(game_state_updated)):
             if game_state_updated[i] < low[i]:
                 game_state_updated[i] = low[i]
@@ -382,10 +415,10 @@ class GymFCPKeepAway(gym.Env):
         # self.crash_counter += 1
         # print("Crash ", self.crash_counter, "out of", self.episode_counter, "episodes")
         # self.kill_agents()
-        return [np.ones(len(self.observation_space.low)),
-                np.ones(len(self.observation_space.low)),
-                np.ones(len(self.observation_space.low))], -1, True, \
-               {"state_central": [1, 1, 1, 1, 1, 1, 1, 1]}
+        return [np.zeros(len(self.observation_space.low)),
+                np.zeros(len(self.observation_space.low)),
+                np.zeros(len(self.observation_space.low))], -1, True, \
+               {"state_central": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
 
     def step(self, actions):
         if actions[0] is not None:
@@ -395,23 +428,25 @@ class GymFCPKeepAway(gym.Env):
         if actions[2] is not None:
             self.client_socket2.sendall(str(actions[2]).encode("utf-8"))
 
+        self.client_socket_oppo.sendall("5".encode("utf-8"))
+
         if self.debug:
             print("Python sent", actions)
 
-        state0, state1, state2, game_state0, game_state1, game_state2 = self.read_state_from_rcss()
-        if state0 is None or state1 is None or state2 is None:
+        state0, state1, state2, state_oppo, game_state0, game_state1, game_state2 = self.read_state_from_rcss()
+        if state0 is None or state1 is None or state2 is None or state_oppo is None:
             return self.check_crash()
 
         while len(state0) == 1 and len(state1) == 1 and len(state2) == 1:
             # print("reading")
             self.refresh_agents()
-            state0, state1, state2, game_state0, game_state1, game_state2 = self.read_state_from_rcss()
+            state0, state1, state2, state_oppo, game_state0, game_state1, game_state2 = self.read_state_from_rcss()
             # print("read", state0, state1, state2, game_state)
 
-            if state0 is None or state1 is None or state2 is None:
+            if state0 is None or state1 is None or state2 is None or state_oppo is None:
                 return self.check_crash()
 
-        terminal, reward = self.scenario.get_terminal_reward([self.state0, self.state1, self.state2],
+        terminal, reward = self.scenario.get_terminal_reward([self.state0, self.state1, self.state2, state_oppo],
                                                              [self.game_state0, self.game_state1, self.game_state2])
 
         return [state0, state1, state2], reward, terminal, \
@@ -427,6 +462,9 @@ class GymFCPKeepAway(gym.Env):
         if self.client_socket2 is not None:
             self.client_socket2.sendall("reset".encode("utf-8"))
             # print("Reset agent")
+        if self.client_socket_oppo is not None:
+            self.client_socket_oppo.sendall("reset".encode("utf-8"))
+            # print("Reset agent")
 
     def kill_agents(self):
         self.kill_agent(self.client_socket0, self.agent_process0)
@@ -440,6 +478,10 @@ class GymFCPKeepAway(gym.Env):
         self.kill_agent(self.client_socket2, self.agent_process2)
         self.client_socket2 = None
         self.agent_process2 = None
+
+        self.kill_agent(self.client_socket_oppo, self.agent_process_oppo)
+        self.client_socket_oppo = None
+        self.agent_process_oppo = None
 
     def kill_agent(self, client_socket, agent_process):
         if client_socket is not None:
