@@ -80,8 +80,8 @@ if FLAGS.demo != "":
     FLAGS.max_epis += 1000
     batch_size = max_episode_length + 1
 
-state_size = [15]
-s_size_central = [8]
+state_size = [17]
+s_size_central = [10]
 action_size = 5
 env = GymFCPKeepAway(serverports=[3100+FLAGS.task_index*1000, 3200+FLAGS.task_index*1000])
 critic_action = False
