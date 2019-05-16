@@ -29,9 +29,9 @@ class Scenario():
         return True, 0
 
 
-class KeepAway(Scenario):
+class Passing(Scenario):
     def __init__(self):
-        self.name = "keepaway"
+        self.name = "passing"
 
         self.action_space = spaces.Tuple((spaces.Discrete(5), spaces.Discrete(5), spaces.Discrete(5)))
         self.observation_space = spaces.Box(
