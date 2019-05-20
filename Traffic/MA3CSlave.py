@@ -247,10 +247,10 @@ class Worker:
         if coord is None:
             coord = sess
 
-        comms_evol = [[], [], [], []]
+        """comms_evol = [[], [], [], [], [], [], [], []]
         if self.display and self.is_chief:
             mpl.ion()
-            mpl.pause(0.001)
+            mpl.pause(0.001)"""
 
         already_calculated_actions = False
         while not coord.should_stop():
@@ -490,19 +490,6 @@ class Worker:
                 mean_reward = np.mean(self.episode_rewards[-5:])
                 mean_value = np.mean(self.episode_mean_values[-5:])
 
-                if self.is_chief and self.message_size == 1 and episode_count % 10 == 0:
-                    neighbor0 = -1 if random.random() > 0.5 else 1
-                    neighbor1 = -1 if random.random() > 0.5 else 1
-                    vals = sess.run(self.local_AC.message,
-                                    feed_dict={self.local_AC.inputs: [[-1, neighbor0, neighbor1, 1],
-                                                                      [1, neighbor0, neighbor1, 1]]})
-                    comms_evol[0].append(vals[0])
-                    comms_evol[1].append(vals[1])
-                    if self.display:
-                        mpl.clf()
-                        mpl.plot(comms_evol[0], color="green")
-                        mpl.plot(comms_evol[1], color="red")
-                        mpl.pause(0.001)
                 if self.is_chief and episode_count % 10 == 0:
                     print("length", mean_length, "reward", mean_reward,
                           "collisions", mean_collisions, "stalls", mean_stalls)
@@ -523,6 +510,27 @@ class Worker:
                 summary.value.add(tag='Losses/Var Norm', simple_value=float(np.mean(v_n)))  # var_norms
                 self.summary_writer.add_summary(summary, episode_count)
                 self.summary_writer.flush()
+
+            """if self.is_chief and self.message_size == 1:
+                vals = sess.run(self.local_AC.message,
+                                feed_dict={self.local_AC.inputs: [[-1, -1, -1, 1],
+                                                                  [1, -1, -1, 1],
+                                                                  [-1, 1, -1, 1],
+                                                                  [1, 1, -1, 1],
+                                                                  [-1, -1, 1, 1],
+                                                                  [1, -1, 1, 1],
+                                                                  [-1, 1, 1, 1],
+                                                                  [1, 1, 1, 1]
+                                                                  ]})
+                for i in range(8):
+                    comms_evol[i].append(vals[i])
+                if self.display:
+                    mpl.clf()
+                    for i in range(8):
+                        mpl.plot(comms_evol[i], color="green" if i % 2 == 0 else "red")
+                    mpl.pause(0.001)
+                    if episode_count%50==0:
+                        print(comms_evol)"""
 
             # Update episode count
             if self.is_chief:
