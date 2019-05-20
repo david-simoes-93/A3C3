@@ -60,6 +60,9 @@ class Worker:
     def train_weights_and_get_comm_gradients(self, rollout, sess, gamma, ac_network, bootstrap_value=0):
 
         rollout = np.array(rollout)
+        if len(rollout)==0:
+            print("Empty rollout")
+            return
 
         observations = np.stack(rollout[:, 0])
         observations_central = np.stack(rollout[:, 1])
