@@ -421,7 +421,6 @@ class GymFCPKeepAway(gym.Env):
                {"state_central": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
 
     def step(self, actions):
-        actions=[1,1,1]
         if actions[0] is not None:
             self.client_socket0.sendall(str(actions[0]).encode("utf-8"))
         if actions[1] is not None:
