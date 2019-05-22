@@ -62,7 +62,7 @@ class Worker:
         rollout = np.array(rollout)
         if len(rollout)==0:
             print("Empty rollout")
-            return
+            return [], [], [], [], 0, 0, 0, 0, 0
 
         observations = np.stack(rollout[:, 0])
         observations_central = np.stack(rollout[:, 1])
