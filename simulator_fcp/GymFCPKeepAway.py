@@ -184,20 +184,26 @@ class GymFCPKeepAway(gym.Env):
 
             #self.debug = True
 
-            while self.agent_process0 is None:
+            if self.agent_process0 is None:
                 self.agent_process0, self.client_socket0 = self.spawn(args0)
             #self.debug = False
-            while self.agent_process1 is None:
+            if self.agent_process1 is None:
                 # print("going for agent1")
                 self.agent_process1, self.client_socket1 = self.spawn(args1)
 
-            while self.agent_process2 is None:
+            if self.agent_process2 is None:
                 # print("going for agent2")
                 self.agent_process2, self.client_socket2 = self.spawn(args2)
 
-            while self.agent_process_oppo is None:
+            if self.agent_process_oppo is None:
                 # print("going for agent2")
                 self.agent_process_oppo, self.client_socket_oppo = self.spawn(args_oppo)
+
+            if self.agent_process0 is None or self.agent_process1 is None or \
+                            self.agent_process2 is None or self.agent_process_oppo is None:
+                print("Agents crashed during spawn!")
+                self.recover_from_crash()
+                return self.reset()
 
                 # self.debug = False
         else:
