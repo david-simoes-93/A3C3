@@ -168,10 +168,10 @@ class GymFCPKeepAway(gym.Env):
 
     def reset(self):
         # reset every 30 episodes
+        self.counter += 1
         if self.counter % 30 == 0:
             self.recover_from_crash()
 
-        self.counter += 1
         self.episode_counter += 1
 
         # starts/resets agents
