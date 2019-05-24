@@ -98,6 +98,8 @@ class GymFCPKeepAway(gym.Env):
         signal.signal(signal.SIGINT, signal_handler)
 
     def start_rcss(self):
+        self.counter = 0
+
         if self.debug:
             self.rcss_process = subprocess.Popen(("/usr/local/bin/rcssserver3d --agent-port " + str(self.server_port) +
                                                   " --server-port " + str(self.server_monitor_port)).split(),
@@ -157,13 +159,19 @@ class GymFCPKeepAway(gym.Env):
         print("waiting for agent to connect...")
         try:
             (client_socket, address) = self.server_socket.accept()
-            client_socket.settimeout(20)
         except:
             print("--error--:", sys.exc_info()[0])
             return None, None
+
+        client_socket.settimeout(20)
         return agent_process, client_socket
 
     def reset(self):
+        # reset every 30 episodes
+        if self.counter % 30 == 0:
+            self.recover_from_crash()
+
+        self.counter += 1
         self.episode_counter += 1
 
         # starts/resets agents
@@ -182,11 +190,11 @@ class GymFCPKeepAway(gym.Env):
 
             # print("Waiting for FCP Agent to be started")
 
-            #self.debug = True
+            # self.debug = True
 
             if self.agent_process0 is None:
                 self.agent_process0, self.client_socket0 = self.spawn(args0)
-            #self.debug = False
+            # self.debug = False
             if self.agent_process1 is None:
                 # print("going for agent1")
                 self.agent_process1, self.client_socket1 = self.spawn(args1)
@@ -216,7 +224,7 @@ class GymFCPKeepAway(gym.Env):
         sleep(1)
 
         specific_state0, specific_state1, specific_state2, specific_state_oppo, \
-            game_state0, game_state1, game_state2 = self.read_state_from_rcss()
+        game_state0, game_state1, game_state2 = self.read_state_from_rcss()
         self.state0, self.state1, self.state2 = specific_state0, specific_state1, specific_state2
         self.game_state0, self.game_state1, self.game_state2 = game_state0, game_state1, game_state2
 
@@ -253,13 +261,13 @@ class GymFCPKeepAway(gym.Env):
             if len(msg_bytes) == 0:
                 raise socket.error("FCP closed conn")
             bytes_to_read = int.from_bytes(msg_bytes, "big")
-            #print("reading ",msg_bytes, int.from_bytes(msg_bytes, "big"))
+            # print("reading ",msg_bytes, int.from_bytes(msg_bytes, "big"))
             msg_bytes = self.client_socket0.recv(bytes_to_read)
             while len(msg_bytes) < bytes_to_read:
-                #print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
+                print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
                 msg_bytes += self.client_socket0.recv(bytes_to_read - len(msg_bytes))
             buffer0 += msg_bytes.decode("utf-8")
-            #print(len(buffer0), buffer0, len(buffer0.split(" ")))
+            # print(len(buffer0), buffer0, len(buffer0.split(" ")))
             # print("py 0:", buffer0)
         except socket.error as err:
             print("Socket 0 timeout?")
@@ -270,13 +278,13 @@ class GymFCPKeepAway(gym.Env):
             if len(msg_bytes) == 0:
                 raise socket.error("FCP closed conn")
             bytes_to_read = int.from_bytes(msg_bytes, "big")
-            #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
+            # print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
             msg_bytes = self.client_socket1.recv(int.from_bytes(msg_bytes, "big"))
             while len(msg_bytes) < bytes_to_read:
-                #print("read only",len(msg_bytes), "reading further",bytes_to_read - len(msg_bytes))
+                print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
                 msg_bytes += self.client_socket1.recv(bytes_to_read - len(msg_bytes))
             buffer1 += msg_bytes.decode("utf-8")
-            #print(len(buffer1), buffer1, len(buffer1.split(" ")))
+            # print(len(buffer1), buffer1, len(buffer1.split(" ")))
             # print("py 1:", buffer1)
         except socket.error as err:
             print("Socket 1 timeout?")
@@ -287,13 +295,13 @@ class GymFCPKeepAway(gym.Env):
             if len(msg_bytes) == 0:
                 raise socket.error("FCP closed conn")
             bytes_to_read = int.from_bytes(msg_bytes, "big")
-            #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
+            # print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
             msg_bytes = self.client_socket2.recv(int.from_bytes(msg_bytes, "big"))
             while len(msg_bytes) < bytes_to_read:
-                #print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
+                print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
                 msg_bytes += self.client_socket2.recv(bytes_to_read - len(msg_bytes))
             buffer2 += msg_bytes.decode("utf-8")
-            #print(len(buffer2), buffer2, len(buffer2.split(" ")))
+            # print(len(buffer2), buffer2, len(buffer2.split(" ")))
             # print("py 2:", buffer2)
         except socket.error as err:
             print("Socket 2 timeout?")
@@ -304,13 +312,13 @@ class GymFCPKeepAway(gym.Env):
             if len(msg_bytes) == 0:
                 raise socket.error("FCP closed conn")
             bytes_to_read = int.from_bytes(msg_bytes, "big")
-            #print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
+            # print("reading ", msg_bytes, int.from_bytes(msg_bytes, "big"))
             msg_bytes = self.client_socket_oppo.recv(int.from_bytes(msg_bytes, "big"))
             while len(msg_bytes) < bytes_to_read:
-                #print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
+                # print("read only", len(msg_bytes), "reading further", bytes_to_read - len(msg_bytes))
                 msg_bytes += self.client_socket_oppo.recv(bytes_to_read - len(msg_bytes))
             buffer_oppo += msg_bytes.decode("utf-8")
-            #print(len(buffer2), buffer2, len(buffer2.split(" ")))
+            # print(len(buffer2), buffer2, len(buffer2.split(" ")))
             # print("py 2:", buffer2)
         except socket.error as err:
             print("Socket oppo timeout?")
@@ -322,7 +330,6 @@ class GymFCPKeepAway(gym.Env):
         return buffer0, buffer1, buffer2, buffer_oppo
 
     def read_state_from_rcss(self):
-        self.counter += 1
         buffer0, buffer1, buffer2, buffer_oppo = self.read_message()
 
         specific_state0, specific_state1, specific_state2, specific_state_oppo = None, None, None, None
@@ -391,11 +398,14 @@ class GymFCPKeepAway(gym.Env):
                               self.game_state1.my_pos_x / 10, self.game_state1.my_pos_y / 10,
                               self.game_state2.my_pos_x / 10, self.game_state2.my_pos_y / 10]
         if state0 is not None and len(state0) != 1:
-            game_state_updated.extend([self.game_state0.ball_x / 10, self.game_state0.ball_y / 10, state0[15], state0[16]])
+            game_state_updated.extend(
+                [self.game_state0.ball_x / 10, self.game_state0.ball_y / 10, state0[15], state0[16]])
         elif state1 is not None and len(state1) != 1:
-            game_state_updated.extend([self.game_state1.ball_x / 10, self.game_state1.ball_y / 10, state1[15], state1[16]])
+            game_state_updated.extend(
+                [self.game_state1.ball_x / 10, self.game_state1.ball_y / 10, state1[15], state1[16]])
         elif state2 is not None and len(state2) != 1:
-            game_state_updated.extend([self.game_state2.ball_x / 10, self.game_state2.ball_y / 10, state2[15], state2[16]])
+            game_state_updated.extend(
+                [self.game_state2.ball_x / 10, self.game_state2.ball_y / 10, state2[15], state2[16]])
         else:
             print("Incomplete game state:", state0, state1, state2)
             traceback.print_stack()
