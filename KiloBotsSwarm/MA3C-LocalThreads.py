@@ -23,7 +23,7 @@ batch_size = 25
 
 load_model = False
 model_path = './model'
-display = False
+display = True
 
 parser = argparse.ArgumentParser()
 parser.register("type", "bool", lambda v: v.lower() == "true")

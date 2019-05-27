@@ -380,7 +380,17 @@ class GymFCPKeepAway(gym.Env):
             print("agent2 got empty message")
 
         if len(buffer_oppo) != 0:
-            specific_state_oppo = [0]
+            state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer2.strip().split(" ")]
+            if len(state) != 1:
+                my_state_oppo = state[15:]
+                game_state_oppo = GameState(state[0:15])
+
+                specific_state_oppo = self.scenario.get_state(my_state_oppo, game_state_oppo)
+
+                self.state_oppo = specific_state_oppo
+                self.game_state_oppo = game_state_oppo
+            else:
+                specific_state_oppo = [0]
         else:
             print("agent oppo got empty message")
 
@@ -399,17 +409,18 @@ class GymFCPKeepAway(gym.Env):
                               self.game_state2.my_pos_x / 10, self.game_state2.my_pos_y / 10]
         if state0 is not None and len(state0) != 1:
             game_state_updated.extend(
-                [self.game_state0.ball_x / 10, self.game_state0.ball_y / 10, state0[15], state0[16]])
+                [self.game_state0.ball_x / 10, self.game_state0.ball_y / 10])
         elif state1 is not None and len(state1) != 1:
             game_state_updated.extend(
-                [self.game_state1.ball_x / 10, self.game_state1.ball_y / 10, state1[15], state1[16]])
+                [self.game_state1.ball_x / 10, self.game_state1.ball_y / 10])
         elif state2 is not None and len(state2) != 1:
             game_state_updated.extend(
-                [self.game_state2.ball_x / 10, self.game_state2.ball_y / 10, state2[15], state2[16]])
+                [self.game_state2.ball_x / 10, self.game_state2.ball_y / 10])
         else:
             print("Incomplete game state:", state0, state1, state2)
             traceback.print_stack()
-            game_state_updated.extend([0, 0, 0, 0])
+            game_state_updated.extend([0, 0])
+        game_state_updated.extend([self.game_state_oppo.my_pos_x / 10, self.game_state_oppo.my_pos_y / 10])
 
         if np.isnan(game_state_updated).any():
             print("Found NaN, game_state_updated:")
@@ -462,7 +473,7 @@ class GymFCPKeepAway(gym.Env):
             if state0 is None or state1 is None or state2 is None or state_oppo is None:
                 return self.check_crash()
 
-        terminal, reward = self.scenario.get_terminal_reward([self.state0, self.state1, self.state2, state_oppo],
+        terminal, reward = self.scenario.get_terminal_reward([self.state0, self.state1, self.state2, self.state_oppo],
                                                              [self.game_state0, self.game_state1, self.game_state2])
 
         return [state0, state1, state2], reward, terminal, \

@@ -165,16 +165,10 @@ class KeepAway(Scenario):
         dist0 = states[0][14] * 10
         dist1 = states[1][14] * 10
         dist2 = states[2][14] * 10
+        distOppo = states[3][14] * 10
 
-        pos_0 = [game_states[0].ball_x, game_states[0].ball_y]
-        pos_1 = [game_states[1].ball_x, game_states[1].ball_y]
-        pos_2 = [game_states[2].ball_x, game_states[2].ball_y]
-        pos_0_oppo = [states[0][6] * 10, states[0][7] * 10]
-        pos_1_oppo = [states[1][6] * 10, states[1][7] * 10]
-        pos_2_oppo = [states[2][6] * 10, states[2][7] * 10]
-        distOppo = min([euclidean_distance(pos_0, pos_0_oppo),
-                        euclidean_distance(pos_1, pos_1_oppo),
-                        euclidean_distance(pos_2, pos_2_oppo)])
+        print(distOppo)
+
         """print("pos", pos_0, pos_1, pos_2, pos_0_oppo, pos_1_oppo, pos_2_oppo)
         print("dists", [euclidean_distance(pos_0, pos_0_oppo),
                         euclidean_distance(pos_1, pos_1_oppo),
