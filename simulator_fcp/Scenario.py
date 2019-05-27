@@ -161,13 +161,22 @@ class KeepAway(Scenario):
 
         return state
 
+    def print_state(self, state):
+        print("MyPos:", state[0:2], "...")
+
     def get_terminal_reward(self, states, game_states):
         dist0 = states[0][14] * 10
         dist1 = states[1][14] * 10
         dist2 = states[2][14] * 10
         distOppo = states[3][14] * 10
 
-        #print(distOppo)
+        """print(states[0])
+        print(states[1])
+        print(states[2])
+        print(states[3])
+
+        print(distOppo)
+        exit()"""
 
         """print("pos", pos_0, pos_1, pos_2, pos_0_oppo, pos_1_oppo, pos_2_oppo)
         print("dists", [euclidean_distance(pos_0, pos_0_oppo),

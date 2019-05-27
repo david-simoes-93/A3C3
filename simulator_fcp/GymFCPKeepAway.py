@@ -380,7 +380,7 @@ class GymFCPKeepAway(gym.Env):
             print("agent2 got empty message")
 
         if len(buffer_oppo) != 0:
-            state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer2.strip().split(" ")]
+            state = [float(x) if np.isfinite(float(x)) else 0 for x in buffer_oppo.strip().split(" ")]
             if len(state) != 1:
                 my_state_oppo = state[15:]
                 game_state_oppo = GameState(state[0:15])
