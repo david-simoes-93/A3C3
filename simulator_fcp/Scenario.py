@@ -167,7 +167,7 @@ class KeepAway(Scenario):
         dist2 = states[2][14] * 10
         distOppo = states[3][14] * 10
 
-        print(distOppo)
+        #print(distOppo)
 
         """print("pos", pos_0, pos_1, pos_2, pos_0_oppo, pos_1_oppo, pos_2_oppo)
         print("dists", [euclidean_distance(pos_0, pos_0_oppo),
