@@ -96,6 +96,8 @@ class GymFCPPassing(gym.Env):
         signal.signal(signal.SIGINT, signal_handler)
 
     def start_rcss(self):
+        self.counter = 0
+
         if self.debug:
             self.rcss_process = subprocess.Popen(("/usr/local/bin/rcssserver3d --agent-port " + str(self.server_port) +
                                                   " --server-port " + str(self.server_monitor_port)).split(),
@@ -151,21 +153,28 @@ class GymFCPPassing(gym.Env):
         print("waiting for agent to connect...")
         try:
             (client_socket, address) = self.server_socket.accept()
-            client_socket.settimeout(20)
         except:
             print("--error--:", sys.exc_info()[0])
             return None, None
+
+        client_socket.settimeout(20)
         return agent_process, client_socket
 
     def reset(self):
+        # reset every 30 episodes
+        self.counter += 1
+        if self.counter % 30 == 0:
+            self.recover_from_crash()
+
         self.episode_counter += 1
 
         # starts/resets agents
         if self.agent_process0 is None or self.agent_process1 is None or self.agent_process2 is None:
-            print("starting agents")
+
             # restart FCP
             self.start_rcss()
 
+            print("starting agents")
             global_args = "./deepAgent -p " + str(self.server_port) + " " + str(self.server_monitor_port) + \
                           " -dp " + str(self.server_socket_port)
             args0 = global_args + self.scenario.args0
@@ -176,16 +185,21 @@ class GymFCPPassing(gym.Env):
 
             # self.debug = True
 
-            while self.agent_process0 is None:
+            if self.agent_process0 is None:
                 self.agent_process0, self.client_socket0 = self.spawn(args0)
 
-            while self.agent_process1 is None:
+            if self.agent_process1 is None:
                 # print("going for agent1")
                 self.agent_process1, self.client_socket1 = self.spawn(args1)
 
-            while self.agent_process2 is None:
+            if self.agent_process2 is None:
                 # print("going for agent2")
                 self.agent_process2, self.client_socket2 = self.spawn(args2)
+
+            if self.agent_process0 is None or self.agent_process1 is None or self.agent_process2 is None:
+                print("Agents crashed during spawn!")
+                self.recover_from_crash()
+                return self.reset()
 
                 # self.debug = False
         else:
@@ -286,7 +300,6 @@ class GymFCPPassing(gym.Env):
         return buffer0, buffer1, buffer2
 
     def read_state_from_rcss(self):
-        self.counter += 1
         buffer0, buffer1, buffer2 = self.read_message()
 
         specific_state0, specific_state1, specific_state2 = None, None, None
