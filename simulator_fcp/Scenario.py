@@ -40,7 +40,8 @@ class Passing(Scenario):
         self.args0 = " -ds keepaway -u 4 -dbeam 0 -9 0 -r 4 -dball 0 -8.7 0"
         self.args1 = " -ds keepaway -u 3 -dbeam -9 9 0 -r 4 -dball 0 -8.7 0"
         self.args2 = " -ds keepaway -u 2 -dbeam 9 9 0 -r 4 -dball 0 -8.7 0"  # TODO doesnt beam there
-        self.last_next_to_ball = 2
+        self.last_next_to_ball = 0
+        self.last_ball_position = [0, 8.7]
         self.scenario_time = 10
 
     def get_state(self, joints, prev_actions, game_state):
@@ -79,28 +80,44 @@ class Passing(Scenario):
         dist1 = joints[1][12] * 10
         dist2 = joints[2][12] * 10
 
+        ballPos0 = [game_states[0].ball_x, game_states[0].ball_y]
+        ballPos1 = [game_states[1].ball_x, game_states[1].ball_y]
+        ballPos2 = [game_states[2].ball_x, game_states[2].ball_y]
+
         reward = 0
         if self.last_next_to_ball == 0 and dist0 > 2:
             if dist1 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                    reward = 1
                 self.last_next_to_ball = 1
+                self.last_ball_position = ballPos1
             elif dist2 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                    reward = 1
                 self.last_next_to_ball = 2
+                self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 1 and dist1 > 2:
             if dist0 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                    reward = 1
                 self.last_next_to_ball = 0
+                self.last_ball_position = ballPos0
             elif dist2 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                    reward = 1
                 self.last_next_to_ball = 2
+                self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 2 and dist2 > 2:
             if dist0 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                    reward = 1
                 self.last_next_to_ball = 0
+                self.last_ball_position = ballPos0
             elif dist1 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                    reward = 1
                 self.last_next_to_ball = 1
+                self.last_ball_position = ballPos1
 
         """if reward == 1:
             print("reward! ",self.last_next_to_ball)
@@ -125,7 +142,8 @@ class KeepAway(Scenario):
         self.args1 = " -ds keepaway -u 3 -dbeam -9 9 0 -r 4 -dball 0 -8.7 0"
         self.args2 = " -ds keepaway -u 2 -dbeam 9 9 0 -r 4 -dball 0 -8.7 0"  # TODO doesnt beam there
         self.args_oppo = " -ds keepaway -t Opponent -u 2 -dbeam 0 0 0 -r 4 -dball 0 -8.7 0"
-        self.last_next_to_ball = 2
+        self.last_next_to_ball = 0
+        self.last_ball_position = [0, 8.7]
         self.scenario_time = 10
 
     def get_state(self, my_state, game_state):
@@ -170,6 +188,10 @@ class KeepAway(Scenario):
         dist2 = states[2][14] * 10
         distOppo = states[3][14] * 10
 
+        ballPos0 = [game_states[0].ball_x, game_states[0].ball_y]
+        ballPos1 = [game_states[1].ball_x, game_states[1].ball_y]
+        ballPos2 = [game_states[2].ball_x, game_states[2].ball_y]
+
         """print(states[0])
         print(states[1])
         print(states[2])
@@ -184,27 +206,40 @@ class KeepAway(Scenario):
                         euclidean_distance(pos_2, pos_2_oppo)])"""
 
         reward = 0
+        #
         if self.last_next_to_ball == 0 and dist0 > 2:
             if dist1 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                    reward = 1
                 self.last_next_to_ball = 1
+                self.last_ball_position = ballPos1
             elif dist2 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                    reward = 1
                 self.last_next_to_ball = 2
+                self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 1 and dist1 > 2:
             if dist0 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                    reward = 1
                 self.last_next_to_ball = 0
+                self.last_ball_position = ballPos0
             elif dist2 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                    reward = 1
                 self.last_next_to_ball = 2
+                self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 2 and dist2 > 2:
             if dist0 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                    reward = 1
                 self.last_next_to_ball = 0
+                self.last_ball_position = ballPos0
             elif dist1 < 1:
-                reward = 1
+                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                    reward = 1
                 self.last_next_to_ball = 1
+                self.last_ball_position = ballPos1
 
         """if reward == 1:
             print("reward! ",self.last_next_to_ball)
