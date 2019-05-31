@@ -87,39 +87,39 @@ class Passing(Scenario):
         reward = 0
         if self.last_next_to_ball == 0 and dist0 > 2:
             if dist1 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos1) > 2:
                     reward = 1
                 self.last_next_to_ball = 1
                 self.last_ball_position = ballPos1
             elif dist2 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos2) > 2:
                     reward = 1
                 self.last_next_to_ball = 2
                 self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 1 and dist1 > 2:
             if dist0 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos0) > 2:
                     reward = 1
                 self.last_next_to_ball = 0
                 self.last_ball_position = ballPos0
             elif dist2 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos2) > 2:
                     reward = 1
                 self.last_next_to_ball = 2
                 self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 2 and dist2 > 2:
             if dist0 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos0) > 2:
                     reward = 1
                 self.last_next_to_ball = 0
                 self.last_ball_position = ballPos0
             elif dist1 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos1) > 2:
                     reward = 1
                 self.last_next_to_ball = 1
                 self.last_ball_position = ballPos1
 
-        """if reward == 1:
+        """if reward != 0:
             print("reward! ",self.last_next_to_ball)
         else:
             print("prev:",self.last_next_to_ball,"dists:",dist0,dist1,dist2)"""
@@ -209,34 +209,34 @@ class KeepAway(Scenario):
         #
         if self.last_next_to_ball == 0 and dist0 > 2:
             if dist1 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos1) > 2:
                     reward = 1
                 self.last_next_to_ball = 1
                 self.last_ball_position = ballPos1
             elif dist2 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos2) > 2:
                     reward = 1
                 self.last_next_to_ball = 2
                 self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 1 and dist1 > 2:
             if dist0 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos0) > 2:
                     reward = 1
                 self.last_next_to_ball = 0
                 self.last_ball_position = ballPos0
             elif dist2 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos2) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos2) > 2:
                     reward = 1
                 self.last_next_to_ball = 2
                 self.last_ball_position = ballPos2
         elif self.last_next_to_ball == 2 and dist2 > 2:
             if dist0 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos0) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos0) > 2:
                     reward = 1
                 self.last_next_to_ball = 0
                 self.last_ball_position = ballPos0
             elif dist1 < 1:
-                if euclidean_distance(self.last_ball_position, ballPos1) < 2:
+                if euclidean_distance(self.last_ball_position, ballPos1) > 2:
                     reward = 1
                 self.last_next_to_ball = 1
                 self.last_ball_position = ballPos1
@@ -256,4 +256,5 @@ class KeepAway(Scenario):
 
 
 def euclidean_distance(a, b):
+    #print("euclidean", a, b)
     return np.sqrt((a[0] - b[0]) * (a[0] - b[0]) + (a[1] - b[1]) * (a[1] - b[1]))
