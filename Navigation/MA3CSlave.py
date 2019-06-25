@@ -15,7 +15,8 @@ class Worker:
                  global_episodes, amount_of_agents_to_send_message_to,
                  display=False, comm=False, comm_size_per_agent=0, spread_messages=True,
                  critic_action=False, critic_comm=False,
-                 comm_delivery_failure_chance=0, comm_gaussian_noise=0, comm_jumble_chance=0):
+                 comm_delivery_failure_chance=0, comm_gaussian_noise=0, comm_jumble_chance=0,
+                 paramSearch=[40, "relu", 80, 40]):
         self.name = "worker_" + str(name)
         self.is_chief = self.name == 'worker_0'
         print(self.name)
@@ -41,7 +42,8 @@ class Worker:
             AC_Network(s_size, s_size_central, number_of_agents, a_size,
                        amount_of_agents_to_send_message_to * comm_size_per_agent,
                        amount_of_agents_to_send_message_to * comm_size_per_agent if spread_messages else comm_size_per_agent,
-                       self.name, trainer, critic_action=critic_action, critic_comm=critic_comm)
+                       self.name, trainer, critic_action=critic_action, critic_comm=critic_comm,
+                       paramSearch=paramSearch)
         self.update_local_ops = update_target_graph('global', self.name)
 
         # Env Pursuit set-up

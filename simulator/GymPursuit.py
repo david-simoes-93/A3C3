@@ -135,7 +135,7 @@ class GymPursuit(gym.Env):
         return self.get_state(), {"state_central": self.get_state_central(), "time_chasing": 0}
 
     def step(self, action):
-        reward = -0.1
+        reward = -0.5   # heavier penalties so that faster policies are much more obvious
         for i, action in enumerate(action):
             if action == 0:
                 mov = [0, 1]

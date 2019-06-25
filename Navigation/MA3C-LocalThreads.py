@@ -53,7 +53,7 @@ parser.add_argument(
 parser.add_argument(
     "--max_epis",
     type=int,
-    default=300000,
+    default=150000,
     help="training steps"
 )
 parser.add_argument(
@@ -80,10 +80,21 @@ parser.add_argument(
     default=0,
     help="demo folder"
 )
+parser.add_argument(
+    "--param_search",
+    type=str,
+    default="40,relu,80,40",
+    help="network configs. [size_of_comm_HL, activ_fn, size_of_actor_and_critic_HL1, size_of_actor_and_critic_HL2, ...]"
+)
 FLAGS, unparsed = parser.parse_known_args()
 number_of_agents = FLAGS.num_agents
 comm_size = FLAGS.comm_size
 amount_of_agents_to_send_message_to = number_of_agents - 1
+
+network_configs = FLAGS.param_search.split(",")
+network_configs[0] = int(network_configs[0])
+for i in range(2, len(network_configs)):
+    network_configs[i] = int(network_configs[i])
 
 if FLAGS.demo != "":
     load_model = True
@@ -120,7 +131,8 @@ with tf.device("/cpu:0"):
                                 action_size, amount_of_agents_to_send_message_to * comm_size,
                                 amount_of_agents_to_send_message_to * comm_size if spread_messages else comm_size,
                                 'global',
-                                None, critic_action=critic_action, critic_comm=critic_comm)  # Generate global network
+                                None, critic_action=critic_action, critic_comm=critic_comm,
+                                paramSearch=network_configs)  # Generate global network
 
     workers = []
     # Create worker classes
@@ -133,7 +145,8 @@ with tf.device("/cpu:0"):
                               critic_action=critic_action, critic_comm=critic_comm,
                               comm_delivery_failure_chance=FLAGS.comm_delivery_failure_chance,
                               comm_gaussian_noise=FLAGS.comm_gaussian_noise,
-                              comm_jumble_chance=FLAGS.comm_jumble_chance))
+                              comm_jumble_chance=FLAGS.comm_jumble_chance,
+                              paramSearch=network_configs))
 
     saver = tf.train.Saver()
 

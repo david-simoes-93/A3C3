@@ -7,7 +7,7 @@ from Helper import normalized_columns_initializer
 # Actor-Critic Network
 class AC_Network:
     def __init__(self, s_size, s_size_central, number_of_agents, a_size, comm_size_input, comm_size_output, scope, trainer,
-                 critic_action=False, critic_comm=False):
+                 critic_action=False, critic_comm=False, paramSearch=[40,"relu",80,40]):
         with tf.variable_scope(scope):
             print("Scope", scope)
             if critic_action and critic_comm:
@@ -19,6 +19,13 @@ class AC_Network:
             else:
                 central_input_size = s_size_central
 
+            if paramSearch[1] == "elu":
+                activation_fn = tf.nn.elu
+            elif paramSearch[1] == "elu":
+                activation_fn = tf.nn.sigmoid
+            else:
+                activation_fn = tf.nn.relu
+
             self.inputs = tf.placeholder(shape=[None, ] + s_size, dtype=tf.float32)
             self.inputs_central = tf.placeholder(shape=[None, ] + central_input_size, dtype=tf.float32)
             self.inputs_comm = tf.placeholder(shape=[None, comm_size_input], dtype=tf.float32)
@@ -26,35 +33,37 @@ class AC_Network:
             flattened_inputs = tf.contrib.layers.flatten(self.inputs)
             self.flattened_inputs_with_comm = tf.concat([flattened_inputs, self.inputs_comm], 1)
 
-            hidden_comm = slim.fully_connected(flattened_inputs, 40,
+            hidden_comm = slim.fully_connected(flattened_inputs, paramSearch[0],
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
-                                           activation_fn=tf.nn.relu)
+                                           activation_fn=activation_fn)
 
-            hidden = slim.fully_connected(self.flattened_inputs_with_comm, 80,
+            hidden = slim.fully_connected(self.flattened_inputs_with_comm, paramSearch[2],
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
-                                           activation_fn=tf.nn.relu)
+                                           activation_fn=activation_fn)
 
-            hidden2 = slim.fully_connected(hidden, 40,
-                                           weights_initializer=tf.contrib.layers.xavier_initializer(),
-                                           biases_initializer=tf.contrib.layers.xavier_initializer(),
-                                           activation_fn=tf.nn.relu)
+            for layer_size in paramSearch[3:]:
+                hidden = slim.fully_connected(hidden, layer_size,
+                                               weights_initializer=tf.contrib.layers.xavier_initializer(),
+                                               biases_initializer=tf.contrib.layers.xavier_initializer(),
+                                               activation_fn=activation_fn)
 
-            hidden_central = slim.fully_connected(self.inputs_central, 80,
+            hidden_central = slim.fully_connected(self.inputs_central, paramSearch[2],
                                           weights_initializer=tf.contrib.layers.xavier_initializer(),
                                           biases_initializer=tf.contrib.layers.xavier_initializer(),
-                                          activation_fn=tf.nn.relu)
+                                          activation_fn=activation_fn)
 
-            hidden2_central = slim.fully_connected(hidden_central, 40,
+            for layer_size in paramSearch[3:]:
+                hidden_central = slim.fully_connected(hidden_central, layer_size,
                                            weights_initializer=tf.contrib.layers.xavier_initializer(),
                                            biases_initializer=tf.contrib.layers.xavier_initializer(),
-                                           activation_fn=tf.nn.relu)
+                                           activation_fn=activation_fn)
 
-            self.value = slim.fully_connected(hidden2_central, 1, activation_fn=None,
+            self.value = slim.fully_connected(hidden_central, 1, activation_fn=None,
                                                  weights_initializer=normalized_columns_initializer(1.0),
                                               biases_initializer=normalized_columns_initializer(1.0))
-            self.policy = slim.fully_connected(hidden2, a_size, activation_fn=tf.nn.softmax,
+            self.policy = slim.fully_connected(hidden, a_size, activation_fn=tf.nn.softmax,
                                                weights_initializer=normalized_columns_initializer(0.01),
                                                biases_initializer=normalized_columns_initializer(0.01))
             if comm_size_output != 0:
