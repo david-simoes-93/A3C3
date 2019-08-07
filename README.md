@@ -3,4 +3,4 @@
 A distributed asynchronous actor-critic algorithm in a multi-agent setting with differentiable communication and a centralized
 critic.
 
-Check out learned policies here: https://youtu.be/xRBp7AJgsSk
+Check out learned policies here: https://youtu.be/fB71yKcP3iU
