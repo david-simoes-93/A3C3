@@ -92,7 +92,7 @@ class Worker:
         # GAE (if epsilon=0, its the same as doing regular advantage)
         epsilon = 0
         if epsilon == 0:
-            print(discounted_rewards, value_plus)
+            #print(discounted_rewards, value_plus)
             advantages = adv(discounted_rewards, value_plus)
         else:
             advantages = gae(gamma, epsilon, rewards, value_plus)

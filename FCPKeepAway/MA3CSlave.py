@@ -331,8 +331,8 @@ class Worker:
                         else:"""
                         actions[i] = np.random.choice(action_indexes, p=action_distribution[i])
                         """# TODO
-                        if current_screen[i][12] < current_screen[i][13] and \
-                                        current_screen[i][12] < current_screen[i][14]:
+                        if current_screen[i][14] < current_screen[i][15] and \
+                                        current_screen[i][14] < current_screen[i][16]:
                             actions[i] = 1
                             #print("kicker:", i)
                         else:

@@ -36,11 +36,11 @@ class Worker:
         self.critic_action = critic_action
         self.critic_comm = critic_comm
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
-        predator = AC_Network(s_size[1], s_size_central, number_of_agents, a_size[1], comm_size_per_agent,
+        predator = AC_Network(s_size[1], s_size_central[1], number_of_agents, a_size[1], comm_size_per_agent,
                               comm_size_per_agent,
                               self.name, trainer, "_agentPredator", critic_action=critic_action,
                               critic_comm=critic_comm)
-        prey = AC_Network(s_size[0], s_size_central, number_of_agents, a_size[0], 0, 0,
+        prey = AC_Network(s_size[0], s_size_central[0], number_of_agents, a_size[0], 0, 0,
                           self.name, trainer, "_agentPrey", critic_action=critic_action, critic_comm=critic_comm)
         self.local_AC = [prey, predator, predator]
         self.update_local_ops = [update_target_graph('global_agentPredator', self.name + "_agentPredator"),
@@ -289,6 +289,9 @@ class Worker:
                         actions_one_hot[agent] = self.actions_one_hot[agent][actions[agent]]
                         # print(actions_one_hot[agent])
                     # exit()
+                    # if hardcoded adversary (for fair comparison)
+                    actions[0] = get_adv_action(current_screen[0])
+                    actions_one_hot[0] = self.actions_one_hot[0][actions[0]]
                     """# message gauss noise
                     if self.comm_gaussian_noise != 0:
                         for index in range(len(message)):
@@ -339,7 +342,7 @@ class Worker:
                 if self.is_chief and self.display:
                     self.env.render()
                     sleep(0.2)
-                episode_reward += sum(reward) if self.spread_rewards else reward
+                episode_reward += reward[1] #sum(reward) if self.spread_rewards else reward
 
                 """# jumbles comms
                 if self.comm_jumble_chance != 0:
@@ -496,3 +499,29 @@ class Worker:
                 episode_count = sess.run(self.global_episodes)
 
         self.env.close()
+
+
+def get_adv_action(cs):
+    lm1 = cs[0:2]
+    lm2 = cs[2:4]
+    player1 = cs[4:6]
+    player2 = cs[6:8]
+
+    # go to lm that is closest to a player
+    lm1dist = min(eucl_dist(lm1, player1), eucl_dist(lm1, player2))
+    lm2dist = min(eucl_dist(lm2, player1), eucl_dist(lm2, player2))
+
+    if lm1dist < lm2dist:
+        target = lm1
+    else:
+        target = lm2
+
+    if abs(target[0]) > abs(target[1]):
+        action = 1 if target[0]>0 else 2
+    else:
+        action = 3 if target[1] > 0 else 4
+
+    return action
+
+def eucl_dist(a, b):
+    return np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2)

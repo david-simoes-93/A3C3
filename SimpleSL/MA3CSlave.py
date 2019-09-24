@@ -37,7 +37,7 @@ class Worker:
         self.critic_comm = critic_comm
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
         self.local_AC = \
-            [AC_Network(s_size[i], s_size_central, number_of_agents, a_size[i],
+            [AC_Network(s_size[i], s_size_central[i], number_of_agents, a_size[i],
                         (number_of_agents - 1) * comm_size_per_agent,
                         (number_of_agents - 1) * comm_size_per_agent if spread_messages else comm_size_per_agent,
                         self.name, trainer, "_agent" + str(i), critic_action=critic_action, critic_comm=critic_comm)
@@ -241,7 +241,7 @@ class Worker:
             coord = sess
 
         already_calculated_actions = False
-        #stats1, stats2 = [], []
+        stats1, stats2 = [], []
         while not coord.should_stop():
             sess.run(self.update_local_ops)
 
@@ -439,8 +439,8 @@ class Worker:
                 if terminal:
                     break
 
-            #stats1.append(terminal)
-            #stats2.append(-reward[0] / self.number_of_agents)
+            stats1.append(terminal)
+            stats2.append(-reward[0] / self.number_of_agents)
 
             # print("0ver ",episode_step_count,episode_reward)
             self.episode_rewards.append(episode_reward)
@@ -509,5 +509,6 @@ class Worker:
                 episode_count = sess.run(self.global_episodes)
 
         self.env.close()
-        #print(stats1)
-        #print(stats2)
+        print(stats1)
+        print(stats2)
+        print(np.mean(stats1), np.mean(stats2))

@@ -59,7 +59,7 @@ parser.add_argument(
 parser.add_argument(
     "--max_epis",
     type=int,
-    default=50000,
+    default=100000,
     help="training steps"
 )
 parser.add_argument(
@@ -101,7 +101,7 @@ if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
 
 state_size = [8, 10, 10]
-s_size_central = sum(state_size)
+s_size_central = [sum(state_size) for _ in range(len(state_size))]
 action_size = [5, 5, 5]
 
 tf.reset_default_graph()

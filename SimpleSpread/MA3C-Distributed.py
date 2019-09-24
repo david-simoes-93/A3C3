@@ -145,7 +145,7 @@ with tf.device(tf.train.replica_device_setter(worker_device="/job:a3c3/task:%d" 
     for i in range(len(hosts)):
         print("Initializing variables for slave ", i)
         if i == FLAGS.task_index:
-            worker = Worker(make_env("simple_spread"), i, state_size, s_size_central,
+            worker = Worker(make_env("simple_spread", benchmark=True), i, state_size, s_size_central,
                             action_size, number_of_agents, trainer, model_path,
                             global_episodes, display=(display and i == 0), comm=(comm_size != 0),
                             comm_size_per_agent=comm_size, spread_messages=spread_messages,

@@ -238,7 +238,7 @@ class Worker:
             coord = sess
 
         already_calculated_actions = False
-        #stats1, stats2 = [], []
+        stats1, stats2 = [], []
         while not coord.should_stop():
             sess.run(self.update_local_ops)
 
@@ -315,8 +315,8 @@ class Worker:
 
                 # Watch environment
                 current_screen, reward, terminal, info = self.env.step(actions_one_hot)
-                #for info_agent in info['n']:
-                #    stats1_temp += (info_agent[1] - 1) / 2
+                for info_agent in info['n']:
+                    stats1_temp += (info_agent[1] - 1) / 2
 
                 for i in range(self.number_of_agents):
                     current_screen[i] = current_screen[i][0:self.s_size]
@@ -427,8 +427,8 @@ class Worker:
                 if terminal:
                     break
 
-            #stats1.append(stats1_temp)
-            #stats2.append(-reward[0] / self.number_of_agents)
+            stats1.append(stats1_temp)
+            stats2.append(-reward[0] / self.number_of_agents)
 
             # print("0ver ",episode_step_count,episode_reward)
             self.episode_rewards.append(episode_reward)
@@ -492,5 +492,6 @@ class Worker:
                 episode_count = sess.run(self.global_episodes)
 
         self.env.close()
-        #print(stats1)
-        #print(stats2)
+        print(stats1)
+        print(stats2)
+        print(np.mean(stats1), np.mean(stats2))

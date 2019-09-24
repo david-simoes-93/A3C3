@@ -101,7 +101,7 @@ if FLAGS.critic == 2 or FLAGS.critic == 3:
     critic_comm = True
 
 state_size = [3, 8]
-s_size_central = sum(state_size)
+s_size_central = [3, 8] #sum(state_size)
 action_size = [1, 5]
 
 tf.reset_default_graph()
@@ -113,7 +113,7 @@ if not os.path.exists(model_path):
 with tf.device("/cpu:0"):
     global_episodes = tf.Variable(0, dtype=tf.int32, name='global_episodes', trainable=False)
     trainer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-    master_networks = [AC_Network(state_size[i], s_size_central, number_of_agents, action_size[i],
+    master_networks = [AC_Network(state_size[i], s_size_central[i], number_of_agents, action_size[i],
                                   (number_of_agents - 1) * comm_size,
                                   (number_of_agents - 1) * comm_size if spread_messages else comm_size,
                                   'global',
