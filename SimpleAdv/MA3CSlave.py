@@ -36,13 +36,14 @@ class Worker:
         self.critic_action = critic_action
         self.critic_comm = critic_comm
         # Create the local copy of the network and the tensorflow op to copy global parameters to local network
-        predator = AC_Network(s_size[1], s_size_central[1], number_of_agents, a_size[1], comm_size_per_agent,
+        predator = AC_Network(s_size[2], s_size_central[2], number_of_agents, a_size[2], comm_size_per_agent,
                               comm_size_per_agent,
                               self.name, trainer, "_agentPredator", critic_action=critic_action,
                               critic_comm=critic_comm)
-        prey = AC_Network(s_size[0], s_size_central[0], number_of_agents, a_size[0], 0, 0,
+        prey = AC_Network(s_size[1], s_size_central[1], number_of_agents, a_size[0], comm_size_per_agent,
+                              comm_size_per_agent,
                           self.name, trainer, "_agentPrey", critic_action=critic_action, critic_comm=critic_comm)
-        self.local_AC = [prey, predator, predator]
+        self.local_AC = [None, prey, predator]
         self.update_local_ops = [update_target_graph('global_agentPredator', self.name + "_agentPredator"),
                                  update_target_graph('global_agentPrey', self.name + "_agentPrey")]
 
@@ -279,7 +280,7 @@ class Worker:
                     action_distribution, message, actions, actions_one_hot = \
                         [None] * self.number_of_agents, [None] * self.number_of_agents, \
                         [None] * self.number_of_agents, [None] * self.number_of_agents
-                    for agent in range(self.number_of_agents):
+                    for agent in range(1, self.number_of_agents):
                         # print(agent, current_screen[agent],curr_comm[agent])
                         [action_distribution[agent]], [message[agent]] = sess.run(
                             [self.local_AC[agent].policy, self.local_AC[agent].message],
@@ -309,7 +310,7 @@ class Worker:
                                 agent]"""
                 already_calculated_actions = False
                 value = [None] * self.number_of_agents
-                for agent in range(self.number_of_agents):
+                for agent in range(1, self.number_of_agents):
                     [[value[agent]]] = sess.run(self.local_AC[agent].value,
                                                 feed_dict={self.local_AC[agent].inputs_central: [
                                                     arrayed_current_screen_central[agent]]})
@@ -358,7 +359,7 @@ class Worker:
                             if jumble:
                                 curr_comm[i][index] = joint_comm[index % self.message_size]"""
 
-                for i in range(self.number_of_agents):
+                for i in range(1, self.number_of_agents):
                     episode_buffer[i].append([previous_screen[i], arrayed_previous_screen_central[i],
                                               previous_comm[i], actions[i], message[i],
                                               reward[i] if self.spread_rewards else reward,
@@ -394,7 +395,7 @@ class Worker:
                             arrayed_current_screen_central[agent] = arrayed_current_screen_central[agent] + curr_comm[
                                 agent]"""
                     already_calculated_actions = True
-                    for i in range(self.number_of_agents):
+                    for i in range(1, self.number_of_agents):
                         [v1] = sess.run(self.local_AC[i].value,
                                         feed_dict={
                                             self.local_AC[i].inputs_central: [arrayed_current_screen_central[i]]})
@@ -440,16 +441,16 @@ class Worker:
             # print("0ver ",episode_step_count,episode_reward)
             self.episode_rewards.append(episode_reward)
             self.episode_lengths.append(episode_step_count)
-            self.episode_mean_values.append(np.mean(episode_values))
+            self.episode_mean_values.append(np.mean(episode_values[1:]))
 
             # Update the network using the experience buffer at the end of the episode.
-            for i in range(self.number_of_agents):
+            for i in range(1, self.number_of_agents):
                 partial_obs[i], partial_mess_rec[i], sent_message[i], mgrad_per_received[i], \
                 v_l[i], p_l[i], e_l[i], g_n[i], v_n[i] = \
                     self.train_weights_and_get_comm_gradients(episode_buffer[i], sess, gamma, self.local_AC[i])
 
-            if self.comm and len(mgrad_per_received[0]) != 0:
-                mgrad_per_sent = self.input_mloss_to_output_mloss(len(mgrad_per_received[0]), mgrad_per_received,
+            if self.comm and len(mgrad_per_received[1]) != 0:
+                mgrad_per_sent = self.input_mloss_to_output_mloss(len(mgrad_per_received[1]), mgrad_per_received,
                                                                   episode_comm_maps)
 
                 for i in range(1,self.number_of_agents):
